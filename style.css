@@ -11,8 +11,8 @@
     /* 안쪽 어두운 면 */
     --highlight-inset: rgba(255, 255, 255, 0.95);
     /* 안쪽 밝은 면 (흰색 부조) */
-    --card-max: 360px;
-    /* A안 상한: 내용 기반 카드 너비의 최대값 */
+    --card-max: 480px;
+    /* 카드 최대 너비 */
 }
 
 html,
@@ -128,20 +128,18 @@ body {
     text-shadow: 0 1px 0 #fff;
 }
 
+
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, var(--card-max)));
-    /* grid-template-columns: repeat(auto-fit, max-content); */
-    align-content: start;
-    column-gap: 0;
-    row-gap: 0;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    justify-items: center;
-    /* or start; 둘 다 OK */
-    grid-auto-flow: row dense;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 12px;
     inline-size: 100%;
     margin-inline: 0;
     max-inline-size: none;
+    position: relative;
 }
 
 /* 카드 */
@@ -149,29 +147,36 @@ body {
     padding: 16px 18px;
     background: #fff;
     text-align: center;
-    width: auto;
-    /* 내용 너비 */
     margin: 0;
     max-width: var(--card-max);
+    width: auto;
+    flex: 0 1 auto;
 }
 
 .card--wide {
-    grid-column: 1 / -1;
-    /* 로고/장소 등 폭 넓게 쓰는 카드 */
+    flex-basis: auto;
 }
 
-/* 한 행에 단 하나뿐인 카드에 부여될 클래스 (기본: 강제 확장 비활성) */
-.card--single-row {
-    grid-column: auto;
-    width: auto;
-    justify-self: center;
+.grid.is-stack {
+    gap: 8px;
 }
 
-/* 부모가 .enable-single 일 때만 마지막 행 단독 카드 확장 */
-.grid.enable-single .card--single-row {
-    grid-column: 1 / -1;
-    width: min(100%, var(--single-card-max, 680px));
-    justify-self: center;
+.grid.is-stack .card {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: none;
+}
+
+.grid.is-chaos {
+    display: block;
+}
+
+.grid.is-chaos .card {
+    cursor: grab;
+}
+
+.grid.is-chaos .card.is-dragging {
+    cursor: grabbing;
 }
 
 .card-title {
@@ -218,4 +223,47 @@ body {
 /* 푸터를 화면 가운데 정렬처럼 보이도록 */
 .site-footer {
     text-align: center;
+}
+
+.hate-html-toggle {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 999;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 999px;
+    background: #101010;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.25),
+        inset -2px -2px 0 rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hate-html-toggle:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.6);
+    outline-offset: 2px;
+}
+
+.hate-html-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.3),
+        inset -2px -2px 0 rgba(255, 255, 255, 0.2);
+}
+
+body.is-chaos .hate-html-toggle {
+    background: #ff5b5b;
+    color: #101010;
+}
+
+body.is-chaos .hate-html-toggle:hover {
+    box-shadow:
+        0 8px 18px rgba(255, 91, 91, 0.4),
+        inset -2px -2px 0 rgba(255, 255, 255, 0.25);
 }
