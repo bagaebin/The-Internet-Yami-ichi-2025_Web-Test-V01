@@ -69,6 +69,8 @@ body {
     margin-inline: 0;
     padding: 0;
     max-inline-size: none;
+    position: relative;
+    z-index: 1;
 }
 
 .site-header,
@@ -83,6 +85,8 @@ body {
     text-align: center;
     display: grid;
     place-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .site-footer small {
@@ -140,6 +144,7 @@ body {
     margin-inline: 0;
     max-inline-size: none;
     position: relative;
+    z-index: 1;
 }
 
 /* 카드 */
@@ -204,6 +209,62 @@ body {
     box-shadow:
         inset -2px -2px 0 var(--highlight-inset),
         inset 2px 2px 0 var(--shadow-inset);
+}
+
+/* Hand overlay (hands stay under cards but above background) */
+.hand-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+}
+
+.hand-overlay__cluster {
+    position: absolute;
+    inset-block: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    min-inline-size: 0;
+    overflow: visible;
+}
+
+.hand-overlay__cluster--left {
+    inset-inline-start: 0;
+    align-items: flex-start;
+}
+
+.hand-overlay__cluster--right {
+    inset-inline-end: 0;
+    align-items: flex-end;
+}
+
+.hand-overlay__pointer {
+    --hand-slot: 0.5;
+    --hand-inline-offset: -220px;
+    --hand-rest-translate-x: 0px;
+    --hand-rest-translate-y: 0px;
+    --hand-translate-x: var(--hand-rest-translate-x);
+    --hand-translate-y: var(--hand-rest-translate-y);
+    --hand-rest-rotation: 0deg;
+    --hand-rotation: var(--hand-rest-rotation);
+    --hand-tip-inline: 92%;
+    --hand-tip-block: 48%;
+    --hand-bleed: 56px;
+    position: absolute;
+    inset-inline-start: var(--hand-inline-offset);
+    inset-block-start: calc(var(--hand-slot) * 100%);
+    pointer-events: none;
+    transform-origin: var(--hand-origin-inline, 82%) var(--hand-origin-block, 46%);
+    transform: translate3d(var(--hand-translate-x), calc(-50% + var(--hand-translate-y)), 0) rotate(var(--hand-rotation));
+    will-change: transform;
+}
+
+.hand-overlay__cluster--right .hand-overlay__pointer {
+    inset-inline-start: auto;
+    inset-inline-end: var(--hand-inline-offset);
 }
 
 /* “흰색 부조(베벨)” 테두리 효과 */

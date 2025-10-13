@@ -304,3 +304,195 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', scheduleLayoutUpdate);
 window.addEventListener('resize', scheduleLayoutUpdate);
 window.addEventListener('orientationchange', scheduleLayoutUpdate);
+
+document.addEventListener('DOMContentLoaded', initHandOverlays);
+
+function initHandOverlays(){
+  const pointerNodes = Array.from(document.querySelectorAll('.hand-overlay__pointer'));
+  if (pointerNodes.length === 0) return;
+
+  const hands = pointerNodes.map(createHandModel);
+  let pointer = null;
+  let raf = 0;
+
+  const prefersReducedMotion = matchMediaSafe('(prefers-reduced-motion: reduce)');
+  let motionPaused = prefersReducedMotion ? prefersReducedMotion.matches : false;
+
+  function applyAllRest(){
+    hands.forEach(applyRestState);
+  }
+
+  function refreshMetrics(){
+    hands.forEach(refreshHandMetrics);
+    scheduleStep();
+  }
+
+  function step(){
+    raf = 0;
+    if (motionPaused) return;
+    hands.forEach(hand => updateHandPointer(hand, pointer));
+  }
+
+  function scheduleStep(){
+    if (motionPaused) {
+      applyAllRest();
+      return;
+    }
+    if (!raf) raf = requestAnimationFrame(step);
+  }
+
+  function handlePointerMove(event){
+    pointer = { x: event.clientX, y: event.clientY };
+    scheduleStep();
+  }
+
+  function handlePointerLeave(){
+    pointer = null;
+    scheduleStep();
+  }
+
+  if (prefersReducedMotion) {
+    const motionListener = event => {
+      motionPaused = event.matches;
+      if (motionPaused) {
+        pointer = null;
+        applyAllRest();
+      } else {
+        scheduleStep();
+      }
+    };
+    addChangeListener(prefersReducedMotion, motionListener);
+  }
+
+  window.addEventListener('pointermove', handlePointerMove, { passive: true });
+  window.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+  window.addEventListener('pointercancel', handlePointerLeave, { passive: true });
+  window.addEventListener('resize', refreshMetrics);
+  window.addEventListener('orientationchange', refreshMetrics);
+
+  refreshMetrics();
+  applyAllRest();
+}
+
+function createHandModel(el){
+  const style = getComputedStyle(el);
+  return {
+    el,
+    direction: el.closest('.hand-overlay__cluster--right') ? 'right' : 'left',
+    bleed: Math.max(0, readNumeric(style.getPropertyValue('--hand-bleed'), 56)),
+    rest: {
+      rotation: readAngle(style.getPropertyValue('--hand-rest-rotation'), 0),
+      translateX: readNumeric(style.getPropertyValue('--hand-rest-translate-x'), 0),
+      translateY: readNumeric(style.getPropertyValue('--hand-rest-translate-y'), 0)
+    },
+    anchor: { x: 0, y: 0 },
+    tipVector: { x: 0, y: 0 },
+    rect: el.getBoundingClientRect()
+  };
+}
+
+function refreshHandMetrics(hand){
+  const rect = hand.el.getBoundingClientRect();
+  const style = getComputedStyle(hand.el);
+  const origin = style.transformOrigin.split(' ');
+  const originX = parseFloat(origin[0]) || 0;
+  const originY = parseFloat(origin[1]) || 0;
+  const anchorX = rect.left + originX;
+  const anchorY = rect.top + originY;
+
+  const tipInline = resolveSlot(style.getPropertyValue('--hand-tip-inline'), rect.width, 0.92);
+  const tipBlock = resolveSlot(style.getPropertyValue('--hand-tip-block'), rect.height, 0.48);
+  const tipX = rect.left + tipInline;
+  const tipY = rect.top + tipBlock;
+
+  hand.anchor.x = anchorX;
+  hand.anchor.y = anchorY;
+  hand.tipVector.x = tipX - anchorX;
+  hand.tipVector.y = tipY - anchorY;
+  hand.rect = rect;
+}
+
+const DEG_PER_RAD = 180 / Math.PI;
+
+function updateHandPointer(hand, pointer){
+  if (!pointer) {
+    applyRestState(hand);
+    return;
+  }
+
+  const angle = Math.atan2(pointer.y - hand.anchor.y, pointer.x - hand.anchor.x);
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+
+  const rotatedX = hand.tipVector.x * cos - hand.tipVector.y * sin;
+  const rotatedY = hand.tipVector.x * sin + hand.tipVector.y * cos;
+
+  let translateX = pointer.x - hand.anchor.x - rotatedX;
+  let translateY = pointer.y - hand.anchor.y - rotatedY;
+
+  translateX = clampHandTranslate(hand, translateX);
+
+  hand.el.style.setProperty('--hand-rotation', `${angle * DEG_PER_RAD}deg`);
+  hand.el.style.setProperty('--hand-translate-x', `${translateX}px`);
+  hand.el.style.setProperty('--hand-translate-y', `${translateY}px`);
+}
+
+function clampHandTranslate(hand, translateX){
+  if (hand.direction === 'left') {
+    const maxTranslate = -hand.bleed - hand.anchor.x;
+    return Math.min(translateX, maxTranslate);
+  }
+  const minTranslate = window.innerWidth + hand.bleed - hand.anchor.x;
+  return Math.max(translateX, minTranslate);
+}
+
+function applyRestState(hand){
+  hand.el.style.setProperty('--hand-rotation', `${hand.rest.rotation}deg`);
+  hand.el.style.setProperty('--hand-translate-x', `${hand.rest.translateX}px`);
+  hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
+}
+
+function resolveSlot(value, size, fallbackRatio){
+  const trimmed = (value || '').trim();
+  if (!trimmed) return size * fallbackRatio;
+  if (trimmed.endsWith('%')) {
+    const pct = parseFloat(trimmed);
+    if (Number.isFinite(pct)) return size * (pct / 100);
+  }
+  if (trimmed.endsWith('px')) {
+    const px = parseFloat(trimmed);
+    if (Number.isFinite(px)) return px;
+  }
+  const num = parseFloat(trimmed);
+  if (Number.isFinite(num)) return num;
+  return size * fallbackRatio;
+}
+
+function readNumeric(value, fallback){
+  const num = parseFloat((value || '').trim());
+  return Number.isFinite(num) ? num : fallback;
+}
+
+function readAngle(value, fallback){
+  if (!value) return fallback;
+  const num = parseFloat(value);
+  return Number.isFinite(num) ? num : fallback;
+}
+
+function matchMediaSafe(query){
+  if (typeof window.matchMedia !== 'function') return null;
+  try {
+    return window.matchMedia(query);
+  } catch (error) {
+    return null;
+  }
+}
+
+function addChangeListener(mql, listener){
+  if (!mql) return;
+  if (typeof mql.addEventListener === 'function') {
+    mql.addEventListener('change', listener);
+  } else if (typeof mql.addListener === 'function') {
+    mql.addListener(listener);
+  }
+}
