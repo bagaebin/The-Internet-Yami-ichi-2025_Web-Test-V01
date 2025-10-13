@@ -73,6 +73,8 @@ body {
     display: grid;
     gap: 0px;
     justify-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .site-header,
@@ -87,6 +89,8 @@ body {
     text-align: center;
     display: grid;
     place-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .site-footer small {
@@ -159,6 +163,7 @@ body {
     margin-inline: 0;
     max-inline-size: none;
     position: relative;
+    z-index: 1;
 }
 
 .visually-hidden {
@@ -393,3 +398,70 @@ body.is-chaos .hate-html-toggle:hover {
         0 8px 18px rgba(255, 91, 91, 0.4),
         inset -2px -2px 0 rgba(255, 255, 255, 0.25);
 }
+
+/* Hand overlay (hands stay under cards but above background) */
+.hand-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+}
+
+.hand-overlay__cluster {
+    position: absolute;
+    inset-block: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    min-inline-size: 0;
+    overflow: visible;
+}
+
+.hand-overlay__cluster--left {
+    inset-inline-start: 0;
+    align-items: flex-start;
+}
+
+.hand-overlay__cluster--right {
+    inset-inline-end: 0;
+    align-items: flex-end;
+}
+
+.hand-overlay__pointer {
+    --hand-slot: 0.5;
+    --hand-inline-offset: 160px;
+    --hand-rest-translate-x: 0px;
+    --hand-rest-translate-y: 0px;
+    --hand-translate-x: var(--hand-rest-translate-x);
+    --hand-translate-y: var(--hand-rest-translate-y);
+    --hand-rest-rotation: 0deg;
+    --hand-rotation: var(--hand-rest-rotation);
+    --hand-tip-inline: 92%;
+    --hand-tip-block: 48%;
+    --hand-bleed: 56px;
+    position: absolute;
+    max-inline-size: 240px;
+    max-block-size: 240px;
+    inline-size: auto;
+    block-size: auto;
+    inset-inline-start: var(--hand-inline-offset);
+    inset-block-start: calc(var(--hand-slot) * 100%);
+    pointer-events: none;
+    transform-origin: var(--hand-origin-inline, 82%) var(--hand-origin-block, 46%);
+    transform: translate3d(var(--hand-translate-x), calc(-50% + var(--hand-translate-y)), 0) rotate(var(--hand-rotation));
+    will-change: transform;
+}
+
+.hand-overlay__cluster--right .hand-overlay__pointer {
+    inset-inline-start: auto;
+    inset-inline-end: var(--hand-inline-offset);
+}
+
+.hand-overlay__pointer[data-slot="1"] { --hand-slot: 0.05; }
+.hand-overlay__pointer[data-slot="2"] { --hand-slot: 0.22; }
+.hand-overlay__pointer[data-slot="3"] { --hand-slot: 0.39; }
+.hand-overlay__pointer[data-slot="4"] { --hand-slot: 0.56; }
+.hand-overlay__pointer[data-slot="5"] { --hand-slot: 0.73; }
+.hand-overlay__pointer[data-slot="6"] { --hand-slot: 0.90; }
