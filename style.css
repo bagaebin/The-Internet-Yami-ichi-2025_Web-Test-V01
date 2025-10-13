@@ -69,6 +69,9 @@ body {
     margin-inline: 0;
     padding: 0;
     max-inline-size: none;
+    display: grid;
+    gap: 24px;
+    justify-items: center;
 }
 
 .site-header,
@@ -142,6 +145,19 @@ body {
     position: relative;
 }
 
+.visually-hidden {
+    position: absolute !important;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 /* 카드 */
 .card {
     padding: 16px 18px;
@@ -155,6 +171,20 @@ body {
 
 .card--wide {
     flex-basis: auto;
+}
+
+.card--section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.card--profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
 .grid.is-stack {
@@ -187,10 +217,68 @@ body {
     opacity: .7;
 }
 
+.card-heading {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
 .card-text {
     margin: 0;
     line-height: 1.5;
     overflow-wrap: anywhere;
+}
+
+.card-text--muted {
+    font-size: 13px;
+    opacity: .75;
+}
+
+.card-text--small {
+    font-size: 14px;
+}
+
+.card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.icon-button {
+    inline-size: 38px;
+    block-size: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    color: var(--text);
+    text-decoration: none;
+    box-shadow:
+        inset -2px -2px 0 var(--highlight-inset),
+        inset 2px 2px 0 var(--shadow-inset);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.icon-button:focus-visible {
+    outline: 3px solid rgba(16, 16, 16, 0.2);
+    outline-offset: 2px;
+}
+
+.icon-button:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        inset -1px -1px 0 rgba(255, 255, 255, 0.8),
+        inset 2px 2px 0 rgba(0, 0, 0, 0.18);
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
 }
 
 .pill {

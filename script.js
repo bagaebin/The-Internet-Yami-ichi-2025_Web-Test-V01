@@ -50,7 +50,7 @@ function scheduleLayoutUpdate(){
   if (__rafScheduled) return;
   __rafScheduled = true;
   requestAnimationFrame(() => {
-    updateGridLayout();
+    updateAllGridLayouts();
     __rafScheduled = false;
   });
 }
@@ -70,8 +70,12 @@ const chaosState = {
   originalStyles: new Map(),
   drags: new Map(),
   zIndex: 1000,
-  gridStyles: {}
+  gridStyles: new Map(),
+  grids: new Set(),
+  cardToGrid: new Map()
 };
+
+let gridResizeObserver = null;
 
 function getCardMaxWidth() {
   const root = getComputedStyle(document.documentElement);
@@ -79,105 +83,124 @@ function getCardMaxWidth() {
   return Number.isFinite(value) ? value : 480;
 }
 
-function updateGridLayout(){
-  const grid = document.querySelector('.grid');
-  if (!grid || chaosState.active) return;
+function updateAllGridLayouts(){
+  if (chaosState.active) return;
+  const grids = document.querySelectorAll('.grid');
+  grids.forEach(grid => {
+    const cards = Array.from(grid.querySelectorAll('.card'));
+    if (cards.length === 0) return;
 
-  const cards = Array.from(grid.querySelectorAll('.card'));
-  if (cards.length === 0) return;
+    const rows = groupRowsByOffsetTop(cards);
+    if (rows.size === 0) return;
 
-  const rows = groupRowsByOffsetTop(cards);
-  if (rows.size === 0) return;
+    const rowLengths = Array.from(rows.values()).map(r => r.length);
+    const maxPerRow = Math.max(...rowLengths);
+    const shouldStack = maxPerRow <= 1 && window.innerWidth < getCardMaxWidth();
 
-  const rowLengths = Array.from(rows.values()).map(r => r.length);
-  const maxPerRow = Math.max(...rowLengths);
-  const shouldStack = maxPerRow <= 1 && window.innerWidth < getCardMaxWidth();
-
-  grid.classList.toggle('is-stack', shouldStack);
+    grid.classList.toggle('is-stack', shouldStack);
+  });
 }
 
-function setupChaosToggle(grid){
+function setupChaosToggle(){
   const toggle = document.getElementById('hate-html-toggle');
-  if (!grid || !toggle) return;
+  if (!toggle) return;
 
   toggle.addEventListener('click', () => {
     if (chaosState.active) {
-      exitChaos(grid, toggle);
+      exitChaos(toggle);
     } else {
-      enterChaos(grid, toggle);
+      enterChaos(toggle);
     }
   });
 
-  grid.addEventListener('pointerdown', onChaosPointerDown);
+  document.addEventListener('pointerdown', onChaosPointerDown);
   document.addEventListener('pointermove', onChaosPointerMove);
   document.addEventListener('pointerup', onChaosPointerEnd);
   document.addEventListener('pointercancel', onChaosPointerEnd);
 }
 
-function enterChaos(grid, toggle){
-  const cards = Array.from(grid.querySelectorAll('.card'));
-  if (cards.length === 0) return;
+function getChaosGrids(){
+  return Array.from(document.querySelectorAll('.grid')).filter(grid => grid.querySelector('.card'));
+}
 
-  const gridRect = grid.getBoundingClientRect();
-  const snapshots = cards.map(card => ({
-    card,
-    rect: card.getBoundingClientRect()
+function captureCardStyles(card){
+  chaosState.originalStyles.set(card, {
+    position: card.style.position,
+    left: card.style.left,
+    top: card.style.top,
+    width: card.style.width,
+    height: card.style.height,
+    zIndex: card.style.zIndex,
+    cursor: card.style.cursor
+  });
+}
+
+function enterChaos(toggle){
+  const grids = getChaosGrids();
+  if (grids.length === 0) return;
+
+  const snapshots = grids.map(grid => ({
+    grid,
+    rect: grid.getBoundingClientRect(),
+    cards: Array.from(grid.querySelectorAll('.card')).map(card => ({
+      card,
+      rect: card.getBoundingClientRect()
+    }))
   }));
 
   chaosState.originalStyles.clear();
-  snapshots.forEach(({ card }) => {
-    chaosState.originalStyles.set(card, {
-      position: card.style.position,
-      left: card.style.left,
-      top: card.style.top,
-      width: card.style.width,
-      height: card.style.height,
-      zIndex: card.style.zIndex,
-      cursor: card.style.cursor
-    });
-  });
-
-  chaosState.gridStyles = {
-    height: grid.style.height,
-    minHeight: grid.style.minHeight
-  };
-
+  chaosState.gridStyles.clear();
+  chaosState.cardToGrid.clear();
   chaosState.drags.clear();
-
-  let maxBottom = 0;
+  chaosState.grids = new Set(grids);
+  chaosState.zIndex = 1000;
 
   document.body.classList.add('is-chaos');
-  grid.classList.add('is-chaos');
-  grid.classList.remove('is-stack');
 
-  snapshots.forEach(({ card, rect }) => {
-    const left = rect.left - gridRect.left;
-    const top = rect.top - gridRect.top;
-    card.style.position = 'absolute';
-    card.style.left = `${left}px`;
-    card.style.top = `${top}px`;
-    card.style.width = `${rect.width}px`;
-    card.style.height = `${rect.height}px`;
-    card.style.zIndex = `${++chaosState.zIndex}`;
-    card.style.cursor = 'grab';
-    card.classList.add('is-chaos-card');
-    maxBottom = Math.max(maxBottom, top + rect.height);
+  snapshots.forEach(({ grid, rect: gridRect, cards }) => {
+    chaosState.gridStyles.set(grid, {
+      height: grid.style.height,
+      minHeight: grid.style.minHeight
+    });
+
+    grid.classList.add('is-chaos');
+    grid.classList.remove('is-stack');
+
+    let maxBottom = 0;
+
+    cards.forEach(({ card, rect }) => {
+      captureCardStyles(card);
+      const left = rect.left - gridRect.left;
+      const top = rect.top - gridRect.top;
+      card.style.position = 'absolute';
+      card.style.left = `${left}px`;
+      card.style.top = `${top}px`;
+      card.style.width = `${rect.width}px`;
+      card.style.height = `${rect.height}px`;
+      card.style.zIndex = `${++chaosState.zIndex}`;
+      card.style.cursor = 'grab';
+      card.classList.add('is-chaos-card');
+      chaosState.cardToGrid.set(card, grid);
+      maxBottom = Math.max(maxBottom, top + rect.height);
+    });
+
+    const canvasHeight = Math.max(maxBottom, gridRect.height);
+    const heightPx = `${Math.ceil(canvasHeight)}px`;
+    grid.style.height = heightPx;
+    grid.style.minHeight = heightPx;
   });
-
-  const canvasHeight = Math.max(maxBottom, grid.offsetHeight);
-  grid.style.height = `${Math.ceil(canvasHeight)}px`;
-  grid.style.minHeight = grid.style.height;
 
   toggle.setAttribute('aria-pressed', 'true');
   toggle.textContent = 'LOVE HTML';
   chaosState.active = true;
 }
 
-function exitChaos(grid, toggle){
+function exitChaos(toggle){
+  if (!chaosState.active) return;
   chaosState.active = false;
 
   document.body.classList.remove('is-chaos');
-  grid.classList.remove('is-chaos');
+  chaosState.grids.forEach(grid => grid.classList.remove('is-chaos'));
 
   chaosState.drags.forEach((drag, pointerId) => {
     if (drag.card && drag.card.releasePointerCapture) {
@@ -186,9 +209,11 @@ function exitChaos(grid, toggle){
   });
   chaosState.drags.clear();
 
-  grid.style.height = chaosState.gridStyles.height || '';
-  grid.style.minHeight = chaosState.gridStyles.minHeight || '';
-  chaosState.gridStyles = {};
+  chaosState.gridStyles.forEach((styles, grid) => {
+    grid.style.height = styles.height || '';
+    grid.style.minHeight = styles.minHeight || '';
+  });
+  chaosState.gridStyles.clear();
 
   chaosState.originalStyles.forEach((styles, card) => {
     ['position', 'left', 'top', 'width', 'height', 'zIndex', 'cursor'].forEach(prop => {
@@ -197,6 +222,8 @@ function exitChaos(grid, toggle){
     card.classList.remove('is-chaos-card', 'is-dragging');
   });
   chaosState.originalStyles.clear();
+  chaosState.cardToGrid.clear();
+  chaosState.grids.clear();
 
   toggle.setAttribute('aria-pressed', 'false');
   toggle.textContent = 'HATE HTML';
@@ -208,10 +235,7 @@ function onChaosPointerDown(event){
   if (!chaosState.active || event.button !== 0) return;
 
   const card = event.target.closest('.card');
-  const grid = document.querySelector('.grid');
-  if (!card || !grid || !grid.contains(card)) return;
-
-  event.preventDefault();
+  if (!card || !chaosState.originalStyles.has(card)) return;
 
   const baseLeft = parseFloat(card.style.left) || 0;
   const baseTop = parseFloat(card.style.top) || 0;
@@ -231,6 +255,7 @@ function onChaosPointerDown(event){
   card.classList.add('is-dragging');
   card.style.cursor = 'grabbing';
   card.style.zIndex = `${++chaosState.zIndex}`;
+  event.preventDefault();
 }
 
 function onChaosPointerMove(event){
@@ -264,7 +289,7 @@ function onChaosPointerEnd(event){
 }
 
 function updateChaosBounds(card){
-  const grid = document.querySelector('.grid');
+  const grid = chaosState.cardToGrid.get(card) || card.closest('.grid');
   if (!grid) return;
 
   const top = parseFloat(card.style.top) || 0;
@@ -273,8 +298,9 @@ function updateChaosBounds(card){
   const currentHeight = parseFloat(grid.style.height) || 0;
 
   if (bottom > currentHeight) {
-    grid.style.height = `${Math.ceil(bottom)}px`;
-    grid.style.minHeight = grid.style.height;
+    const heightPx = `${Math.ceil(bottom)}px`;
+    grid.style.height = heightPx;
+    grid.style.minHeight = heightPx;
   }
 }
 
@@ -282,23 +308,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // Ensure layout is stabilized before first measurement
   requestAnimationFrame(() => requestAnimationFrame(scheduleLayoutUpdate));
 
-  const grid = document.querySelector('.grid');
-  // Recalculate on grid size changes
-  if (grid && 'ResizeObserver' in window) {
-    const ro = new ResizeObserver(() => scheduleLayoutUpdate());
-    ro.observe(grid);
+  const grids = Array.from(document.querySelectorAll('.grid'));
+
+  if ('ResizeObserver' in window && !gridResizeObserver) {
+    gridResizeObserver = new ResizeObserver(() => scheduleLayoutUpdate());
+    grids.forEach(grid => gridResizeObserver.observe(grid));
   }
 
-  // Recalculate when images inside the grid finish loading
-  if (grid) {
+  grids.forEach(grid => {
     grid.querySelectorAll('img').forEach(img => {
       if (!img.complete) {
         img.addEventListener('load', scheduleLayoutUpdate, { once: true });
       }
     });
-  }
+  });
 
-  setupChaosToggle(grid);
+  setupChaosToggle();
 });
 
 window.addEventListener('load', scheduleLayoutUpdate);
