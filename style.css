@@ -1,0 +1,221 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --text: #101010;
+    --bg: #d4f8fb;
+    --outline: rgba(0, 0, 0, 0.10);
+    /* 카드 외곽선(종이 가장자리 느낌) */
+    --shadow-inset: rgba(0, 0, 0, 0.15);
+    /* 안쪽 어두운 면 */
+    --highlight-inset: rgba(255, 255, 255, 0.95);
+    /* 안쪽 밝은 면 (흰색 부조) */
+    --card-max: 360px;
+    /* A안 상한: 내용 기반 카드 너비의 최대값 */
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 12px;
+    color: var(--text);
+    background: var(--bg);
+    font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+    font-optical-sizing: auto;
+    align-items: center;
+}
+
+/* 접근성 향상 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+.space-grotesk {
+    font-family: "Space Grotesk", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+.space-grotesk-300 {
+    font-weight: 300;
+}
+
+.space-grotesk-400 {
+    font-weight: 400;
+}
+
+.space-grotesk-500 {
+    font-weight: 500;
+}
+
+.space-grotesk-600 {
+    font-weight: 600;
+}
+
+.space-grotesk-700 {
+    font-weight: 700;
+}
+
+/* 공통 레이아웃 */
+.wrap {
+    inline-size: 100%;
+    margin-inline: 0;
+    padding: 0;
+    max-inline-size: none;
+}
+
+.site-header,
+.site-footer {
+    inline-size: fit-content;
+    width: fit-content;
+    /* 구형 엔진 대비 */
+    max-inline-size: 100%;
+    margin-inline: auto;
+    padding: 14px 16px;
+    background: #fff;
+    text-align: center;
+    display: grid;
+    place-items: center;
+}
+
+.site-footer small {
+    opacity: .7;
+}
+
+/* 로고 영역 */
+.logo-wrap {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: auto;
+    aspect-ratio: 3 / 1;
+    margin-right: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.site-header .logo-wrap {
+    margin: 0 auto;
+}
+
+#logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.logo-fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    letter-spacing: 4px;
+    opacity: .25;
+}
+
+.event-title {
+    margin: 8px 0 0;
+    font-size: 24px;
+    text-shadow: 0 1px 0 #fff;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, var(--card-max)));
+    /* grid-template-columns: repeat(auto-fit, max-content); */
+    align-content: start;
+    column-gap: 0;
+    row-gap: 0;
+    justify-content: center;
+    justify-items: center;
+    /* or start; 둘 다 OK */
+    grid-auto-flow: row dense;
+    inline-size: 100%;
+    margin-inline: 0;
+    max-inline-size: none;
+}
+
+/* 카드 */
+.card {
+    padding: 16px 18px;
+    background: #fff;
+    text-align: center;
+    width: auto;
+    /* 내용 너비 */
+    margin: 0;
+    max-width: var(--card-max);
+}
+
+.card--wide {
+    grid-column: 1 / -1;
+    /* 로고/장소 등 폭 넓게 쓰는 카드 */
+}
+
+/* 한 행에 단 하나뿐인 카드에 부여될 클래스 (기본: 강제 확장 비활성) */
+.card--single-row {
+    grid-column: auto;
+    width: auto;
+    justify-self: center;
+}
+
+/* 부모가 .enable-single 일 때만 마지막 행 단독 카드 확장 */
+.grid.enable-single .card--single-row {
+    grid-column: 1 / -1;
+    width: min(100%, var(--single-card-max, 680px));
+    justify-self: center;
+}
+
+.card-title {
+    margin: 0 0 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    opacity: .7;
+}
+
+.card-text {
+    margin: 0;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.pill {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    box-shadow:
+        inset -2px -2px 0 var(--highlight-inset),
+        inset 2px 2px 0 var(--shadow-inset);
+}
+
+/* “흰색 부조(베벨)” 테두리 효과 */
+.bevel {
+    position: relative;
+    border: 2px solid #fff;
+    /* 요청: 테두리 흰색 */
+    background: #fff;
+    /* 바깥쪽 종이 윤곽 */
+    box-shadow:
+        0 0 0 1px var(--outline),
+        /* 안쪽 베벨(윗왼쪽 하이라이트, 아랫오른쪽 그림자) */
+        inset -2px -2px 0 var(--highlight-inset),
+        inset 2px 2px 0 var(--shadow-inset);
+}
+
+/* 푸터를 화면 가운데 정렬처럼 보이도록 */
+.site-footer {
+    text-align: center;
+}
