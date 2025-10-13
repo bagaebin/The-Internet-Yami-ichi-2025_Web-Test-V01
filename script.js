@@ -428,7 +428,7 @@ function createHandModel(el){
     el,
     direction: el.closest('.hand-overlay__cluster--right') ? 'right' : 'left',
     rest: {
-      rotation: readAngle(style.getPropertyValue('--hand-rest-rotation'), 0),
+      rotation: readAngle(style.getPropertyValue('--hand-rest-rotation'), ),
       translateX: readNumeric(style.getPropertyValue('--hand-rest-translate-x'), 0),
       translateY: readNumeric(style.getPropertyValue('--hand-rest-translate-y'), 0)
     },
