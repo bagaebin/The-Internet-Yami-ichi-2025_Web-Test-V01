@@ -142,6 +142,10 @@ body {
     position: relative;
 }
 
+.grid + .grid {
+    margin-top: 16px;
+}
+
 /* 카드 */
 .card {
     padding: 16px 18px;
