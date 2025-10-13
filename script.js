@@ -459,8 +459,8 @@ function updateHandPointer(hand, pointer){
   }
 
   const angle = Math.atan2(pointer.y - hand.anchor.y, pointer.x - hand.anchor.x);
-  const clamped = clampHandAngle(hand, angle);
-  hand.el.style.setProperty('--hand-rotation', `${clamped * DEG_PER_RAD}deg`);
+  const clampedDeg = clampHandAngle(hand, angle);
+  hand.el.style.setProperty('--hand-rotation', `${clampedDeg}deg`);
   hand.el.style.setProperty('--hand-translate-x', `${hand.rest.translateX}px`);
   hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
 }
@@ -468,11 +468,10 @@ function updateHandPointer(hand, pointer){
 function clampHandAngle(hand, angle){
   const centerDeg = hand.direction === 'left' ? 0 : 180;
   const range = 110; // keeps rotation aiming toward the canvas interior
-  const minDeg = centerDeg - range;
-  const maxDeg = centerDeg + range;
-  const deg = angle * DEG_PER_RAD;
-  const clampedDeg = Math.max(minDeg, Math.min(maxDeg, deg));
-  return clampedDeg / DEG_PER_RAD;
+  const rawDeg = angle * DEG_PER_RAD;
+  const delta = normalizeAngleDeg(rawDeg - centerDeg);
+  const clampedDelta = Math.max(-range, Math.min(range, delta));
+  return centerDeg + clampedDelta;
 }
 
 function applyRestState(hand){
@@ -505,6 +504,13 @@ function readAngle(value, fallback){
   if (!value) return fallback;
   const num = parseFloat(value);
   return Number.isFinite(num) ? num : fallback;
+}
+
+function normalizeAngleDeg(value){
+  let deg = value % 360;
+  if (deg > 180) deg -= 360;
+  if (deg < -180) deg += 360;
+  return deg;
 }
 
 function matchMediaSafe(query){

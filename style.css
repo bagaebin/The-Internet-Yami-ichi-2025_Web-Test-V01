@@ -461,6 +461,7 @@ body.is-chaos .hate-html-toggle:hover {
 .hand-overlay__cluster--right .hand-overlay__pointer {
     inset-inline-start: auto;
     inset-inline-end: var(--hand-inline-offset);
+    --hand-rest-rotation: 180deg;
 }
 
 .hand-overlay__pointer[data-slot="1"] {
