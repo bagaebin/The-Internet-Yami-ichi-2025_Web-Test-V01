@@ -431,7 +431,7 @@ body.is-chaos .hate-html-toggle:hover {
 
 .hand-overlay__pointer {
     --hand-slot: 0.5;
-    --hand-inline-offset: 160px;
+    --hand-inline-offset: -40px;
     --hand-rest-translate-x: 0px;
     --hand-rest-translate-y: 0px;
     --hand-translate-x: var(--hand-rest-translate-x);

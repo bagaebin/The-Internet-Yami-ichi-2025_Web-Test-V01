@@ -424,15 +424,12 @@ function createHandModel(el){
   return {
     el,
     direction: el.closest('.hand-overlay__cluster--right') ? 'right' : 'left',
-    bleed: Math.max(0, readNumeric(style.getPropertyValue('--hand-bleed'), 56)),
     rest: {
       rotation: readAngle(style.getPropertyValue('--hand-rest-rotation'), 0),
       translateX: readNumeric(style.getPropertyValue('--hand-rest-translate-x'), 0),
       translateY: readNumeric(style.getPropertyValue('--hand-rest-translate-y'), 0)
     },
-    anchor: { x: 0, y: 0 },
-    tipVector: { x: 0, y: 0 },
-    rect: el.getBoundingClientRect()
+    anchor: { x: 0, y: 0 }
   };
 }
 
@@ -444,17 +441,8 @@ function refreshHandMetrics(hand){
   const originY = parseFloat(origin[1]) || 0;
   const anchorX = rect.left + originX;
   const anchorY = rect.top + originY;
-
-  const tipInline = resolveSlot(style.getPropertyValue('--hand-tip-inline'), rect.width, 0.92);
-  const tipBlock = resolveSlot(style.getPropertyValue('--hand-tip-block'), rect.height, 0.48);
-  const tipX = rect.left + tipInline;
-  const tipY = rect.top + tipBlock;
-
   hand.anchor.x = anchorX;
   hand.anchor.y = anchorY;
-  hand.tipVector.x = tipX - anchorX;
-  hand.tipVector.y = tipY - anchorY;
-  hand.rect = rect;
 }
 
 const DEG_PER_RAD = 180 / Math.PI;
@@ -466,51 +454,26 @@ function updateHandPointer(hand, pointer){
   }
 
   const angle = Math.atan2(pointer.y - hand.anchor.y, pointer.x - hand.anchor.x);
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-
-  const rotatedX = hand.tipVector.x * cos - hand.tipVector.y * sin;
-  const rotatedY = hand.tipVector.x * sin + hand.tipVector.y * cos;
-
-  let translateX = pointer.x - hand.anchor.x - rotatedX;
-  let translateY = pointer.y - hand.anchor.y - rotatedY;
-
-  translateX = clampHandTranslate(hand, translateX);
-
-  hand.el.style.setProperty('--hand-rotation', `${angle * DEG_PER_RAD}deg`);
-  hand.el.style.setProperty('--hand-translate-x', `${translateX}px`);
-  hand.el.style.setProperty('--hand-translate-y', `${translateY}px`);
+  const clamped = clampHandAngle(hand, angle);
+  hand.el.style.setProperty('--hand-rotation', `${clamped * DEG_PER_RAD}deg`);
+  hand.el.style.setProperty('--hand-translate-x', `${hand.rest.translateX}px`);
+  hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
 }
 
-function clampHandTranslate(hand, translateX){
-  if (hand.direction === 'left') {
-    const maxTranslate = -hand.bleed - hand.anchor.x;
-    return Math.min(translateX, maxTranslate);
-  }
-  const minTranslate = window.innerWidth + hand.bleed - hand.anchor.x;
-  return Math.max(translateX, minTranslate);
+function clampHandAngle(hand, angle){
+  const centerDeg = hand.direction === 'left' ? 0 : 180;
+  const range = 110; // keeps rotation aiming toward the canvas interior
+  const minDeg = centerDeg - range;
+  const maxDeg = centerDeg + range;
+  const deg = angle * DEG_PER_RAD;
+  const clampedDeg = Math.max(minDeg, Math.min(maxDeg, deg));
+  return clampedDeg / DEG_PER_RAD;
 }
 
 function applyRestState(hand){
   hand.el.style.setProperty('--hand-rotation', `${hand.rest.rotation}deg`);
   hand.el.style.setProperty('--hand-translate-x', `${hand.rest.translateX}px`);
   hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
-}
-
-function resolveSlot(value, size, fallbackRatio){
-  const trimmed = (value || '').trim();
-  if (!trimmed) return size * fallbackRatio;
-  if (trimmed.endsWith('%')) {
-    const pct = parseFloat(trimmed);
-    if (Number.isFinite(pct)) return size * (pct / 100);
-  }
-  if (trimmed.endsWith('px')) {
-    const px = parseFloat(trimmed);
-    if (Number.isFinite(px)) return px;
-  }
-  const num = parseFloat(trimmed);
-  if (Number.isFinite(num)) return num;
-  return size * fallbackRatio;
 }
 
 function readNumeric(value, fallback){
