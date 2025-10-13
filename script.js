@@ -368,7 +368,10 @@ function initHandOverlays(){
   }
 
   function refreshMetrics(){
-    hands.forEach(refreshHandMetrics);
+    hands.forEach(hand => {
+      applyRestState(hand);
+      refreshHandMetrics(hand);
+    });
     scheduleStep();
   }
 
@@ -436,13 +439,15 @@ function createHandModel(el){
 function refreshHandMetrics(hand){
   const rect = hand.el.getBoundingClientRect();
   const style = getComputedStyle(hand.el);
-  const origin = style.transformOrigin.split(' ');
-  const originX = parseFloat(origin[0]) || 0;
-  const originY = parseFloat(origin[1]) || 0;
-  const anchorX = rect.left + originX;
-  const anchorY = rect.top + originY;
-  hand.anchor.x = anchorX;
-  hand.anchor.y = anchorY;
+  const originParts = style.transformOrigin.split(' ');
+  const computedOriginX = readOriginValue(originParts[0], rect.width, rect.width * 0.82);
+  const computedOriginY = readOriginValue(originParts[1], rect.height, rect.height * 0.46);
+  const originInline = style.getPropertyValue('--hand-origin-inline');
+  const originBlock = style.getPropertyValue('--hand-origin-block');
+  const originX = readOriginValue(originInline, rect.width, computedOriginX);
+  const originY = readOriginValue(originBlock, rect.height, computedOriginY);
+  hand.anchor.x = rect.left + originX;
+  hand.anchor.y = rect.top + originY;
 }
 
 const DEG_PER_RAD = 180 / Math.PI;
@@ -474,6 +479,21 @@ function applyRestState(hand){
   hand.el.style.setProperty('--hand-rotation', `${hand.rest.rotation}deg`);
   hand.el.style.setProperty('--hand-translate-x', `${hand.rest.translateX}px`);
   hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
+}
+
+function readOriginValue(value, size, fallback){
+  if (!value) return fallback;
+  const trimmed = value.trim();
+  if (!trimmed) return fallback;
+  if (trimmed.endsWith('%')) {
+    const pct = parseFloat(trimmed.slice(0, -1));
+    if (Number.isFinite(pct)) {
+      return (pct / 100) * size;
+    }
+    return fallback;
+  }
+  const num = parseFloat(trimmed);
+  return Number.isFinite(num) ? num : fallback;
 }
 
 function readNumeric(value, fallback){

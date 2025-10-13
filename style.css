@@ -422,16 +422,20 @@ body.is-chaos .hate-html-toggle:hover {
 .hand-overlay__cluster--left {
     inset-inline-start: 0;
     align-items: flex-start;
+    --hand-origin-inline: 12%;
+    --hand-inline-offset: -12px;
 }
 
 .hand-overlay__cluster--right {
     inset-inline-end: 0;
     align-items: flex-end;
+    --hand-origin-inline: 88%;
+    --hand-inline-offset: 12px;
 }
 
 .hand-overlay__pointer {
     --hand-slot: 0.5;
-    --hand-inline-offset: -40px;
+    --hand-inline-offset: 0px;
     --hand-rest-translate-x: 0px;
     --hand-rest-translate-y: 0px;
     --hand-translate-x: var(--hand-rest-translate-x);
@@ -459,9 +463,32 @@ body.is-chaos .hate-html-toggle:hover {
     inset-inline-end: var(--hand-inline-offset);
 }
 
-.hand-overlay__pointer[data-slot="1"] { --hand-slot: 0.05; }
-.hand-overlay__pointer[data-slot="2"] { --hand-slot: 0.22; }
-.hand-overlay__pointer[data-slot="3"] { --hand-slot: 0.39; }
-.hand-overlay__pointer[data-slot="4"] { --hand-slot: 0.56; }
-.hand-overlay__pointer[data-slot="5"] { --hand-slot: 0.73; }
-.hand-overlay__pointer[data-slot="6"] { --hand-slot: 0.90; }
+.hand-overlay__pointer[data-slot="1"] {
+    --hand-slot: 0.12;
+    --hand-origin-block: 44%;
+}
+
+.hand-overlay__pointer[data-slot="2"] {
+    --hand-slot: 0.28;
+    --hand-origin-block: 46%;
+}
+
+.hand-overlay__pointer[data-slot="3"] {
+    --hand-slot: 0.44;
+    --hand-origin-block: 48%;
+}
+
+.hand-overlay__pointer[data-slot="4"] {
+    --hand-slot: 0.60;
+    --hand-origin-block: 50%;
+}
+
+.hand-overlay__pointer[data-slot="5"] {
+    --hand-slot: 0.76;
+    --hand-origin-block: 52%;
+}
+
+.hand-overlay__pointer[data-slot="6"] {
+    --hand-slot: 0.92;
+    --hand-origin-block: 54%;
+}
