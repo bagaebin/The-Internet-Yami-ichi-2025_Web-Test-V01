@@ -211,7 +211,7 @@ function enterChaos(toggle){
   });
 
   toggle.setAttribute('aria-pressed', 'true');
-  toggle.textContent = 'LOVE HTML';
+  toggle.textContent = 'I LOVE HTML';
   chaosState.active = true;
 }
 
@@ -246,7 +246,7 @@ function exitChaos(toggle){
   chaosState.grids.clear();
 
   toggle.setAttribute('aria-pressed', 'false');
-  toggle.textContent = 'HATE HTML';
+  toggle.textContent = 'I HATE HTML';
 
   requestAnimationFrame(() => scheduleLayoutUpdate());
 }
