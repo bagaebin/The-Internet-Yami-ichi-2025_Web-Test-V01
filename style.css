@@ -27,6 +27,7 @@ body {
     font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
     font-optical-sizing: auto;
     align-items: center;
+    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=158484'), auto;
 }
 
 /* 접근성 향상 */
@@ -108,7 +109,14 @@ body {
     margin: 0 auto;
 }
 
-#logo {
+.logo-wrap--card {
+    width: min(280px, 100%);
+    margin-inline: auto;
+    margin-right: 0;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.logo-wrap img {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -185,6 +193,21 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 8px;
+}
+
+.card--logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.card--logo code {
+    font-family: "Space Grotesk", "Courier New", Courier, monospace;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
 }
 
 .grid.is-stack {

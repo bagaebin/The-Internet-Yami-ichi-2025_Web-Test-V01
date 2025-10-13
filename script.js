@@ -28,18 +28,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* 로고가 없을 때 대체 표시 유지 */
-const logo = document.getElementById('logo');
-if (logo){
-  const fb = document.querySelector('.logo-fallback');
-  const toggleFallback = (show) => {
-    if (!fb) return;
-    fb.style.display = show ? 'grid' : 'none';
-    fb.classList.toggle('is-visible', show);
-  };
-  logo.addEventListener('error', () => toggleFallback(true));
-  logo.addEventListener('load',  () => toggleFallback(false));
-  // 초기 상태 결정
-  if (!logo.complete || logo.naturalWidth === 0) toggleFallback(true);
+function setupLogoFallbacks(){
+  document.querySelectorAll('.js-logo').forEach(logo => {
+    const wrap = logo.closest('.logo-wrap');
+    const fallback = wrap ? wrap.querySelector('.logo-fallback') : null;
+    if (!fallback) return;
+
+    const toggleFallback = (show) => {
+      fallback.style.display = show ? 'grid' : 'none';
+      fallback.classList.toggle('is-visible', show);
+    };
+
+    logo.addEventListener('error', () => toggleFallback(true));
+    logo.addEventListener('load', () => toggleFallback(false));
+
+    if (!logo.complete || logo.naturalWidth === 0) {
+      toggleFallback(true);
+    } else {
+      toggleFallback(false);
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupLogoFallbacks);
+} else {
+  setupLogoFallbacks();
 }
 
 // --- (기존 코드 위에 있어도 되고, 맨 아래에 있어도 됩니다) ---
@@ -64,6 +78,8 @@ function groupRowsByOffsetTop(items){
   });
   return rows;
 }
+
+const CHAOS_JITTER_RANGE = 24;
 
 const chaosState = {
   active: false,
@@ -172,16 +188,20 @@ function enterChaos(toggle){
       captureCardStyles(card);
       const left = rect.left - gridRect.left;
       const top = rect.top - gridRect.top;
+      const jitterX = (Math.random() - 0.5) * 2 * CHAOS_JITTER_RANGE;
+      const jitterY = (Math.random() - 0.5) * 2 * CHAOS_JITTER_RANGE;
+      const jitteredLeft = Math.max(0, left + jitterX);
+      const jitteredTop = Math.max(0, top + jitterY);
       card.style.position = 'absolute';
-      card.style.left = `${left}px`;
-      card.style.top = `${top}px`;
+      card.style.left = `${jitteredLeft}px`;
+      card.style.top = `${jitteredTop}px`;
       card.style.width = `${rect.width}px`;
       card.style.height = `${rect.height}px`;
       card.style.zIndex = `${++chaosState.zIndex}`;
       card.style.cursor = 'grab';
       card.classList.add('is-chaos-card');
       chaosState.cardToGrid.set(card, grid);
-      maxBottom = Math.max(maxBottom, top + rect.height);
+      maxBottom = Math.max(maxBottom, jitteredTop + rect.height);
     });
 
     const canvasHeight = Math.max(maxBottom, gridRect.height);
