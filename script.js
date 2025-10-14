@@ -368,7 +368,10 @@ function initHandOverlays(){
   }
 
   function refreshMetrics(){
-    hands.forEach(refreshHandMetrics);
+    hands.forEach(hand => {
+      applyRestState(hand);
+      refreshHandMetrics(hand);
+    });
     scheduleStep();
   }
 
@@ -425,7 +428,7 @@ function createHandModel(el){
     el,
     direction: el.closest('.hand-overlay__cluster--right') ? 'right' : 'left',
     rest: {
-      rotation: readAngle(style.getPropertyValue('--hand-rest-rotation'), 0),
+      rotation: readAngle(style.getPropertyValue('--hand-rest-rotation'), ),
       translateX: readNumeric(style.getPropertyValue('--hand-rest-translate-x'), 0),
       translateY: readNumeric(style.getPropertyValue('--hand-rest-translate-y'), 0)
     },
@@ -436,13 +439,15 @@ function createHandModel(el){
 function refreshHandMetrics(hand){
   const rect = hand.el.getBoundingClientRect();
   const style = getComputedStyle(hand.el);
-  const origin = style.transformOrigin.split(' ');
-  const originX = parseFloat(origin[0]) || 0;
-  const originY = parseFloat(origin[1]) || 0;
-  const anchorX = rect.left + originX;
-  const anchorY = rect.top + originY;
-  hand.anchor.x = anchorX;
-  hand.anchor.y = anchorY;
+  const originParts = style.transformOrigin.split(' ');
+  const computedOriginX = readOriginValue(originParts[0], rect.width, rect.width * 0.82);
+  const computedOriginY = readOriginValue(originParts[1], rect.height, rect.height * 0.46);
+  const originInline = style.getPropertyValue('--hand-origin-inline');
+  const originBlock = style.getPropertyValue('--hand-origin-block');
+  const originX = readOriginValue(originInline, rect.width, computedOriginX);
+  const originY = readOriginValue(originBlock, rect.height, computedOriginY);
+  hand.anchor.x = rect.left + originX;
+  hand.anchor.y = rect.top + originY;
 }
 
 const DEG_PER_RAD = 180 / Math.PI;
@@ -454,8 +459,8 @@ function updateHandPointer(hand, pointer){
   }
 
   const angle = Math.atan2(pointer.y - hand.anchor.y, pointer.x - hand.anchor.x);
-  const clamped = clampHandAngle(hand, angle);
-  hand.el.style.setProperty('--hand-rotation', `${clamped * DEG_PER_RAD}deg`);
+  const clampedDeg = clampHandAngle(hand, angle);
+  hand.el.style.setProperty('--hand-rotation', `${clampedDeg}deg`);
   hand.el.style.setProperty('--hand-translate-x', `${hand.rest.translateX}px`);
   hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
 }
@@ -463,17 +468,31 @@ function updateHandPointer(hand, pointer){
 function clampHandAngle(hand, angle){
   const centerDeg = hand.direction === 'left' ? 0 : 180;
   const range = 110; // keeps rotation aiming toward the canvas interior
-  const minDeg = centerDeg - range;
-  const maxDeg = centerDeg + range;
-  const deg = angle * DEG_PER_RAD;
-  const clampedDeg = Math.max(minDeg, Math.min(maxDeg, deg));
-  return clampedDeg / DEG_PER_RAD;
+  const rawDeg = angle * DEG_PER_RAD;
+  const delta = normalizeAngleDeg(rawDeg - centerDeg);
+  const clampedDelta = Math.max(-range, Math.min(range, delta));
+  return centerDeg + clampedDelta;
 }
 
 function applyRestState(hand){
   hand.el.style.setProperty('--hand-rotation', `${hand.rest.rotation}deg`);
   hand.el.style.setProperty('--hand-translate-x', `${hand.rest.translateX}px`);
   hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
+}
+
+function readOriginValue(value, size, fallback){
+  if (!value) return fallback;
+  const trimmed = value.trim();
+  if (!trimmed) return fallback;
+  if (trimmed.endsWith('%')) {
+    const pct = parseFloat(trimmed.slice(0, -1));
+    if (Number.isFinite(pct)) {
+      return (pct / 100) * size;
+    }
+    return fallback;
+  }
+  const num = parseFloat(trimmed);
+  return Number.isFinite(num) ? num : fallback;
 }
 
 function readNumeric(value, fallback){
@@ -485,6 +504,13 @@ function readAngle(value, fallback){
   if (!value) return fallback;
   const num = parseFloat(value);
   return Number.isFinite(num) ? num : fallback;
+}
+
+function normalizeAngleDeg(value){
+  let deg = value % 360;
+  if (deg > 180) deg -= 360;
+  if (deg < -180) deg += 360;
+  return deg;
 }
 
 function matchMediaSafe(query){
