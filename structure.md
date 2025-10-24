@@ -1,45 +1,87 @@
 # Structure Overview
 
 ## High-level Architecture
-- Static single-page site served as plain HTML with linked CSS and JavaScript.
-- `index.html` is the main document orchestrating layout and content.
-- Assets (images, icons) live under `assets/`, referenced directly by the markup.
+- **Static single-page application** served as raw HTML/CSS/JS without build tooling or bundlers.
+- `index.html` is the sole entry document; it links `style.css` and `script.js` and inlines no critical styles.
+- Decorative and branding assets live in `assets/`; subdirectories separate logos from hand overlays to simplify swaps.
+- JavaScript executes after DOMContentLoaded, progressively enhancing the baseline semantic markup.
 
-## DOM Structure
-- `<header class="site-header bevel">` containing the event title.
-- `.hand-overlay` fixed-position layer with left/right clusters of pointer images positioned underneath interactive content.
-- `<main class="wrap">` containing three grid sections:
-  - `.grid--branding`: cards displaying logos.
-  - `.grid--venue`: cards for venue location, date, time.
-  - `.grid--artists`: intro card plus artist profile cards with action links.
-- `<footer class="site-footer bevel">` for legal copy.
-- `#hate-html-toggle` floating button enabling "chaos" mode.
+## DOM Topology
+### Global Regions
+1. `<header class="site-header bevel">` – introduces the event name.
+2. `.hand-overlay` – fixed-position layer containing two clusters (`--left`, `--right`) of pointer images that track pointer movement.
+3. `<main class="wrap">` – houses three semantically grouped `section.grid` collections.
+4. `<footer class="site-footer bevel">` – retains attribution copy.
+5. `#hate-html-toggle` – floating action button that toggles chaos mode.
 
-## Component Responsibilities
-- **Cards (`.card` variants)**: Present discrete content blocks, styled with bevel effect.
-- **Grids (`.grid` variants)**: Flexbox containers managing responsive arrangement of cards; toggled between normal, stacked, and chaos layouts by JS.
-- **Hand overlay**: Decorative layer reacting to pointer movement via script-controlled CSS custom properties.
-- **Chaos mode toggle (`#hate-html-toggle`)**: Button that switches between tidy layout and draggable absolute-positioned cards.
+### Section Breakdown
+| Section | Purpose | Key children |
+| --- | --- | --- |
+| `.grid--branding` | Showcase primary and alternate logos with image fallback layers. | Two `.card--logo` articles each wrapping `.logo-wrap` with `.js-logo` image and `.logo-fallback` div. |
+| `.grid--venue` | Communicate venue address, event date (with weekday), and opening hours. | `.card--wide` for address text, `.card` with `#date-value[data-date]` for date auto-labeling, `.card` for time range. |
+| `.grid--artists` | Introduce the artist roster and individual bios. | `.card--section` for intro copy, multiple `.card--profile` entries containing heading, blurb, and `.card-actions` icon buttons. |
 
-## JavaScript Modules (script.js)
-- Date enhancement: On DOM ready, populates weekday labels for elements with `data-date` or `<time>` attributes.
-- Logo fallback handling: Replaces broken/missing logos with text fallback layer.
-- Layout management:
-  - Measures grid rows to decide when to apply `.is-stack` class (single-column layout for narrow viewports).
-  - Schedules layout recalculations via `requestAnimationFrame` and listens to resize/orientation/load events.
-- Chaos mode system:
-  - Captures original inline styles before activating.
-  - Applies absolute positioning with random jitter, enables dragging via Pointer Events, and ensures grid containers expand to fit moved cards.
-  - Restores original styles when toggled off.
-- Hand overlay controller:
-  - Builds hand model metadata (rest transforms, anchors).
-  - Tracks pointer movement to rotate hands toward cursor unless reduced-motion preference is active.
-  - Responds to viewport changes to refresh anchor positions.
+### Component Contracts
+- **Cards (`.card`, variants)**
+  - Accept child content slots (`.card-title`, `.card-text`, `.card-actions`).
+  - Provide bevel styling via shared `.bevel` class and rely on CSS variables for background/edge colors.
+- **Grids (`.grid`, modifiers)**
+  - Flexbox containers toggling between row and column layouts (`.is-stack`) based on viewport height/width heuristics.
+  - When `body.is-chaos` is active, grids gain `.is-chaos` class enabling absolute-positioned children while preserving min-height.
+- **Logo wrap (`.logo-wrap--card`)**
+  - Contains an image and fallback text. JavaScript toggles `.is-visible` on `.logo-fallback` if an image load fails.
+- **Chaos toggle (`#hate-html-toggle`)**
+  - Floating button anchored bottom-right; script attaches click handler to flip layout state.
+- **Hand overlay**
+  - Each `img.hand-overlay__pointer` registers anchor coordinates and transforms via CSS custom properties.
 
-## CSS Organization (style.css)
-- Root custom properties defining color palette and sizing.
-- Global resets and typography settings using Google Fonts (Space Grotesk).
-- Layout styles for wrappers, header/footer, grids, cards, and interactive elements.
-- Bevel effect mixin applied via `.bevel` class.
-- Styles for chaos mode (`body.is-chaos`, `.grid.is-chaos`, `.card.is-chaos-card`).
-- Hand overlay positioning and transform defaults using CSS variables for runtime control.
+## JavaScript System (`script.js`)
+### Module Layout
+1. **Utility hooks**
+   - `ready(fn)` registers DOMContentLoaded listener.
+   - `createLogoFallback(image)` binds error handlers for logos.
+2. **Date enhancer**
+   - Uses `Intl.DateTimeFormat` to derive weekday label from `data-date` or `<time datetime>` attributes and injects `<span class="dow">` content.
+3. **Responsive layout manager**
+   - Calculates row count for each `.grid` via `getComputedStyle` and toggles `.is-stack` class when cards wrap to multiple lines.
+   - Deploys `ResizeObserver` for grids and listens to `window` resize/orientationchange.
+4. **Chaos mode engine**
+   - Maintains `chaosState` snapshot of original inline styles and transform offsets.
+   - On activation, applies `position:absolute` with randomized translation offsets, updates z-index on drag start, and restores on exit.
+   - Pointer event handlers (`pointerdown`, `pointermove`, `pointerup/cancel`) enable dragging with pointer capture, honoring `touch-action:none` styles.
+5. **Hand overlay controller**
+   - Pre-computes anchor metadata (bounding rect, rest rotation) for each pointer image.
+   - On pointer move, computes vector toward cursor and updates CSS variables (`--hand-rotate`, `--hand-translate-x/y`).
+   - Respects `prefers-reduced-motion` by short-circuiting listeners when matched.
+
+### Lifecycle Timeline
+1. **DOMContentLoaded**: ready handler runs date enhancer, logo fallback attachments, hand controller initialization, chaos toggle wiring, and initial layout measurement.
+2. **Window load**: layout manager re-evaluates to account for late-loading assets.
+3. **Resize/orientation**: layout manager recalculates stack state, hand controller refreshes anchors.
+4. **User interactions**:
+   - Clicking toggle triggers chaos engine state switch.
+   - Dragging chaos cards updates inline transforms.
+   - Pointer move updates hand overlay transforms when animations permitted.
+
+## CSS Organization (`style.css`)
+### File Sections
+1. **Foundations**: CSS custom property definitions for palette, spacing, bevel depth, motion durations.
+2. **Resets & Typography**: Normalize styles, assign `Space Grotesk`, `Nunito`, `Quicksand` fallback stack, configure base font sizing.
+3. **Layout & Containers**: `.wrap`, `.grid`, `.site-header/footer`, `.hand-overlay` structural rules.
+4. **Components**: `.card` family, `.icon-button`, `.logo-wrap`, `.card-actions` alignment.
+5. **State Modifiers**: `.is-stack`, `.is-chaos`, `.is-chaos-card`, focus-visible handling.
+6. **Animations & Effects**: Bevel pseudo-elements, transition timings, pointer hover states.
+
+### Token & Responsive Strategy
+- Root variables drive theme (e.g., `--bg`, `--fg`, `--accent`).
+- Media queries: prefers-reduced-motion, max-width breakpoints for stacking logic, pointer-coarse adjustments.
+- Chaos mode adjusts cursor to custom URL and applies high-contrast background to maintain readability.
+
+## Data Sources & Content Mapping
+- Date string stored in `data-date` attribute within `index.html`; script derives weekday for localization without server calls.
+- Artist bios and links are static in markup; no runtime fetching.
+- Asset paths are relative, enabling deployment under the same directory without routing concerns.
+
+## Observability Hooks
+- No analytics instrumentation included; to add telemetry, hook into chaos toggle or pointer handlers.
+- Console logging is absent by default, keeping production output clean.
