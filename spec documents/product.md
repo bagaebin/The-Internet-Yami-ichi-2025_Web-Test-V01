@@ -8,7 +8,6 @@
 
 ## Target Audiences
 | Persona | Goals | Needs from site |
-| --- | --- | --- |
 | Local visitors & tourists | Decide whether to attend; note date, time, location. | Clear schedule, map-ready address, sense of vibe. |
 | Artists & collaborators | Validate inclusion, share with networks. | Personal bios, outbound links, visually rich presentation. |
 | Sponsors/press | Assess brand alignment, capture highlights quickly. | Immediate access to logos, succinct event summary, unique differentiators. |

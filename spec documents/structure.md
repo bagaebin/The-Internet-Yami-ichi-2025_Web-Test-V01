@@ -16,7 +16,6 @@
 
 ### Section Breakdown
 | Section | Purpose | Key children |
-| --- | --- | --- |
 | `.grid--branding` | Showcase primary and alternate logos with image fallback layers. | Two `.card--logo` articles each wrapping `.logo-wrap` with `.js-logo` image and `.logo-fallback` div. |
 | `.grid--venue` | Communicate venue address, event date (with weekday), and opening hours. | `.card--wide` for address text, `.card` with `#date-value[data-date]` for date auto-labeling, `.card` for time range. |
 | `.grid--artists` | Introduce the artist roster and individual bios. | `.card--section` for intro copy, multiple `.card--profile` entries containing heading, blurb, and `.card-actions` icon buttons. |
