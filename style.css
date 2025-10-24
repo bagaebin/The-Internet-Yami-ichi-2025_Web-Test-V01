@@ -11,8 +11,8 @@
     /* 안쪽 어두운 면 */
     --highlight-inset: rgba(255, 255, 255, 0.95);
     /* 안쪽 밝은 면 (흰색 부조) */
-    --card-max: 360px;
-    /* A안 상한: 내용 기반 카드 너비의 최대값 */
+    --card-max: 480px;
+    /* 카드 최대 너비 */
 }
 
 html,
@@ -27,6 +27,7 @@ body {
     font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
     font-optical-sizing: auto;
     align-items: center;
+    cursor: url('http://www.rw-designer.com/cursor-extern.php?id=158484'), auto;
 }
 
 /* 접근성 향상 */
@@ -69,6 +70,11 @@ body {
     margin-inline: 0;
     padding: 0;
     max-inline-size: none;
+    display: grid;
+    gap: 0px;
+    justify-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .site-header,
@@ -83,6 +89,8 @@ body {
     text-align: center;
     display: grid;
     place-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .site-footer small {
@@ -96,7 +104,6 @@ body {
     place-items: center;
     width: auto;
     aspect-ratio: 3 / 1;
-    margin-right: 12px;
     overflow: hidden;
     background: #fff;
 }
@@ -105,11 +112,27 @@ body {
     margin: 0 auto;
 }
 
-#logo {
+.logo-wrap--card {
+    width: min(280px, 100%);
+    margin-inline: auto;
+    border: none;
+    aspect-ratio: auto;
+    overflow: visible;
+    padding: 16px;
+}
+
+.logo-wrap img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
+}
+
+.logo-wrap--card img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 .logo-fallback {
@@ -128,20 +151,32 @@ body {
     text-shadow: 0 1px 0 #fff;
 }
 
+
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, var(--card-max)));
-    /* grid-template-columns: repeat(auto-fit, max-content); */
-    align-content: start;
-    column-gap: 0;
-    row-gap: 0;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    justify-items: center;
-    /* or start; 둘 다 OK */
-    grid-auto-flow: row dense;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 0px;
     inline-size: 100%;
     margin-inline: 0;
     max-inline-size: none;
+    position: relative;
+    z-index: 1;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 /* 카드 */
@@ -149,29 +184,73 @@ body {
     padding: 16px 18px;
     background: #fff;
     text-align: center;
-    width: auto;
-    /* 내용 너비 */
     margin: 0;
     max-width: var(--card-max);
+    width: auto;
+    flex: 0 1 auto;
 }
 
 .card--wide {
-    grid-column: 1 / -1;
-    /* 로고/장소 등 폭 넓게 쓰는 카드 */
+    flex-basis: auto;
 }
 
-/* 한 행에 단 하나뿐인 카드에 부여될 클래스 (기본: 강제 확장 비활성) */
-.card--single-row {
-    grid-column: auto;
-    width: auto;
-    justify-self: center;
+.card--section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
 }
 
-/* 부모가 .enable-single 일 때만 마지막 행 단독 카드 확장 */
-.grid.enable-single .card--single-row {
-    grid-column: 1 / -1;
-    width: min(100%, var(--single-card-max, 680px));
-    justify-self: center;
+.card--profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.card--logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    margin-inline: auto;
+}
+
+.card--logo code {
+    font-family: "Space Grotesk", "Courier New", Courier, monospace;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+}
+
+.grid.is-stack {
+    gap: 0px;
+}
+
+.grid.is-stack .card {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: none;
+}
+
+.grid.is-chaos {
+    display: block;
+}
+
+.grid.is-chaos .card {
+    cursor: grab;
+}
+
+.grid.is-chaos .card.is-dragging {
+    cursor: grabbing;
 }
 
 .card-title {
@@ -182,10 +261,67 @@ body {
     opacity: .7;
 }
 
+.card-heading {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
 .card-text {
     margin: 0;
     line-height: 1.5;
     overflow-wrap: anywhere;
+}
+
+.card-text--muted {
+    font-size: 13px;
+    opacity: .75;
+}
+
+.card-text--small {
+    font-size: 14px;
+}
+
+.card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.icon-button {
+    inline-size: 38px;
+    block-size: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    color: var(--text);
+    text-decoration: none;
+    box-shadow:
+        inset -2px -2px 0 var(--highlight-inset),
+        inset 2px 2px 0 var(--shadow-inset);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.icon-button:focus-visible {
+    outline: 3px solid rgba(16, 16, 16, 0.2);
+    outline-offset: 2px;
+}
+
+.icon-button:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        inset -1px -1px 0 rgba(255, 255, 255, 0.8),
+        inset 2px 2px 0 rgba(0, 0, 0, 0.18);
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
 }
 
 .pill {
@@ -218,4 +354,148 @@ body {
 /* 푸터를 화면 가운데 정렬처럼 보이도록 */
 .site-footer {
     text-align: center;
+}
+
+.hate-html-toggle {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 999;
+    padding: 12px 18px;
+    border: 0;
+    background: #101010;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.25),
+        inset -2px -2px 0 rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 1000;
+}
+
+.hate-html-toggle:focus-visible {
+    outline: 3px solid rgba(255, 255, 255, 0.6);
+    outline-offset: 2px;
+}
+
+.hate-html-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.3),
+        inset -2px -2px 0 rgba(255, 255, 255, 0.2);
+}
+
+body.is-chaos .hate-html-toggle {
+    background: #ff5b5b;
+    color: #101010;
+}
+
+body.is-chaos .hate-html-toggle:hover {
+    box-shadow:
+        0 8px 18px rgba(255, 91, 91, 0.4),
+        inset -2px -2px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Hand overlay (hands stay under cards but above background) */
+.hand-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+}
+
+.hand-overlay__cluster {
+    position: absolute;
+    inset-block: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    min-inline-size: 0;
+    overflow: visible;
+}
+
+.hand-overlay__cluster--left {
+    inset-inline-start: 0;
+    align-items: flex-start;
+    --hand-origin-inline: 12%;
+    --hand-inline-offset-left-base: calc(var(--hand-origin-inline) - 40px);
+    --hand-inline-offset: var(
+        --hand-inline-offset-left,
+        var(--hand-inline-offset-left-base)
+    );
+}
+
+.hand-overlay__cluster--right {
+    inset-inline-end: 0;
+    align-items: flex-end;
+    --hand-origin-inline: 12%;
+    --hand-inline-offset-right-base: calc(var(--hand-origin-inline) - 240px);
+    --hand-inline-offset: var(
+        --hand-inline-offset-right,
+        var(--hand-inline-offset-right-base)
+    );
+}
+
+.hand-overlay__pointer {
+    --hand-slot: 0.5;
+    --hand-rest-translate-x: 0px;
+    --hand-rest-translate-y: 0px;
+    --hand-translate-x: var(--hand-rest-translate-x);
+    --hand-translate-y: var(--hand-rest-translate-y);
+    --hand-rest-rotation: 0deg;
+    --hand-rotation: var(--hand-rest-rotation);
+    --hand-tip-inline: 92%;
+    --hand-tip-block: 48%;
+    position: absolute;
+    max-inline-size: 240px;
+    max-block-size: 240px;
+    inline-size: auto;
+    block-size: auto;
+    inset-inline-start: var(--hand-inline-offset, 0px);
+    inset-block-start: calc(var(--hand-slot) * 100%);
+    pointer-events: none;
+    transform-origin: var(--hand-origin-inline, 82%) var(--hand-origin-block, 46%);
+    transform: translate3d(var(--hand-translate-x), calc(-50% + var(--hand-translate-y)), 0) rotate(var(--hand-rotation));
+    will-change: transform;
+}
+
+.hand-overlay__cluster--right .hand-overlay__pointer {
+    inset-inline-start: auto;
+    inset-inline-end: var(--hand-inline-offset, 0px);
+    --hand-rest-rotation: 180deg;
+}
+
+.hand-overlay__pointer[data-slot="1"] {
+    --hand-slot: 0.12;
+    --hand-origin-block: 44%;
+}
+
+.hand-overlay__pointer[data-slot="2"] {
+    --hand-slot: 0.28;
+    --hand-origin-block: 46%;
+}
+
+.hand-overlay__pointer[data-slot="3"] {
+    --hand-slot: 0.44;
+    --hand-origin-block: 48%;
+}
+
+.hand-overlay__pointer[data-slot="4"] {
+    --hand-slot: 0.60;
+    --hand-origin-block: 50%;
+}
+
+.hand-overlay__pointer[data-slot="5"] {
+    --hand-slot: 0.76;
+    --hand-origin-block: 52%;
+}
+
+.hand-overlay__pointer[data-slot="6"] {
+    --hand-slot: 0.92;
+    --hand-origin-block: 54%;
 }

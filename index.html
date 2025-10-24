@@ -17,16 +17,49 @@
 
 <body>
     <header class="site-header bevel">
-        <div class="logo-wrap">
-            <!-- 로고 파일을 /assets/logo.png 로 두면 표시됩니다 -->
-            <img id="logo" src="assets/logo.png" alt="The Internet Yami-ichi Arnhem 2025 Logo" />
-            <div class="logo-fallback" aria-hidden="true">LOGO</div>
-        </div>
         <h1 class="event-title">The Internet Yami-ichi Arnhem 2025</h1>
     </header>
 
+           <div class="hand-overlay" aria-hidden="true">
+            <div class="hand-overlay__cluster hand-overlay__cluster--left">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-left-01.png" alt="" data-side="left" data-slot="1">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-left-02.png" alt="" data-side="left" data-slot="2">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-left-03.png" alt="" data-side="left" data-slot="3">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-left-04.png" alt="" data-side="left" data-slot="4">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-left-05.png" alt="" data-side="left" data-slot="5">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-left-06.png" alt="" data-side="left" data-slot="6">
+            </div>
+            <div class="hand-overlay__cluster hand-overlay__cluster--right">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-right-01.png" alt="" data-side="right" data-slot="1">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-right-02.png" alt="" data-side="right" data-slot="2">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-right-03.png" alt="" data-side="right" data-slot="3">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-right-04.png" alt="" data-side="right" data-slot="4">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-right-05.png" alt="" data-side="right" data-slot="5">
+                <img class="hand-overlay__pointer" src="assets/hands/hand-right-06.png" alt="" data-side="right" data-slot="6">
+            </div>
+        </div>
+
     <main class="wrap">
-        <section class="grid">
+        <section class="grid grid--branding" aria-labelledby="branding-heading">
+            <h2 id="branding-heading" class="visually-hidden">Brand Assets</h2>
+
+            <article class="card bevel card--logo">
+                <div class="logo-wrap logo-wrap--card">
+                    <img class="js-logo" src="assets/2025_logo.png" alt="Primary event logo" />
+                    <div class="logo-fallback" aria-hidden="true">LOGO</div>
+                </div>
+            </article>
+
+            <article class="card bevel card--logo">
+                <div class="logo-wrap logo-wrap--card">
+                    <img class="js-logo" src="assets/og_logo.png" alt="Alternate event logo" />
+                    <div class="logo-fallback" aria-hidden="true">ALT</div>
+                </div>
+            </article>
+        </section>
+
+        <section class="grid grid--venue" aria-labelledby="venue-heading">
+            <h2 id="venue-heading" class="visually-hidden">Venue</h2>
 
             <article class="card bevel card--wide">
                 <p class="card-text">
@@ -43,51 +76,183 @@
             <article class="card bevel">
                 <p class="card-text">14:00 – 20:00</p>
             </article>
+        </section>
+
+        <section class="grid grid--artists" aria-labelledby="artists-heading">
+            <h2 id="artists-heading" class="visually-hidden">Artists</h2>
+
+            <article class="card bevel card--section">
+                <h3 class="card-title">Artists</h3>
+                <p class="card-text card-text--muted">
+                    Gathering all artists who participate in the events.
+                </p>
+            </article>
+
+            <article class="card bevel card--profile">
+                <h3 class="card-heading">Ying</h3>
+                <p class="card-text card-text--small">
+                    Digital illustrator blending folklore with generative textures for immersive zines and screens.
+                </p>
+                <div class="card-actions">
+                    <a class="icon-button" href="https://instagram.com" aria-label="Ying on Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </a>
+                    <a class="icon-button" href="https://example.com" aria-label="Ying website">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.9 2.3a8 8 0 0 0-2.5 3.5h2.2c.2-1.3.6-2.4 1.1-3.5h-.8zm3.8 0c.5 1.1.9 2.2 1.1 3.5h2.2a8 8 0 0 0-2.5-3.5h-.8zM8 12c0 .7 0 1.4.1 2h2.6v-4H8.1c-.1.6-.1 1.3-.1 2zm4-2v4h2.6a18 18 0 0 0 0-4H12zm-1.7 6H8.6a8 8 0 0 0 2.5 3.5c-.5-1.1-.9-2.2-1.1-3.5zm3.4 0c-.2 1.3-.6 2.4-1.1 3.5 1-.6 1.9-2 2.5-3.5h-1.4zM6 10h2.1c.1-.7.3-1.4.5-2H6.8a8 8 0 0 0-.8 2zm9.4-2c.2.6.4 1.3.5 2H18c-.1-.7-.4-1.4-.6-2h-2zm-.5 6c-.1.7-.3 1.4-.5 2h2.3c.3-.6.5-1.3.6-2h-2.4zm-8.1 0c.1.7.3 1.4.6 2h2.2c-.2-.6-.4-1.3-.5-2H6.8z" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="card bevel card--profile">
+                <h3 class="card-heading">Jurre</h3>
+                <p class="card-text card-text--small">
+                    Experimental coder crafting playful net-art installations that bend browser realities.
+                </p>
+                <div class="card-actions">
+                    <a class="icon-button" href="https://instagram.com" aria-label="Jurre on Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </a>
+                    <a class="icon-button" href="https://example.com" aria-label="Jurre website">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.9 2.3a8 8 0 0 0-2.5 3.5h2.2c.2-1.3.6-2.4 1.1-3.5h-.8zm3.8 0c.5 1.1.9 2.2 1.1 3.5h2.2a8 8 0 0 0-2.5-3.5h-.8zM8 12c0 .7 0 1.4.1 2h2.6v-4H8.1c-.1.6-.1 1.3-.1 2zm4-2v4h2.6a18 18 0 0 0 0-4H12zm-1.7 6H8.6a8 8 0 0 0 2.5 3.5c-.5-1.1-.9-2.2-1.1-3.5zm3.4 0c-.2 1.3-.6 2.4-1.1 3.5 1-.6 1.9-2 2.5-3.5h-1.4zM6 10h2.1c.1-.7.3-1.4.5-2H6.8a8 8 0 0 0-.8 2zm9.4-2c.2.6.4 1.3.5 2H18c-.1-.7-.4-1.4-.6-2h-2zm-.5 6c-.1.7-.3 1.4-.5 2h2.3c.3-.6.5-1.3.6-2h-2.4zm-8.1 0c.1.7.3 1.4.6 2h2.2c-.2-.6-.4-1.3-.5-2H6.8z" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="card bevel card--profile">
+                <h3 class="card-heading">Uijae</h3>
+                <p class="card-text card-text--small">
+                    Sound designer turning biometric data into ambient scores for collective listening moments.
+                </p>
+                <div class="card-actions">
+                    <a class="icon-button" href="https://instagram.com" aria-label="Uijae on Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </a>
+                    <a class="icon-button" href="https://example.com" aria-label="Uijae website">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.9 2.3a8 8 0 0 0-2.5 3.5h2.2c.2-1.3.6-2.4 1.1-3.5h-.8zm3.8 0c.5 1.1.9 2.2 1.1 3.5h2.2a8 8 0 0 0-2.5-3.5h-.8zM8 12c0 .7 0 1.4.1 2h2.6v-4H8.1c-.1.6-.1 1.3-.1 2zm4-2v4h2.6a18 18 0 0 0 0-4H12zm-1.7 6H8.6a8 8 0 0 0 2.5 3.5c-.5-1.1-.9-2.2-1.1-3.5zm3.4 0c-.2 1.3-.6 2.4-1.1 3.5 1-.6 1.9-2 2.5-3.5h-1.4zM6 10h2.1c.1-.7.3-1.4.5-2H6.8a8 8 0 0 0-.8 2zm9.4-2c.2.6.4 1.3.5 2H18c-.1-.7-.4-1.4-.6-2h-2zm-.5 6c-.1.7-.3 1.4-.5 2h2.3c.3-.6.5-1.3.6-2h-2.4zm-8.1 0c.1.7.3 1.4.6 2h2.2c-.2-.6-.4-1.3-.5-2H6.8z" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="card bevel card--profile">
+                <h3 class="card-heading">Snoerp</h3>
+                <p class="card-text card-text--small">
+                    Netweaver building whimsical chatbots that archive community memories in playful dialects.
+                </p>
+                <div class="card-actions">
+                    <a class="icon-button" href="https://instagram.com" aria-label="Snoerp on Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </a>
+                    <a class="icon-button" href="https://example.com" aria-label="Snoerp website">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.9 2.3a8 8 0 0 0-2.5 3.5h2.2c.2-1.3.6-2.4 1.1-3.5h-.8zm3.8 0c.5 1.1.9 2.2 1.1 3.5h2.2a8 8 0 0 0-2.5-3.5h-.8zM8 12c0 .7 0 1.4.1 2h2.6v-4H8.1c-.1.6-.1 1.3-.1 2zm4-2v4h2.6a18 18 0 0 0 0-4H12zm-1.7 6H8.6a8 8 0 0 0 2.5 3.5c-.5-1.1-.9-2.2-1.1-3.5zm3.4 0c-.2 1.3-.6 2.4-1.1 3.5 1-.6 1.9-2 2.5-3.5h-1.4zM6 10h2.1c.1-.7.3-1.4.5-2H6.8a8 8 0 0 0-.8 2zm9.4-2c.2.6.4 1.3.5 2H18c-.1-.7-.4-1.4-.6-2h-2zm-.5 6c-.1.7-.3 1.4-.5 2h2.3c.3-.6.5-1.3.6-2h-2.4zm-8.1 0c.1.7.3 1.4.6 2h2.2c-.2-.6-.4-1.3-.5-2H6.8z" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="card bevel card--profile">
+                <h3 class="card-heading">Hyebin</h3>
+                <p class="card-text card-text--small">
+                    Creative technologist animating archival footage with AI-assisted collage storytelling.
+                </p>
+                <div class="card-actions">
+                    <a class="icon-button" href="https://instagram.com" aria-label="Hyebin on Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </a>
+                    <a class="icon-button" href="https://example.com" aria-label="Hyebin website">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.9 2.3a8 8 0 0 0-2.5 3.5h2.2c.2-1.3.6-2.4 1.1-3.5h-.8zm3.8 0c.5 1.1.9 2.2 1.1 3.5h2.2a8 8 0 0 0-2.5-3.5h-.8zM8 12c0 .7 0 1.4.1 2h2.6v-4H8.1c-.1.6-.1 1.3-.1 2zm4-2v4h2.6a18 18 0 0 0 0-4H12zm-1.7 6H8.6a8 8 0 0 0 2.5 3.5c-.5-1.1-.9-2.2-1.1-3.5zm3.4 0c-.2 1.3-.6 2.4-1.1 3.5 1-.6 1.9-2 2.5-3.5h-1.4zM6 10h2.1c.1-.7.3-1.4.5-2H6.8a8 8 0 0 0-.8 2zm9.4-2c.2.6.4 1.3.5 2H18c-.1-.7-.4-1.4-.6-2h-2zm-.5 6c-.1.7-.3 1.4-.5 2h2.3c.3-.6.5-1.3.6-2h-2.4zm-8.1 0c.1.7.3 1.4.6 2h2.2c-.2-.6-.4-1.3-.5-2H6.8z" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="card bevel card--profile">
+                <h3 class="card-heading">Vi</h3>
+                <p class="card-text card-text--small">
+                    Web poet scripting hypertext narratives that remix crowdsourced micro-fiction threads.
+                </p>
+                <div class="card-actions">
+                    <a class="icon-button" href="https://instagram.com" aria-label="Vi on Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </a>
+                    <a class="icon-button" href="https://example.com" aria-label="Vi website">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.9 2.3a8 8 0 0 0-2.5 3.5h2.2c.2-1.3.6-2.4 1.1-3.5h-.8zm3.8 0c.5 1.1.9 2.2 1.1 3.5h2.2a8 8 0 0 0-2.5-3.5h-.8zM8 12c0 .7 0 1.4.1 2h2.6v-4H8.1c-.1.6-.1 1.3-.1 2zm4-2v4h2.6a18 18 0 0 0 0-4H12zm-1.7 6H8.6a8 8 0 0 0 2.5 3.5c-.5-1.1-.9-2.2-1.1-3.5zm3.4 0c-.2 1.3-.6 2.4-1.1 3.5 1-.6 1.9-2 2.5-3.5h-1.4zM6 10h2.1c.1-.7.3-1.4.5-2H6.8a8 8 0 0 0-.8 2zm9.4-2c.2.6.4 1.3.5 2H18c-.1-.7-.4-1.4-.6-2h-2zm-.5 6c-.1.7-.3 1.4-.5 2h2.3c.3-.6.5-1.3.6-2h-2.4zm-8.1 0c.1.7.3 1.4.6 2h2.2c-.2-.6-.4-1.3-.5-2H6.8z" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="card bevel card--profile">
+                <h3 class="card-heading">Meike</h3>
+                <p class="card-text card-text--small">
+                    Interaction artist translating neighborhood sensor feeds into kinetic typography displays.
+                </p>
+                <div class="card-actions">
+                    <a class="icon-button" href="https://instagram.com" aria-label="Meike on Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </a>
+                    <a class="icon-button" href="https://example.com" aria-label="Meike website">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.9 2.3a8 8 0 0 0-2.5 3.5h2.2c.2-1.3.6-2.4 1.1-3.5h-.8zm3.8 0c.5 1.1.9 2.2 1.1 3.5h2.2a8 8 0 0 0-2.5-3.5h-.8zM8 12c0 .7 0 1.4.1 2h2.6v-4H8.1c-.1.6-.1 1.3-.1 2zm4-2v4h2.6a18 18 0 0 0 0-4H12zm-1.7 6H8.6a8 8 0 0 0 2.5 3.5c-.5-1.1-.9-2.2-1.1-3.5zm3.4 0c-.2 1.3-.6 2.4-1.1 3.5 1-.6 1.9-2 2.5-3.5h-1.4zM6 10h2.1c.1-.7.3-1.4.5-2H6.8a8 8 0 0 0-.8 2zm9.4-2c.2.6.4 1.3.5 2H18c-.1-.7-.4-1.4-.6-2h-2zm-.5 6c-.1.7-.3 1.4-.5 2h2.3c.3-.6.5-1.3.6-2h-2.4zm-8.1 0c.1.7.3 1.4.6 2h2.2c-.2-.6-.4-1.3-.5-2H6.8z" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="card bevel card--profile">
+                <h3 class="card-heading">Sep</h3>
+                <p class="card-text card-text--small">
+                    Critical designer remixing obsolete hardware into speculative storytelling devices.
+                </p>
+                <div class="card-actions">
+                    <a class="icon-button" href="https://instagram.com" aria-label="Sep on Instagram">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H7zm11 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+                        </svg>
+                    </a>
+                    <a class="icon-button" href="https://example.com" aria-label="Sep website">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" class="icon" focusable="false">
+                            <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm-1.9 2.3a8 8 0 0 0-2.5 3.5h2.2c.2-1.3.6-2.4 1.1-3.5h-.8zm3.8 0c.5 1.1.9 2.2 1.1 3.5h2.2a8 8 0 0 0-2.5-3.5h-.8zM8 12c0 .7 0 1.4.1 2h2.6v-4H8.1c-.1.6-.1 1.3-.1 2zm4-2v4h2.6a18 18 0 0 0 0-4H12zm-1.7 6H8.6a8 8 0 0 0 2.5 3.5c-.5-1.1-.9-2.2-1.1-3.5zm3.4 0c-.2 1.3-.6 2.4-1.1 3.5 1-.6 1.9-2 2.5-3.5h-1.4zM6 10h2.1c.1-.7.3-1.4.5-2H6.8a8 8 0 0 0-.8 2zm9.4-2c.2.6.4 1.3.5 2H18c-.1-.7-.4-1.4-.6-2h-2zm-.5 6c-.1.7-.3 1.4-.5 2h2.3c.3-.6.5-1.3.6-2h-2.4zm-8.1 0c.1.7.3 1.4.6 2h2.2c-.2-.6-.4-1.3-.5-2H6.8z" />
+                        </svg>
+                    </a>
+                </div>
+            </article>
 
             <!-- 필요 시 추가 섹션을 같은 형태로 복제하여 사용하세요 -->
 
         </section>
-        <!-- Artists & Works -->
-        <section class="artists">
-          <h2 class="section-title">Artist &amp; Works</h2>
-          <p class="section-note"><span class="dot" aria-hidden="true"></span> Gathering all artists who participate in the events</p>
-          <div class="artists-grid" role="table" aria-label="Artists list">
-            <!-- Header -->
-            <div class="cell cell--head" role="columnheader">Name</div>
-            <div class="cell cell--head" role="columnheader">Introduction</div>
-            <div class="cell cell--head" role="columnheader">Link (e.g., Portfolio, Instagram…)</div>
-            <!-- Rows -->
-            <div class="cell" data-label="Name" role="cell">Ying</div>
-            <div class="cell" data-label="Introduction" role="cell">—</div>
-            <div class="cell" data-label="Link" role="cell"><a href="#" class="muted" title="Add link">—</a></div>
-            <div class="cell" data-label="Name" role="cell">Jurre</div>
-            <div class="cell" data-label="Introduction" role="cell">—</div>
-            <div class="cell" data-label="Link" role="cell"><a href="#" class="muted" title="Add link">—</a></div>
-            <div class="cell" data-label="Name" role="cell">Uijae</div>
-            <div class="cell" data-label="Introduction" role="cell">—</div>
-            <div class="cell" data-label="Link" role="cell"><a href="#" class="muted" title="Add link">—</a></div>
-            <div class="cell" data-label="Name" role="cell">Snoerp</div>
-            <div class="cell" data-label="Introduction" role="cell">—</div>
-            <div class="cell" data-label="Link" role="cell"><a href="#" class="muted" title="Add link">—</a></div>
-            <div class="cell" data-label="Name" role="cell">Hyebin</div>
-            <div class="cell" data-label="Introduction" role="cell">—</div>
-            <div class="cell" data-label="Link" role="cell"><a href="#" class="muted" title="Add link">—</a></div>
-            <div class="cell" data-label="Name" role="cell">Vi</div>
-            <div class="cell" data-label="Introduction" role="cell">—</div>
-            <div class="cell" data-label="Link" role="cell"><a href="#" class="muted" title="Add link">—</a></div>
-            <div class="cell" data-label="Name" role="cell">Meike</div>
-            <div class="cell" data-label="Introduction" role="cell">—</div>
-            <div class="cell" data-label="Link" role="cell"><a href="#" class="muted" title="Add link">—</a></div>
-            <div class="cell" data-label="Name" role="cell">Sep</div>
-            <div class="cell" data-label="Introduction" role="cell">—</div>
-            <div class="cell" data-label="Link" role="cell"><a href="#" class="muted" title="Add link">—</a></div>
-          </div>
-        </section>
+
     </main>
 
     <footer class="site-footer bevel">
         <small>© 2025 Early-Internet Layout • Made for demo</small>
     </footer>
+
+    <button type="button" id="hate-html-toggle" class="hate-html-toggle" aria-pressed="false">
+        I HATE HTML
+    </button>
 
     <script src="script.js"></script>
 </body>
