@@ -15,7 +15,76 @@
         rel="stylesheet">
 </head>
 
-<body>
+<body class="has-intro">
+    <div class="intro-overlay" role="dialog" aria-modal="true" aria-label="Internet Yami-ichi Arnhem 2025 intro">
+        <div class="intro-overlay__inner">
+            <section class="intro-landing" aria-labelledby="intro-landing-title">
+                <div class="intro-landing__meta">
+                    <p id="intro-landing-title" class="intro-landing__kicker">The Internet Yami-ichi Arnhem 2025</p>
+                    <div class="intro-landing__badges">
+                        <time class="intro-badge js-date" datetime="2025-12-19">
+                            2025-12-19 <span class="dow">(Fri)</span>
+                        </time>
+                        <span class="intro-badge intro-badge--time">14:00 – 20:00</span>
+                        <span class="intro-badge intro-badge--venue">Rembrandt Theater<br>Velperplein 10, Arnhem</span>
+                    </div>
+                    <div class="intro-landing__partners">
+                        <span class="intro-partner">DTI Arnhem</span>
+                        <span aria-hidden="true" class="intro-partner-dot">×</span>
+                        <span class="intro-partner">Focus Unlimited</span>
+                    </div>
+                </div>
+                <button class="intro-landing__logo" type="button" data-intro-action="enter">
+                    <span class="intro-landing__logo-ring" aria-hidden="true"></span>
+                    <img src="assets/2025_logo.png" alt="Yami-ichi 2025 logo" class="intro-landing__logo-img">
+                    <span class="intro-landing__hint">Click to enter the info page</span>
+                </button>
+                <div class="intro-landing__hands" aria-hidden="true">
+                    <img src="assets/hands/hand-left-03.png" alt="" class="intro-hand intro-hand--left intro-hand--one">
+                    <img src="assets/hands/hand-left-05.png" alt="" class="intro-hand intro-hand--left intro-hand--two">
+                    <img src="assets/hands/hand-right-02.png" alt="" class="intro-hand intro-hand--right intro-hand--three">
+                    <img src="assets/hands/hand-right-05.png" alt="" class="intro-hand intro-hand--right intro-hand--four">
+                </div>
+            </section>
+
+            <section class="intro-info" aria-labelledby="intro-info-title">
+                <div class="intro-browser">
+                    <header class="intro-browser__chrome">
+                        <span class="intro-browser__dot" aria-hidden="true"></span>
+                        <span class="intro-browser__dot" aria-hidden="true"></span>
+                        <span class="intro-browser__dot" aria-hidden="true"></span>
+                        <p id="intro-info-title">Info</p>
+                    </header>
+                    <div class="intro-browser__body">
+                        <p class="intro-browser__lede">Dive into artist line-ups, market happenings, and browser-born experiments curated for Arnhem.</p>
+                        <ul class="intro-browser__list">
+                            <li>Artist directory &amp; playful bios</li>
+                            <li>Venue navigation &amp; visiting tips</li>
+                            <li>Interactive experiments from makers</li>
+                        </ul>
+                        <button class="intro-browser__enter" type="button" data-intro-action="enter">Enter info page</button>
+                    </div>
+                </div>
+                <div class="intro-popups" aria-hidden="true">
+                    <div class="intro-popup intro-popup--alert">
+                        <div class="intro-popup__icon" aria-hidden="true">!</div>
+                        <p class="intro-popup__text">ALERT: Artist livestream booting up…</p>
+                        <button type="button" class="intro-popup__button" tabindex="-1">OK</button>
+                    </div>
+                    <div class="intro-popup intro-popup--tip">
+                        <p class="intro-popup__heading">Browser Tip</p>
+                        <p class="intro-popup__text">Drag the cards later for chaos mode!</p>
+                        <button type="button" class="intro-popup__button" tabindex="-1">Nice</button>
+                    </div>
+                    <div class="intro-popup intro-popup--warning">
+                        <div class="intro-popup__icon" aria-hidden="true">⚠</div>
+                        <p class="intro-popup__text">Hands detected → pointing at the logo.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <button class="intro-overlay__skip" type="button" data-intro-action="enter">Skip intro</button>
+    </div>
     <header class="site-header bevel">
         <h1 class="event-title">The Internet Yami-ichi Arnhem 2025</h1>
     </header>

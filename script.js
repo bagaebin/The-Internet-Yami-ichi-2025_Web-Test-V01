@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dowEl = el.querySelector('.dow');
     if (dowEl) dowEl.textContent = `(${w})`;
   });
+
+  setupIntroOverlay();
 });
 
 /* 로고가 없을 때 대체 표시 유지 */
@@ -54,6 +56,68 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', setupLogoFallbacks);
 } else {
   setupLogoFallbacks();
+}
+
+function setupIntroOverlay(){
+  const overlay = document.querySelector('.intro-overlay');
+  const body = document.body;
+  if (!overlay) {
+    body?.classList.remove('has-intro');
+    return;
+  }
+
+  let removed = false;
+
+  const finalize = () => {
+    if (removed) return;
+    removed = true;
+    overlay.remove();
+  };
+
+  const dismissOverlay = () => {
+    if (overlay.classList.contains('is-dismissed')) return;
+    overlay.classList.add('is-dismissed');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (body) {
+      body.classList.remove('has-intro');
+      body.classList.add('intro-dismissed');
+    }
+    document.removeEventListener('keydown', onKeyDown);
+    window.setTimeout(finalize, 1000);
+  };
+
+  const onTransitionEnd = (event) => {
+    if (event.propertyName === 'opacity') {
+      overlay.removeEventListener('transitionend', onTransitionEnd);
+      finalize();
+    }
+  };
+
+  const onKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      dismissOverlay();
+    }
+  };
+
+  overlay.addEventListener('transitionend', onTransitionEnd);
+  document.addEventListener('keydown', onKeyDown);
+
+  overlay.querySelectorAll('[data-intro-action="enter"]').forEach(node => {
+    node.addEventListener('click', (event) => {
+      event.preventDefault();
+      dismissOverlay();
+    });
+  });
+
+  const primaryFocus = overlay.querySelector('.intro-landing__logo');
+  if (primaryFocus instanceof HTMLElement) {
+    window.setTimeout(() => {
+      if (!overlay.classList.contains('is-dismissed')) {
+        primaryFocus.focus({ preventScroll: true });
+      }
+    }, 140);
+  }
 }
 
 // --- (기존 코드 위에 있어도 되고, 맨 아래에 있어도 됩니다) ---
