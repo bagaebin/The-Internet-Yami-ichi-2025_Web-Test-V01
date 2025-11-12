@@ -6,7 +6,7 @@
     --text: #101010;
     --bg: #d4f8fb;
     --outline: rgba(0, 0, 0, 0.10);
-    /* 카드 외곽선(종이 가장자리 느낌) */
+    /* 카드 외곽선 */
     --shadow-inset: rgba(0, 0, 0, 0.15);
     /* 안쪽 어두운 면 */
     --highlight-inset: rgba(255, 255, 255, 0.95);
@@ -201,11 +201,35 @@ body {
     gap: 6px;
 }
 
-.card--profile {
+.card--event {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+}
+
+.card--info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    text-align: left;
+}
+
+.card--info .card-text {
+    text-align: left;
+}
+
+.card-list {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.card-list li {
+    line-height: 1.5;
 }
 
 .card--logo {
@@ -255,10 +279,9 @@ body {
 
 .card-title {
     margin: 0 0 10px;
-    font-size: 14px;
+    font-size: 20px;
     text-transform: uppercase;
     letter-spacing: .08em;
-    opacity: .7;
 }
 
 .card-heading {
@@ -273,13 +296,8 @@ body {
     overflow-wrap: anywhere;
 }
 
-.card-text--muted {
-    font-size: 13px;
-    opacity: .75;
-}
-
 .card-text--small {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .card-actions {
@@ -362,41 +380,44 @@ body {
     bottom: 20px;
     z-index: 999;
     padding: 12px 18px;
-    border: 0;
-    background: #101010;
+    border: 1px solid #0077CC;
+    border-radius: 4px;
+    background-image: linear-gradient(#42A1EC, #0070C9);
     color: #fff;
     font-family: inherit;
     font-weight: 700;
     letter-spacing: 0.08em;
-    box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.25),
-        inset -2px -2px 0 rgba(255, 255, 255, 0.2);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: background-image 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     z-index: 1000;
 }
 
 .hate-html-toggle:focus-visible {
-    outline: 3px solid rgba(255, 255, 255, 0.6);
-    outline-offset: 2px;
+    box-shadow: rgba(131, 192, 253, 0.5) 0 0 0 3px;
+    outline: none;
 }
 
 .hate-html-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 8px 18px rgba(0, 0, 0, 0.3),
-        inset -2px -2px 0 rgba(255, 255, 255, 0.2);
+    background-image: linear-gradient(#51A9EE, #147BCD);
+    border-color: #1482D0;
+    text-decoration: none;
+}
+
+.hate-html-toggle:active {
+    background-image: linear-gradient(#3D94D9, #0067B9);
+    border-color: #006DBC;
+    outline: none;
 }
 
 body.is-chaos .hate-html-toggle {
-    background: #ff5b5b;
-    color: #101010;
+    background-image: linear-gradient(#ff8e8e, #ff5b5b);
+    border-color: #ff5b5b;
+    color: #fff;
 }
 
 body.is-chaos .hate-html-toggle:hover {
-    box-shadow:
-        0 8px 18px rgba(255, 91, 91, 0.4),
-        inset -2px -2px 0 rgba(255, 255, 255, 0.25);
+    background-image: linear-gradient(#ff9c9c, #ff6f6f);
+    border-color: #ff6f6f;
 }
 
 /* Hand overlay (hands stay under cards but above background) */
