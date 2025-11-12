@@ -1,40 +1,44 @@
-/* 작게 유용한 스크립트: data-date 속성에서 요일을 자동 계산해 표시합니다. */
-document.addEventListener('DOMContentLoaded', () => {
-  // Support: legacy #date-value, .js-date nodes, and <time datetime="YYYY-MM-DD">
+/** [F1] Bootstraps weekday badges for elements declaring ISO dates. */
+function initDateBadges(){
   const targets = [];
   const legacy = document.getElementById('date-value');
   if (legacy) targets.push(legacy);
   targets.push(...document.querySelectorAll('.js-date, time[datetime]'));
 
-  const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
   targets.forEach(el => {
-    let iso =
+    const iso =
       el.getAttribute('data-date') ||
       (el.tagName === 'TIME' ? el.getAttribute('datetime') : null);
     if (!iso) return;
 
-    // Normalize YYYY-MM-DD → Date.UTC to avoid TZ drift
-    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-    if (!m) return;
-    const y = Number(m[1]), mo = Number(m[2]), da = Number(m[3]);
-    const d = new Date(Date.UTC(y, mo - 1, da));
-    if (isNaN(d)) return;
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+    if (!match) return;
 
-    const w = weekdays[d.getUTCDay()];
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const parsed = new Date(Date.UTC(year, month - 1, day));
+    if (Number.isNaN(parsed.getTime())) return;
+
+    const weekday = WEEKDAYS[parsed.getUTCDay()];
     const dowEl = el.querySelector('.dow');
-    if (dowEl) dowEl.textContent = `(${w})`;
+    if (dowEl) dowEl.textContent = `(${weekday})`;
   });
-});
+}
 
-/* 로고가 없을 때 대체 표시 유지 */
+/** [C1] Abbreviated weekday names used by {@link initDateBadges}. */
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+document.addEventListener('DOMContentLoaded', initDateBadges);
+
+/** [F2] Ensures a fallback block is shown whenever logos fail to load. */
 function setupLogoFallbacks(){
   document.querySelectorAll('.js-logo').forEach(logo => {
     const wrap = logo.closest('.logo-wrap');
     const fallback = wrap ? wrap.querySelector('.logo-fallback') : null;
     if (!fallback) return;
 
-    const toggleFallback = (show) => {
+    const toggleFallback = show => {
       fallback.style.display = show ? 'grid' : 'none';
       fallback.classList.toggle('is-visible', show);
     };
@@ -56,31 +60,34 @@ if (document.readyState === 'loading') {
   setupLogoFallbacks();
 }
 
-// --- (기존 코드 위에 있어도 되고, 맨 아래에 있어도 됩니다) ---
+/** [S1] Internal flag preventing redundant layout recalculations. */
+let rafScheduled = false;
 
-// rAF-throttled scheduler to avoid layout thrashing
-let __rafScheduled = false;
+/** [F3] Debounces expensive grid layout calculations with rAF. */
 function scheduleLayoutUpdate(){
-  if (__rafScheduled) return;
-  __rafScheduled = true;
+  if (rafScheduled) return;
+  rafScheduled = true;
   requestAnimationFrame(() => {
     updateAllGridLayouts();
-    __rafScheduled = false;
+    rafScheduled = false;
   });
 }
 
+/** [F4] Clusters grid items that share the same vertical offset. */
 function groupRowsByOffsetTop(items){
   const rows = new Map();
   items.forEach(el => {
-    const top = el.offsetTop; // integer px per row in CSS Grid
+    const top = el.offsetTop;
     if (!rows.has(top)) rows.set(top, []);
     rows.get(top).push(el);
   });
   return rows;
 }
 
+/** [C2] Maximum chaos jitter distance for draggable cards. */
 const CHAOS_JITTER_RANGE = 24;
 
+/** [S2] Mutable state backing chaos mode interactions. */
 const chaosState = {
   active: false,
   originalStyles: new Map(),
@@ -91,18 +98,20 @@ const chaosState = {
   cardToGrid: new Map()
 };
 
+/** [S3] Lazily created ResizeObserver shared across grids. */
 let gridResizeObserver = null;
 
-function getCardMaxWidth() {
+/** [F5] Reads the CSS custom property representing card width limit. */
+function getCardMaxWidth(){
   const root = getComputedStyle(document.documentElement);
   const value = parseFloat(root.getPropertyValue('--card-max'));
   return Number.isFinite(value) ? value : 480;
 }
 
+/** [F6] Applies responsive stacking classes across all grids. */
 function updateAllGridLayouts(){
   if (chaosState.active) return;
-  const grids = document.querySelectorAll('.grid');
-  grids.forEach(grid => {
+  document.querySelectorAll('.grid').forEach(grid => {
     const cards = Array.from(grid.querySelectorAll('.card'));
     if (cards.length === 0) return;
 
@@ -117,6 +126,7 @@ function updateAllGridLayouts(){
   });
 }
 
+/** [F7] Wires chaos mode toggle and pointer listeners. */
 function setupChaosToggle(){
   const toggle = document.getElementById('hate-html-toggle');
   if (!toggle) return;
@@ -135,10 +145,12 @@ function setupChaosToggle(){
   document.addEventListener('pointercancel', onChaosPointerEnd);
 }
 
+/** [F8] Collects grids that contain draggable cards. */
 function getChaosGrids(){
   return Array.from(document.querySelectorAll('.grid')).filter(grid => grid.querySelector('.card'));
 }
 
+/** [F9] Saves inline styles prior to chaos mode mutation. */
 function captureCardStyles(card){
   chaosState.originalStyles.set(card, {
     position: card.style.position,
@@ -151,6 +163,7 @@ function captureCardStyles(card){
   });
 }
 
+/** [F10] Activates chaos mode, converting grids to draggable canvases. */
 function enterChaos(toggle){
   const grids = getChaosGrids();
   if (grids.length === 0) return;
@@ -215,6 +228,7 @@ function enterChaos(toggle){
   chaosState.active = true;
 }
 
+/** [F11] Restores original grid layout and pointer bindings. */
 function exitChaos(toggle){
   if (!chaosState.active) return;
   chaosState.active = false;
@@ -251,6 +265,7 @@ function exitChaos(toggle){
   requestAnimationFrame(() => scheduleLayoutUpdate());
 }
 
+/** [F12] Begins tracking a pointer drag in chaos mode. */
 function onChaosPointerDown(event){
   if (!chaosState.active || event.button !== 0) return;
 
@@ -278,22 +293,20 @@ function onChaosPointerDown(event){
   event.preventDefault();
 }
 
+/** [F13] Updates a dragged card's position on pointer move. */
 function onChaosPointerMove(event){
   const drag = chaosState.drags.get(event.pointerId);
   if (!drag) return;
 
   const dx = event.clientX - drag.startX;
   const dy = event.clientY - drag.startY;
-
-  const left = drag.baseLeft + dx;
-  const top = drag.baseTop + dy;
-
-  drag.card.style.left = `${left}px`;
-  drag.card.style.top = `${top}px`;
+  drag.card.style.left = `${drag.baseLeft + dx}px`;
+  drag.card.style.top = `${drag.baseTop + dy}px`;
 
   updateChaosBounds(drag.card);
 }
 
+/** [F14] Finalizes a drag interaction and cleans up state. */
 function onChaosPointerEnd(event){
   const drag = chaosState.drags.get(event.pointerId);
   if (!drag) return;
@@ -308,6 +321,7 @@ function onChaosPointerEnd(event){
   chaosState.drags.delete(event.pointerId);
 }
 
+/** [F15] Extends chaos grid bounds whenever a card moves beyond limits. */
 function updateChaosBounds(card){
   const grid = chaosState.cardToGrid.get(card) || card.closest('.grid');
   if (!grid) return;
@@ -325,7 +339,6 @@ function updateChaosBounds(card){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Ensure layout is stabilized before first measurement
   requestAnimationFrame(() => requestAnimationFrame(scheduleLayoutUpdate));
 
   const grids = Array.from(document.querySelectorAll('.grid'));
@@ -352,6 +365,7 @@ window.addEventListener('orientationchange', scheduleLayoutUpdate);
 
 document.addEventListener('DOMContentLoaded', initHandOverlays);
 
+/** [F16] Animates illustrated hands so they follow the user's pointer. */
 function initHandOverlays(){
   const pointerNodes = Array.from(document.querySelectorAll('.hand-overlay__pointer'));
   if (pointerNodes.length === 0) return;
@@ -363,41 +377,41 @@ function initHandOverlays(){
   const prefersReducedMotion = matchMediaSafe('(prefers-reduced-motion: reduce)');
   let motionPaused = prefersReducedMotion ? prefersReducedMotion.matches : false;
 
-  function applyAllRest(){
+  const applyAllRest = () => {
     hands.forEach(applyRestState);
-  }
+  };
 
-  function refreshMetrics(){
+  const refreshMetrics = () => {
     hands.forEach(hand => {
       applyRestState(hand);
       refreshHandMetrics(hand);
     });
     scheduleStep();
-  }
+  };
 
-  function step(){
+  const step = () => {
     raf = 0;
     if (motionPaused) return;
     hands.forEach(hand => updateHandPointer(hand, pointer));
-  }
+  };
 
-  function scheduleStep(){
+  const scheduleStep = () => {
     if (motionPaused) {
       applyAllRest();
       return;
     }
     if (!raf) raf = requestAnimationFrame(step);
-  }
+  };
 
-  function handlePointerMove(event){
+  const handlePointerMove = event => {
     pointer = { x: event.clientX, y: event.clientY };
     scheduleStep();
-  }
+  };
 
-  function handlePointerLeave(){
+  const handlePointerLeave = () => {
     pointer = null;
     scheduleStep();
-  }
+  };
 
   if (prefersReducedMotion) {
     const motionListener = event => {
@@ -422,13 +436,14 @@ function initHandOverlays(){
   applyAllRest();
 }
 
+/** [F17] Builds an interactive hand model from DOM state. */
 function createHandModel(el){
   const style = getComputedStyle(el);
   return {
     el,
     direction: el.closest('.hand-overlay__cluster--right') ? 'right' : 'left',
     rest: {
-      rotation: readAngle(style.getPropertyValue('--hand-rest-rotation'), ),
+      rotation: readAngle(style.getPropertyValue('--hand-rest-rotation'), 0),
       translateX: readNumeric(style.getPropertyValue('--hand-rest-translate-x'), 0),
       translateY: readNumeric(style.getPropertyValue('--hand-rest-translate-y'), 0)
     },
@@ -436,6 +451,7 @@ function createHandModel(el){
   };
 }
 
+/** [F18] Updates hand anchor coordinates based on layout metrics. */
 function refreshHandMetrics(hand){
   const rect = hand.el.getBoundingClientRect();
   const style = getComputedStyle(hand.el);
@@ -450,8 +466,10 @@ function refreshHandMetrics(hand){
   hand.anchor.y = rect.top + originY;
 }
 
+/** [C3] Degrees represented by a single radian, used for conversion. */
 const DEG_PER_RAD = 180 / Math.PI;
 
+/** [F19] Rotates a hand toward the pointer while respecting constraints. */
 function updateHandPointer(hand, pointer){
   if (!pointer) {
     applyRestState(hand);
@@ -465,21 +483,24 @@ function updateHandPointer(hand, pointer){
   hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
 }
 
+/** [F20] Limits hand rotation so illustrations remain readable. */
 function clampHandAngle(hand, angle){
   const centerDeg = hand.direction === 'left' ? 0 : 180;
-  const range = 110; // keeps rotation aiming toward the canvas interior
+  const range = 110;
   const rawDeg = angle * DEG_PER_RAD;
   const delta = normalizeAngleDeg(rawDeg - centerDeg);
   const clampedDelta = Math.max(-range, Math.min(range, delta));
   return centerDeg + clampedDelta;
 }
 
+/** [F21] Restores a hand element to its resting transform. */
 function applyRestState(hand){
   hand.el.style.setProperty('--hand-rotation', `${hand.rest.rotation}deg`);
   hand.el.style.setProperty('--hand-translate-x', `${hand.rest.translateX}px`);
   hand.el.style.setProperty('--hand-translate-y', `${hand.rest.translateY}px`);
 }
 
+/** [F22] Parses origin values expressed as px or percentages. */
 function readOriginValue(value, size, fallback){
   if (!value) return fallback;
   const trimmed = value.trim();
@@ -495,17 +516,20 @@ function readOriginValue(value, size, fallback){
   return Number.isFinite(num) ? num : fallback;
 }
 
+/** [F23] Safely converts numeric-like CSS values to floats. */
 function readNumeric(value, fallback){
   const num = parseFloat((value || '').trim());
   return Number.isFinite(num) ? num : fallback;
 }
 
+/** [F24] Extracts a numeric angle, falling back when parsing fails. */
 function readAngle(value, fallback){
   if (!value) return fallback;
   const num = parseFloat(value);
   return Number.isFinite(num) ? num : fallback;
 }
 
+/** [F25] Normalizes angles to the range [-180, 180]. */
 function normalizeAngleDeg(value){
   let deg = value % 360;
   if (deg > 180) deg -= 360;
@@ -513,6 +537,7 @@ function normalizeAngleDeg(value){
   return deg;
 }
 
+/** [F26] Guards against unsupported matchMedia environments. */
 function matchMediaSafe(query){
   if (typeof window.matchMedia !== 'function') return null;
   try {
@@ -522,6 +547,7 @@ function matchMediaSafe(query){
   }
 }
 
+/** [F27] Adds a change listener that supports legacy APIs. */
 function addChangeListener(mql, listener){
   if (!mql) return;
   if (typeof mql.addEventListener === 'function') {
