@@ -13,13 +13,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&family=Space+Grotesk:wght@300..700&display=swap"
         rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Turret+Road:wght@200;300;400;500;700;800&family=Workbench&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <header class="site-header bevel">
-        <h1 class="event-title">The Internet Yami-ichi Arnhem 2025 test </h1>
-    </header>
-
+    <!-- Interactive hands animation - Always visible -->
     <div class="hand-overlay" aria-hidden="true">
         <div class="hand-overlay__cluster hand-overlay__cluster--left">
             <img class="hand-overlay__pointer" src="assets/hands/hand-left-01.png" alt="" data-side="left"
@@ -51,7 +51,36 @@
         </div>
     </div>
 
-    <main class="wrap">
+    <!-- Landing Page -->
+    <div class="landing-page">
+        <!-- Top Logo -->
+        <div class="top-logo">
+            <img src="assets/og_logo.png" alt="Yami-ichi Original Logo" class="top-logo__image js-logo" />
+        </div>
+
+        <!-- Main Content Container -->
+        <div class="landing-content">
+            <!-- Center Logo with Pop Animation -->
+            <div class="logo-center">
+                <a href="#main-content" class="logo-center__link" onclick="showMainContent(event)">
+                    <img class="logo-center__image js-logo" src="assets/2025_logo.png" alt="The Internet Yami-ichi Arnhem 2025" />
+                </a>
+            </div>
+        </div>
+
+        <!-- Bottom Logos Section -->
+        <div class="bottom-logos-section">
+            <div class="partner-logo">
+                <img src="assets/datlogo.png" alt="DAT Logo" class="partner-logo__image js-logo" />
+            </div>
+            <div class="partner-logo">
+                <img src="assets/FOCFILM_LOGO_ZW.png" alt="Focus Filmtheater Logo" class="partner-logo__image js-logo" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Original Main Content (Hidden by default, can be accessed via navigation) -->
+    <main class="wrap main-content" style="display: none;" id="main-content">
         <section class="grid grid--branding" aria-labelledby="branding-heading">
             <h2 id="branding-heading" class="visually-hidden">Brand Assets</h2>
 
@@ -224,11 +253,11 @@
         </section>
     </main>
 
-    <footer class="site-footer bevel">
+    <footer class="site-footer bevel" style="display: none;">
         <small>© The Internet Yami-ichi 2025 Arnhem</small>
     </footer>
 
-    <button type="button" id="hate-html-toggle" class="hate-html-toggle" aria-pressed="false">
+    <button type="button" id="hate-html-toggle" class="hate-html-toggle" aria-pressed="false" style="display: none;">
         I HATE HTML
     </button>
 

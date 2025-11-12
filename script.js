@@ -363,6 +363,28 @@ window.addEventListener('load', scheduleLayoutUpdate);
 window.addEventListener('resize', scheduleLayoutUpdate);
 window.addEventListener('orientationchange', scheduleLayoutUpdate);
 
+/** [F28] Handles navigation from landing page to main content */
+function showMainContent(event) {
+  event.preventDefault();
+  const landingPage = document.querySelector('.landing-page');
+  const mainContent = document.querySelector('.main-content');
+  const footer = document.querySelector('.site-footer');
+  const hateHtmlButton = document.getElementById('hate-html-toggle');
+  
+  if (landingPage) landingPage.style.display = 'none';
+  if (mainContent) mainContent.style.display = 'grid';
+  if (footer) footer.style.display = 'block';
+  if (hateHtmlButton) hateHtmlButton.style.display = 'block';
+  
+  // Scroll to top of main content
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Trigger layout update for the main content
+  requestAnimationFrame(() => {
+    scheduleLayoutUpdate();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', initHandOverlays);
 
 /** [F16] Animates illustrated hands so they follow the user's pointer. */
@@ -423,10 +445,10 @@ function initHandOverlays(){
         scheduleStep();
       }
     };
-    addChangeListener(prefersReducedMotion, motionListener);
-  }
+  addChangeListener(prefersReducedMotion, motionListener);
+}
 
-  window.addEventListener('pointermove', handlePointerMove, { passive: true });
+window.addEventListener('pointermove', handlePointerMove, { passive: true });
   window.addEventListener('pointerleave', handlePointerLeave, { passive: true });
   window.addEventListener('pointercancel', handlePointerLeave, { passive: true });
   window.addEventListener('resize', refreshMetrics);

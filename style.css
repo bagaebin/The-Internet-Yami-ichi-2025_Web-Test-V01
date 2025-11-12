@@ -188,6 +188,8 @@ body {
     max-width: var(--card-max);
     width: auto;
     flex: 0 1 auto;
+    position: relative;
+    z-index: 2;
 }
 
 .card--wide {
@@ -419,12 +421,415 @@ body.is-chaos .hate-html-toggle:hover {
     border-color: #ff6f6f;
 }
 
-/* Hand overlay (hands stay under cards but above background) */
+/* ========================================
+   LANDING PAGE STYLES
+   ======================================== */
+
+.landing-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Top Logo */
+.top-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+    animation: floatFromCenter 2s ease-out;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.top-logo__image {
+    max-width: 120px;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+@keyframes floatFromCenter {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 300px, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes floatToLeft {
+    0% {
+        opacity: 0;
+        transform: translate3d(400px, -300px, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes floatToRight {
+    0% {
+        opacity: 0;
+        transform: translate3d(-400px, -300px, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Main Content Layout */
+.landing-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+    flex: 1;
+    padding: 40px 20px;
+    position: relative;
+}
+
+/* Center Logo with Pop Animation */
+.logo-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: logoPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    animation-delay: 0.1s;
+    animation-fill-mode: both;
+}
+
+.logo-center__link {
+    display: block;
+    max-width: 500px;
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    position: relative;
+}
+
+.logo-center__link:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+}
+
+.logo-center__link:active {
+    transform: scale(0.98);
+}
+
+.logo-center__image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.logo-center .logo-fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 48px;
+    letter-spacing: 4px;
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+/* Bottom Logos Section */
+.bottom-logos-section {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.partner-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.partner-logo:first-child {
+    animation: floatToLeft 2s ease-out;
+    animation-delay: 0.7s;
+    animation-fill-mode: both;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.partner-logo:last-child {
+    animation: floatToRight 2s ease-out;
+    animation-delay: 0.7s;
+    animation-fill-mode: both;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.partner-logo__image {
+    max-width: 120px;
+    width: 100%;
+    height: auto;
+    display: block;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.partner-logo__image:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animations */
+@keyframes logoPop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes floatToLeft {
+    0% {
+        opacity: 0;
+        transform: translate(calc(50vw - 50%), calc(-50vh + 50%)) scale(0.3);
+    }
+    25% {
+        transform: translate(calc(35vw - 35%), calc(-35vh + 35%)) scale(0.5);
+    }
+    50% {
+        transform: translate(calc(20vw - 20%), calc(-25vh + 25%)) scale(0.7);
+    }
+    75% {
+        transform: translate(calc(8vw - 8%), calc(-10vh + 10%)) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+}
+
+@keyframes floatToRight {
+    0% {
+        opacity: 0;
+        transform: translate(calc(-50vw + 50%), calc(-50vh + 50%)) scale(0.3);
+    }
+    25% {
+        transform: translate(calc(-35vw + 35%), calc(-40vh + 40%)) scale(0.5);
+    }
+    50% {
+        transform: translate(calc(-18vw + 18%), calc(-28vh + 28%)) scale(0.7);
+    }
+    75% {
+        transform: translate(calc(-6vw + 6%), calc(-12vh + 12%)) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-30px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Hand Entry Animation */
+@keyframes handEnter {
+    0% {
+        opacity: 0;
+        transform: translate3d(var(--hand-translate-x), calc(-50% + var(--hand-translate-y) + 40px), 0) rotate(var(--hand-rotation));
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(var(--hand-translate-x), calc(-50% + var(--hand-translate-y)), 0) rotate(var(--hand-rotation));
+    }
+}
+
+.hand-overlay__pointer {
+    animation: handEnter 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+.hand-overlay__pointer[data-slot="1"] {
+    animation-delay: 0.1s;
+}
+
+.hand-overlay__pointer[data-slot="2"] {
+    animation-delay: 0.15s;
+}
+
+.hand-overlay__pointer[data-slot="3"] {
+    animation-delay: 0.2s;
+}
+
+.hand-overlay__pointer[data-slot="4"] {
+    animation-delay: 0.25s;
+}
+
+.hand-overlay__pointer[data-slot="5"] {
+    animation-delay: 0.3s;
+}
+
+.hand-overlay__pointer[data-slot="6"] {
+    animation-delay: 0.35s;
+}
+
+@keyframes fadeInUp {
+    0% {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .landing-content {
+        padding: 30px 20px;
+    }
+
+    .logo-center__link {
+        max-width: 400px;
+    }
+
+    .bottom-logos-section {
+        padding: 20px 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .landing-page {
+        padding: 15px;
+    }
+
+    .landing-content {
+        padding: 20px 15px;
+    }
+
+    .logo-center__link {
+        max-width: 320px;
+    }
+
+    .bottom-logos-section {
+        padding: 15px 30px;
+    }
+
+    .partner-logo__image {
+        max-width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .landing-page {
+        padding: 10px;
+    }
+
+    .landing-content {
+        padding: 15px 10px;
+    }
+
+    .logo-center {
+        gap: 12px;
+    }
+
+    .logo-text {
+        font-size: 28px;
+    }
+
+    .logo-center__link {
+        max-width: 280px;
+    }
+
+    .logo-center .logo-fallback {
+        font-size: 32px;
+    }
+
+    .bottom-logos-section {
+        padding: 10px 20px;
+    }
+
+    .partner-logo__image {
+        max-width: 70px;
+    }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .landing-content,
+    .logo-center,
+    .logo-text,
+    .bottom-logos-section {
+        animation: none !important;
+    }
+
+    .hand-overlay__pointer {
+        animation: none !important;
+    }
+
+    .logo-center__link:hover {
+        transform: none;
+        filter: none;
+    }
+
+    .partner-logo__image:hover {
+        transform: none;
+    }
+}
+
+
 .hand-overlay {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
     overflow: visible;
 }
 
