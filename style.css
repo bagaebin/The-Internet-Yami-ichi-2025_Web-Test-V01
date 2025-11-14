@@ -71,6 +71,40 @@ body {
     letter-spacing: 0.01em;
     align-items: center;
     cursor: url('http://www.rw-designer.com/cursor-extern.php?id=158484'), auto;
+    scrollbar-face-color: #05B7FF;
+    scrollbar-arrow-color: #05B7FF;
+    scrollbar-track-color: #CBD5D7;
+    scrollbar-shadow-color: #05B7FF;
+    scrollbar-highlight-color: #05B7FF;
+    scrollbar-3dlight-color: #808080;
+    scrollbar-darkshadow-Color: #202020;
+    scrollbar-color: #05B7FF #CBD5D7;
+}
+
+body.intro-active {
+    margin: 0;
+    overflow: hidden;
+    min-height: 100vh;
+    min-height: 100svh;
+}
+
+body::-webkit-scrollbar {
+    width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+    background: #CBD5D7;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #05B7FF;
+    border-radius: 999px;
+    border: 2px solid #CBD5D7;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.15);
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background-color: #0299d4;
 }
 
 /* 접근성 향상 */
@@ -117,6 +151,22 @@ body {
 
 .site-footer small {
     opacity: .7;
+}
+
+.site-footer__logos {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.site-footer__logo {
+    max-width: 90px;
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.08));
 }
 
 /* 로고 영역 */
@@ -454,6 +504,7 @@ body.is-chaos .hate-html-toggle:hover {
 
 .landing-page {
     min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -461,6 +512,39 @@ body.is-chaos .hate-html-toggle:hover {
     padding: 20px;
     position: relative;
     overflow: hidden;
+}
+
+.logo-card {
+    --card-delay: 0s;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    border-radius: 24px;
+    padding: 20px 32px;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.12), inset 0 2px 0 rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+    animation: introCardPop 0.85s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+    animation-delay: var(--card-delay);
+}
+
+.logo-card--primary {
+    padding: clamp(24px, 4vw, 48px);
+    min-width: min(640px, 90vw);
+}
+
+.logo-card--compact {
+    padding: 16px 28px;
+    border-radius: 20px;
+}
+
+.logo-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.18);
 }
 
 /* Top Logo */
@@ -471,12 +555,10 @@ body.is-chaos .hate-html-toggle:hover {
     padding: 20px;
     position: relative;
     z-index: 2;
-    animation: floatFromCenter 2s ease-out;
-    animation-delay: 0.5s;
-    animation-fill-mode: both;
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased;
+}
+
+.top-logo .logo-card {
+    --card-delay: 0.15s;
 }
 
 .top-logo__image {
@@ -484,39 +566,6 @@ body.is-chaos .hate-html-toggle:hover {
     width: 100%;
     height: auto;
     display: block;
-}
-
-@keyframes floatFromCenter {
-    0% {
-        opacity: 0;
-        transform: translate3d(0, 300px, 0);
-    }
-    100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-    }
-}
-
-@keyframes floatToLeft {
-    0% {
-        opacity: 0;
-        transform: translate3d(400px, -300px, 0);
-    }
-    100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-    }
-}
-
-@keyframes floatToRight {
-    0% {
-        opacity: 0;
-        transform: translate3d(-400px, -300px, 0);
-    }
-    100% {
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
-    }
 }
 
 /* Main Content Layout */
@@ -529,6 +578,10 @@ body.is-chaos .hate-html-toggle:hover {
     flex: 1;
     padding: 40px 20px;
     position: relative;
+}
+
+.landing-content .logo-card {
+    --card-delay: 0.25s;
 }
 
 /* Center Logo with Pop Animation */
@@ -561,7 +614,7 @@ body.is-chaos .hate-html-toggle:hover {
 }
 
 .logo-center__image {
-    width: 120%;
+    width: 100%;
     height: auto;
     display: block;
 }
@@ -623,30 +676,15 @@ body.is-chaos .hate-html-toggle:hover {
 }
 
 .logos-left .partner-logo {
-    animation: floatToLeft 2s ease-out;
-    animation-delay: 0.7s;
-    animation-fill-mode: both;
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased;
+    --card-delay: 0.35s;
 }
 
 .logos-middle .partner-logo {
-    animation: floatToLeft 2s ease-out;
-    animation-delay: 0.8s;
-    animation-fill-mode: both;
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased;
+    --card-delay: 0.4s;
 }
 
 .logos-right .partner-logo {
-    animation: floatToRight 2s ease-out;
-    animation-delay: 0.7s;
-    animation-fill-mode: both;
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased;
+    --card-delay: 0.45s;
 }
 
 .partner-logo__image {
@@ -661,6 +699,13 @@ body.is-chaos .hate-html-toggle:hover {
 .partner-logo__image:hover {
     opacity: 1;
     transform: scale(1.05);
+}
+
+.intro-logo {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 @keyframes fadeIn {
@@ -687,43 +732,19 @@ body.is-chaos .hate-html-toggle:hover {
     }
 }
 
-@keyframes floatToLeft {
-    0% {
-        opacity: 0;
-        transform: translate(calc(50vw - 50%), calc(-50vh + 50%)) scale(0.3);
-    }
-    25% {
-        transform: translate(calc(35vw - 35%), calc(-35vh + 35%)) scale(0.5);
-    }
-    50% {
-        transform: translate(calc(20vw - 20%), calc(-25vh + 25%)) scale(0.7);
-    }
-    75% {
-        transform: translate(calc(8vw - 8%), calc(-10vh + 10%)) scale(0.9);
-    }
-    100% {
-        opacity: 1;
-        transform: translate(0, 0) scale(1);
-    }
-}
 
-@keyframes floatToRight {
+@keyframes introCardPop {
     0% {
         opacity: 0;
-        transform: translate(calc(-50vw + 50%), calc(-50vh + 50%)) scale(0.3);
+        transform: translateY(30px) scale(0.9);
     }
-    25% {
-        transform: translate(calc(-35vw + 35%), calc(-40vh + 40%)) scale(0.5);
-    }
-    50% {
-        transform: translate(calc(-18vw + 18%), calc(-28vh + 28%)) scale(0.7);
-    }
-    75% {
-        transform: translate(calc(-6vw + 6%), calc(-12vh + 12%)) scale(0.9);
+    60% {
+        opacity: 1;
+        transform: translateY(-6px) scale(1.02);
     }
     100% {
         opacity: 1;
-        transform: translate(0, 0) scale(1);
+        transform: translateY(0) scale(1);
     }
 }
 
