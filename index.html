@@ -8,14 +8,30 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="style.css" />
 
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/favicons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/favicons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/favicons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/favicons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/favicons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/favicons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/favicons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/favicons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
+    <link rel="manifest" href="assets/favicons/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="assets/favicons/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Quicksand:wght@300..700&family=Space+Grotesk:wght@300..700&display=swap"
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Turret+Road:wght@200;300;400;500;700;800&display=swap"
         rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@100..900&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rock+3D&family=Sue+Ellen+Francisco&family=Turret+Road:wght@200;300;400;500;700;800&family=Workbench&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -55,7 +71,8 @@
     <div class="landing-page">
         <!-- Top Logo -->
         <div class="top-logo">
-            <img src="assets/og_logo.png" alt="Yami-ichi Original Logo" class="top-logo__image js-logo" />
+            <img src="assets/logos/og_yamiichi_logo.png" alt="Yami-ichi Original Logo"
+                class="top-logo__image js-logo" />
         </div>
 
         <!-- Main Content Container -->
@@ -63,9 +80,10 @@
             <!-- Center Logo with Pop Animation -->
             <div class="logo-center">
                 <a href="#main-content" class="logo-center__link" onclick="showMainContent(event)">
-                    <img class="logo-center__image js-logo" src="assets/2025_logo.png" alt="The Internet Yami-ichi Arnhem 2025" />
+                    <img class="logo-center__image js-logo" src="assets/logos/2025_yamiichi_logo.png"
+                        alt="The Internet Yami-ichi Arnhem 2025" />
                 </a>
-                <p class="logo-center__date">December 19, 2025</p>
+                <p class="logo-center__date">19-12-2025</p>
             </div>
         </div>
 
@@ -73,37 +91,38 @@
         <div class="bottom-logos-section">
             <div class="logos-left">
                 <div class="partner-logo">
-                    <img src="assets/logo-artez.png" alt="Artez Logo" class="partner-logo__image js-logo" />
+                    <img src="assets/logos/artez_logo.png" alt="Artez Logo" class="partner-logo__image js-logo" />
                 </div>
             </div>
             <div class="logos-middle">
                 <div class="partner-logo">
-                    <img src="assets/datlogo.png" alt="DAT Logo" class="partner-logo__image js-logo" />
+                    <img src="assets/logos/dat_logo.png" alt="DAT Logo" class="partner-logo__image js-logo" />
                 </div>
             </div>
             <div class="logos-right">
                 <div class="partner-logo">
-                    <img src="assets/FOCFILM_LOGO_ZW.png" alt="Focus Filmtheater Logo" class="partner-logo__image js-logo" />
+                    <img src="assets/logos/focus_logo.png" alt="Focus Filmtheater Logo"
+                        class="partner-logo__image js-logo" />
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Original Main Content (Hidden by default, can be accessed via navigation) -->
-    <main class="wrap main-content" style="display: none;" id="main-content">
+    <main class="wrap main-content is-hidden" id="main-content">
         <section class="grid grid--branding" aria-labelledby="branding-heading">
             <h2 id="branding-heading" class="visually-hidden">Brand Assets</h2>
 
             <article class="card bevel card--logo">
                 <div class="logo-wrap logo-wrap--card">
-                    <img class="js-logo" src="assets/2025_logo.png" alt="Primary event logo" />
+                    <img class="js-logo" src="assets/logos/2025_yamiichi_logo.png" alt="2025 Arnhem Yami-ichi Logo" />
                     <div class="logo-fallback" aria-hidden="true">LOGO</div>
                 </div>
             </article>
 
             <article class="card bevel card--logo">
                 <div class="logo-wrap logo-wrap--card">
-                    <img class="js-logo" src="assets/og_logo.png" alt="Alternate event logo" />
+                    <img class="js-logo" src="assets/logos/og_yamiichi_logo.png" alt="The Internet Yami-ichi Logo" />
                     <div class="logo-fallback" aria-hidden="true">ALT</div>
                 </div>
             </article>
@@ -122,8 +141,8 @@
             </article>
 
             <article class="card bevel">
-                <p class="card-text" id="date-value" data-date="2025-12-19">
-                    2025-12-19 <span class="dow">(Fri)</span>
+                <p class="card-text" id="date-value" data-date="19-12-2025">
+                    19-12-2025 <span class="dow">(Fri)</span>
                 </p>
             </article>
 
@@ -142,18 +161,21 @@
                     into real world.
                 </p>
                 <p class="card-text card-text--small">
-                     <a href="http://yami-ichi.biz/">Internet Yami-Ichi</a> is a flea market-style event where people deal with “Internet-ish” items in
-                    real space. </p>
+                    <a href="http://yami-ichi.biz/">Internet Yami-Ichi</a> is a flea market-style event where people
+                    deal with “Internet-ish” items in
+                    real space.
+                </p>
             </article>
 
-            <article class="card bevel card--event">
+            <!-- ***TBU -->
+            <!-- <article class="card bevel card--event">
                 <h3 class="card-heading">Event name</h3>
                 <p class="card-text">
                     Artist name
                 </p>
                 <p class="card-text card-text--small">
                     Description of the event goes here.
-                </p>
+                </p> -->
             </article>
         </section>
 
@@ -167,7 +189,8 @@
                 </p>
             </article>
 
-            <article class="card bevel card--event">
+            <!-- ***TBU -->
+            <!-- <article class="card bevel card--event">
                 <h3 class="card-heading">Event name</h3>
                 <p class="card-text">
                     Artist name
@@ -175,7 +198,7 @@
                 <p class="card-text card-text--small">
                     Description of the event goes here.
                 </p>
-            </article>
+            </article> -->
 
             <section class="grid grid--film-screening" aria-labelledby="film-screening-heading">
                 <h2 id="film-screening-heading" class="visually-hidden">Film Screening</h2>
@@ -191,7 +214,8 @@
 
                 </article>
 
-                <article class="card bevel card--event">
+                <!-- ***TBU -->
+                <!-- <article class="card bevel card--event">
                     <h3 class="card-heading">Event name</h3>
                     <p class="card-text">
                         Artist name
@@ -200,21 +224,23 @@
                         Description of the event goes here.
                     </p>
                 </article>
-            </section>
+            </section> -->
 
-            <section class="grid grid--workshops" aria-labelledby="workshops-heading">
-                <h2 id="workshops-heading" class="visually-hidden">Workshops</h2>
+                <section class="grid grid--workshops" aria-labelledby="workshops-heading">
+                    <h2 id="workshops-heading" class="visually-hidden">Workshops</h2>
 
-                <article class="card bevel card--section">
-                    <h3 class="card-title">Workshops</h3>
-                    <p class="card-text card-text--small">
-                        Skip the shopping cart, hit the workbench. Craft your physical internet in our workshop. </p>
-                    <p class="card-text card-text--small">
-                        You will produce their own ‘internet-ish’ artifact under the guidance of the artist. </p>
+                    <article class="card bevel card--section">
+                        <h3 class="card-title">Workshops</h3>
+                        <p class="card-text card-text--small">
+                            Skip the shopping cart, hit the workbench. Craft your physical internet in our workshop.
+                        </p>
+                        <p class="card-text card-text--small">
+                            You will produce their own ‘internet-ish’ artifact under the guidance of the artist. </p>
 
-                </article>
+                    </article>
 
-                <article class="card bevel card--event">
+                    <!-- ***TBU -->
+                    <!-- <article class="card bevel card--event">
                     <h3 class="card-heading">Event name</h3>
                     <p class="card-text">
                         Artist name
@@ -222,56 +248,25 @@
                     <p class="card-text card-text--small">
                         Description of the event goes here.
                     </p>
-                </article>
+                </article> -->
+                </section>
             </section>
-        </section>
 
-        <section class="grid grid--contact" aria-labelledby="contact-heading">
-            <h2 id="contact-heading" class="visually-hidden">Contact</h2>
+            <footer class="site-footer bevel is-hidden">
+                <div class="card-actions">
+                    <a class="icon-button" href="https://www.instagram.com/yamiichi_arnhem/" target="_blank"
+                        rel="noopener noreferrer" aria-label="Follow Yami-ichi Arnhem on Instagram">
+                        <img class="icon" src="assets/ig-icon.svg" alt="" aria-hidden="true">
+                    </a>
+                </div>
+                <small>© The Internet Yami-ichi 2025 Arnhem</small>
+            </footer>
 
-            <article class="card bevel card--info">
-                <h3 class="card-heading">How to be a vendor</h3>
-                <ul class="card-list">
-                    <li class="card-text card-text--small">Everyone with brilliant ideas in materializing Internet goods and services can take part in this market.</li>
-                    <li class="card-text card-text--small">Vendors from previous editions sold rejected iOS apps, personal data in USB drives, meme-cookies, glitched embroidery on clothes, spam mail, computer generated cocktails, and many other unexpected things.</li>
-                    <li class="card-text card-text--small">Participation fee is free; join individually or as a group.</li>
-                    <li class="card-text card-text--small">You are in charge of setting up and dismantling your own booth.</li>
-                    <li class="card-text card-text--small">The public event runs 11:30 to 18:00 with last entry at 17:30; arrive at least one hour before the start.</li>
-                    <li class="card-text card-text--small">Only sell or display Internet-related goods or works.</li>
-                    <li class="card-text card-text--small">No dangerous, harmful, or illegal stuff.</li>
-                    <li class="card-text card-text--small">Set the price you prefer.</li>
-                </ul>
-            </article>
+            <button type="button" id="hate-html-toggle" class="hate-html-toggle is-hidden" aria-pressed="false">
+                I HATE HTML
+            </button>
 
-            <article class="card bevel card--info">
-                <h3 class="card-heading">How to be a buyer</h3>
-                <p class="card-text card-text--small">Do we need to make tickets? Let's determine the way to manage the amount of visitors!</p>
-            </article>
-
-            <article class="card bevel card--info">
-                <h3 class="card-heading">House Rules</h3>
-                <p class="card-text card-text--small">TBU.</p>
-            </article>
-
-            <article class="card bevel card--info">
-                <h3 class="card-heading">Contact info</h3>
-                <ul class="card-list">
-                    <li class="card-text card-text--small">Do we need to make the official email address?</li>
-                    <li class="card-text card-text--small">Who is going to take contact from visitors?</li>
-                </ul>
-            </article>
-        </section>
-    </main>
-
-    <footer class="site-footer bevel" style="display: none;">
-        <small>© The Internet Yami-ichi 2025 Arnhem</small>
-    </footer>
-
-    <button type="button" id="hate-html-toggle" class="hate-html-toggle" aria-pressed="false" style="display: none;">
-        I HATE HTML
-    </button>
-
-    <script src="script.js"></script>
+            <script src="script.js"></script>
 </body>
 
 </html>

@@ -2,6 +2,47 @@
     box-sizing: border-box;
 }
 
+.is-hidden {
+    display: none !important;
+}
+
+/* Turret Road font weights */
+.turret-road-extralight {
+    font-family: "Turret Road", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+}
+
+.turret-road-light {
+    font-family: "Turret Road", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+}
+
+.turret-road-regular {
+    font-family: "Turret Road", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.turret-road-medium {
+    font-family: "Turret Road", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.turret-road-bold {
+    font-family: "Turret Road", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.turret-road-extrabold {
+    font-family: "Turret Road", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+}
+
 :root {
     --text: #101010;
     --bg: #d4f8fb;
@@ -23,9 +64,11 @@ body {
 body {
     margin: 12px;
     color: var(--text);
-    background: var(--bg);
-    font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+    background: var(--bg) url("assets/bg.png") center / cover no-repeat fixed;
+    font-family: "Turret Road", "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
     font-optical-sizing: auto;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     align-items: center;
     cursor: url('http://www.rw-designer.com/cursor-extern.php?id=158484'), auto;
 }
@@ -36,32 +79,6 @@ body {
         transition: none !important;
         animation: none !important;
     }
-}
-
-.space-grotesk {
-    font-family: "Space Grotesk", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-}
-
-.space-grotesk-300 {
-    font-weight: 300;
-}
-
-.space-grotesk-400 {
-    font-weight: 400;
-}
-
-.space-grotesk-500 {
-    font-weight: 500;
-}
-
-.space-grotesk-600 {
-    font-weight: 600;
-}
-
-.space-grotesk-700 {
-    font-weight: 700;
 }
 
 /* 공통 레이아웃 */
@@ -87,9 +104,14 @@ body {
     padding: 14px 16px;
     background: #fff;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
     display: grid;
     place-items: center;
     position: relative;
+    gap: 12px;
     z-index: 1;
 }
 
@@ -183,6 +205,9 @@ body {
 .card {
     padding: 16px 18px;
     background: #fff;
+    box-shadow:
+        inset -2px -2px 0 var(--highlight-inset),
+        inset 2px 2px 0 var(--shadow-inset);
     text-align: center;
     margin: 0;
     max-width: var(--card-max);
@@ -282,6 +307,7 @@ body {
 .card-title {
     margin: 0 0 10px;
     font-size: 20px;
+    font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .08em;
 }
@@ -289,7 +315,7 @@ body {
 .card-heading {
     margin: 0;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .card-text {
@@ -299,7 +325,7 @@ body {
 }
 
 .card-text--small {
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .card-actions {
@@ -385,6 +411,7 @@ body {
     border: 1px solid #0077CC;
     background-image: linear-gradient(#42A1EC, #0070C9);
     color: #fff;
+    font-size: 14px;
     font-family: inherit;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -534,7 +561,7 @@ body.is-chaos .hate-html-toggle:hover {
 }
 
 .logo-center__image {
-    width: 100%;
+    width: 120%;
     height: auto;
     display: block;
 }
@@ -552,8 +579,8 @@ body.is-chaos .hate-html-toggle:hover {
 }
 
 .logo-center__date {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 32px;
+    font-weight: 700;
     color: var(--text);
     margin: 0;
     text-align: center;
@@ -561,7 +588,6 @@ body.is-chaos .hate-html-toggle:hover {
     animation: fadeIn 1s ease-out;
     animation-delay: 1s;
     animation-fill-mode: both;
-    font-family: 'Montserrat Alternates', sans-serif;
 }
 
 /* Bottom Logos Section */

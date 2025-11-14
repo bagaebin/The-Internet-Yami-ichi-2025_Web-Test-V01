@@ -1,3 +1,5 @@
+1411 Updated 
+
   # Home
 
 1. ## The Internet Yami-ichi 2025 Arnhem Logo(Img) {#the-internet-yami-ichi-2025-arnhem-logo(img)}
@@ -36,27 +38,7 @@
 |  |  |  |
 |  |  |  |
 
-2. ## Exhibition
-
-* We can make a subtitle
-
-3) ### Description
-- TBU
-
-4) ### Vendors
-
-| The name of the booth | The Artist’s name | Introduction |
-| :---- | :---- | :---- |
-| TBU |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-
-3. ## Film Screening
+2. ## Film Screening
 
 * We can make a subtitle
 
@@ -95,33 +77,8 @@
 |  |  |  |
 
 # Contact
-
-1. ## How to be vendor
-
-- Everyone with brilliant ideas in materializing Internet goods and services can take part in this market.   
-- Vendors from previous editions sold rejected iOS apps, personal data in USB drives, meme-cookies, glitched embroidery on clothes, spam mail, computer generated cocktails, and many other unexpected things. 
-
-- Participation fee is free\!  
-- individually or as a group
-
-- In charge of the set up and the dismantling of your own booth  
-- The public event is from 11.30am to 6pm. Last entry at 5:30pm.  
-- Vendors should arrive at least one hour before the event starts.
-
-- Only sell / display Internet-related goods / works.  
-- No dangerous, harmful or illegal stuff.  
-- Set the price you prefer.
-
-2. ## How to be buyer
-
-* Do we need to make tickets? Let’s determine the way to manage the amount of visitors\!
-
-3. ## House Rules
-
-4. ## Contact info
-
-* Do we need to make the official email-address?  
-* Who is gonna take some contact from visitors?
+1. ## Contact info
+- Instagram Link: https://www.instagram.com/yamiichi_arnhem/
 
   # Artists’ Banners
 | Name | Banner Image | Link(e.g. Portfolio, Instagram…) attached to the banner |

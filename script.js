@@ -376,10 +376,10 @@ function showMainContent(event) {
   const footer = document.querySelector('.site-footer');
   const hateHtmlButton = document.getElementById('hate-html-toggle');
   
-  if (landingPage) landingPage.style.display = 'none';
-  if (mainContent) mainContent.style.display = 'grid';
-  if (footer) footer.style.display = 'block';
-  if (hateHtmlButton) hateHtmlButton.style.display = 'block';
+  if (landingPage) landingPage.classList.add('is-hidden');
+  if (mainContent) mainContent.classList.remove('is-hidden');
+  if (footer) footer.classList.remove('is-hidden');
+  if (hateHtmlButton) hateHtmlButton.classList.remove('is-hidden');
   
   // Scroll to top of main content
   window.scrollTo({ top: 0, behavior: 'smooth' });
