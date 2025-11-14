@@ -375,12 +375,13 @@ function showMainContent(event) {
   const mainContent = document.querySelector('.main-content');
   const footer = document.querySelector('.site-footer');
   const hateHtmlButton = document.getElementById('hate-html-toggle');
-  
+
   if (landingPage) landingPage.classList.add('is-hidden');
   if (mainContent) mainContent.classList.remove('is-hidden');
   if (footer) footer.classList.remove('is-hidden');
   if (hateHtmlButton) hateHtmlButton.classList.remove('is-hidden');
-  
+  document.body.classList.remove('intro-active');
+
   // Scroll to top of main content
   window.scrollTo({ top: 0, behavior: 'smooth' });
   

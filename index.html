@@ -34,7 +34,7 @@
         rel="stylesheet">
 </head>
 
-<body>
+<body class="intro-active">
     <!-- Interactive hands animation - Always visible -->
     <div class="hand-overlay" aria-hidden="true">
         <div class="hand-overlay__cluster hand-overlay__cluster--left">
@@ -71,19 +71,23 @@
     <div class="landing-page">
         <!-- Top Logo -->
         <div class="top-logo">
-            <img src="assets/logos/og_yamiichi_logo.png" alt="Yami-ichi Original Logo"
-                class="top-logo__image js-logo" />
+            <div class="logo-card logo-card--compact">
+                <img src="assets/logos/og_yamiichi_logo.png" alt="Yami-ichi Original Logo"
+                    class="top-logo__image js-logo intro-logo" />
+            </div>
         </div>
 
         <!-- Main Content Container -->
         <div class="landing-content">
             <!-- Center Logo with Pop Animation -->
-            <div class="logo-center">
-                <a href="#main-content" class="logo-center__link" onclick="showMainContent(event)">
-                    <img class="logo-center__image js-logo" src="assets/logos/2025_yamiichi_logo.png"
-                        alt="The Internet Yami-ichi Arnhem 2025" />
-                </a>
-                <p class="logo-center__date">19-12-2025</p>
+            <div class="logo-card logo-card--primary">
+                <div class="logo-center">
+                    <a href="#main-content" class="logo-center__link" onclick="showMainContent(event)">
+                        <img class="logo-center__image js-logo intro-logo" src="assets/logos/2025_yamiichi_logo.png"
+                            alt="The Internet Yami-ichi Arnhem 2025" />
+                    </a>
+                    <p class="logo-center__date">19-12-2025</p>
+                </div>
             </div>
         </div>
 
@@ -91,18 +95,26 @@
         <div class="bottom-logos-section">
             <div class="logos-left">
                 <div class="partner-logo">
-                    <img src="assets/logos/artez_logo.png" alt="Artez Logo" class="partner-logo__image js-logo" />
+                    <div class="logo-card logo-card--compact">
+                        <img src="assets/logos/artez_logo.png" alt="Artez Logo"
+                            class="partner-logo__image js-logo intro-logo" />
+                    </div>
                 </div>
             </div>
             <div class="logos-middle">
                 <div class="partner-logo">
-                    <img src="assets/logos/dat_logo.png" alt="DAT Logo" class="partner-logo__image js-logo" />
+                    <div class="logo-card logo-card--compact">
+                        <img src="assets/logos/dat_logo.png" alt="DAT Logo"
+                            class="partner-logo__image js-logo intro-logo" />
+                    </div>
                 </div>
             </div>
             <div class="logos-right">
                 <div class="partner-logo">
-                    <img src="assets/logos/focus_logo.png" alt="Focus Filmtheater Logo"
-                        class="partner-logo__image js-logo" />
+                    <div class="logo-card logo-card--compact">
+                        <img src="assets/logos/focus_logo.png" alt="Focus Filmtheater Logo"
+                            class="partner-logo__image js-logo intro-logo" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -258,6 +270,11 @@
                         rel="noopener noreferrer" aria-label="Follow Yami-ichi Arnhem on Instagram">
                         <img class="icon" src="assets/ig-icon.svg" alt="" aria-hidden="true">
                     </a>
+                </div>
+                <div class="site-footer__logos">
+                    <img src="assets/logos/artez_logo.png" alt="Artez" class="site-footer__logo">
+                    <img src="assets/logos/dat_logo.png" alt="Design Art Technology" class="site-footer__logo">
+                    <img src="assets/logos/focus_logo.png" alt="Focus Filmtheater" class="site-footer__logo">
                 </div>
                 <small>© The Internet Yami-ichi 2025 Arnhem</small>
             </footer>
