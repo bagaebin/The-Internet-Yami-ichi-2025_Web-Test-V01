@@ -30,6 +30,9 @@ function initDateBadges(){
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 document.addEventListener('DOMContentLoaded', initDateBadges);
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('is-landing-active');
+});
 
 /** [F2] Ensures a fallback block is shown whenever logos fail to load. */
 function setupLogoFallbacks(){
@@ -380,6 +383,7 @@ function showMainContent(event) {
   if (mainContent) mainContent.classList.remove('is-hidden');
   if (footer) footer.classList.remove('is-hidden');
   if (hateHtmlButton) hateHtmlButton.classList.remove('is-hidden');
+  document.body.classList.remove('is-landing-active');
   
   // Scroll to top of main content
   window.scrollTo({ top: 0, behavior: 'smooth' });
