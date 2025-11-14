@@ -112,7 +112,7 @@ function getCardMaxWidth(){
 function updateAllGridLayouts(){
   if (chaosState.active) return;
   document.querySelectorAll('.grid').forEach(grid => {
-    const cards = Array.from(grid.querySelectorAll('.card'));
+    const cards = getDirectCards(grid);
     if (cards.length === 0) return;
 
     const rows = groupRowsByOffsetTop(cards);
@@ -147,7 +147,12 @@ function setupChaosToggle(){
 
 /** [F8] Collects grids that contain draggable cards. */
 function getChaosGrids(){
-  return Array.from(document.querySelectorAll('.grid')).filter(grid => grid.querySelector('.card'));
+  return Array.from(document.querySelectorAll('.grid')).filter(grid => getDirectCards(grid).length > 0);
+}
+
+/** [F8a] Returns only the direct child cards of a grid element. */
+function getDirectCards(grid){
+  return Array.from(grid.children).filter(child => child.classList && child.classList.contains('card'));
 }
 
 /** [F9] Saves inline styles prior to chaos mode mutation. */
@@ -171,7 +176,7 @@ function enterChaos(toggle){
   const snapshots = grids.map(grid => ({
     grid,
     rect: grid.getBoundingClientRect(),
-    cards: Array.from(grid.querySelectorAll('.card')).map(card => ({
+    cards: getDirectCards(grid).map(card => ({
       card,
       rect: card.getBoundingClientRect()
     }))
