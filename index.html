@@ -71,8 +71,13 @@
     <div class="landing-page">
         <!-- Top Logo -->
         <div class="top-logo">
-            <img src="assets/logos/og_yamiichi_logo.png" alt="Yami-ichi Original Logo"
-                class="top-logo__image js-logo" />
+            <article class="card bevel intro-logo-card top-logo__card">
+                <div class="logo-wrap logo-wrap--card">
+                    <img src="assets/logos/og_yamiichi_logo.png" alt="Yami-ichi Original Logo"
+                        class="top-logo__image js-logo" />
+                    <div class="logo-fallback" aria-hidden="true">YAMI-ICHI</div>
+                </div>
+            </article>
         </div>
 
         <!-- Main Content Container -->
@@ -90,20 +95,31 @@
         <!-- Bottom Logos Section -->
         <div class="bottom-logos-section">
             <div class="logos-left">
-                <div class="partner-logo">
-                    <img src="assets/logos/artez_logo.png" alt="Artez Logo" class="partner-logo__image js-logo" />
-                </div>
+                <article class="card bevel intro-logo-card partner-logo">
+                    <div class="logo-wrap logo-wrap--card">
+                        <img src="assets/logos/artez_logo.png" alt="Artez Logo"
+                            class="partner-logo__image js-logo" />
+                        <div class="logo-fallback" aria-hidden="true">ARTEZ</div>
+                    </div>
+                </article>
             </div>
             <div class="logos-middle">
-                <div class="partner-logo">
-                    <img src="assets/logos/dat_logo.png" alt="DAT Logo" class="partner-logo__image js-logo" />
-                </div>
+                <article class="card bevel intro-logo-card partner-logo">
+                    <div class="logo-wrap logo-wrap--card">
+                        <img src="assets/logos/dat_logo.png" alt="Design Art Technology Logo"
+                            class="partner-logo__image js-logo" />
+                        <div class="logo-fallback" aria-hidden="true">DAT</div>
+                    </div>
+                </article>
             </div>
             <div class="logos-right">
-                <div class="partner-logo">
-                    <img src="assets/logos/focus_logo.png" alt="Focus Filmtheater Logo"
-                        class="partner-logo__image js-logo" />
-                </div>
+                <article class="card bevel intro-logo-card partner-logo">
+                    <div class="logo-wrap logo-wrap--card">
+                        <img src="assets/logos/focus_logo.png" alt="Focus Filmtheater Logo"
+                            class="partner-logo__image js-logo" />
+                        <div class="logo-fallback" aria-hidden="true">FOCUS</div>
+                    </div>
+                </article>
             </div>
         </div>
     </div>
@@ -253,6 +269,11 @@
             </section>
 
             <footer class="site-footer bevel is-hidden">
+                <div class="site-footer__logos" aria-label="Event partners">
+                    <img src="assets/logos/artez_logo.png" alt="Artez" class="site-footer__logo">
+                    <img src="assets/logos/dat_logo.png" alt="Design Art Technology" class="site-footer__logo">
+                    <img src="assets/logos/focus_logo.png" alt="Focus Filmtheater" class="site-footer__logo">
+                </div>
                 <div class="card-actions">
                     <a class="icon-button" href="https://www.instagram.com/yamiichi_arnhem/" target="_blank"
                         rel="noopener noreferrer" aria-label="Follow Yami-ichi Arnhem on Instagram">

@@ -30,6 +30,7 @@ function initDateBadges(){
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 document.addEventListener('DOMContentLoaded', initDateBadges);
+document.addEventListener('DOMContentLoaded', lockLandingScroll);
 
 /** [F2] Ensures a fallback block is shown whenever logos fail to load. */
 function setupLogoFallbacks(){
@@ -375,11 +376,12 @@ function showMainContent(event) {
   const mainContent = document.querySelector('.main-content');
   const footer = document.querySelector('.site-footer');
   const hateHtmlButton = document.getElementById('hate-html-toggle');
-  
+
   if (landingPage) landingPage.classList.add('is-hidden');
   if (mainContent) mainContent.classList.remove('is-hidden');
   if (footer) footer.classList.remove('is-hidden');
   if (hateHtmlButton) hateHtmlButton.classList.remove('is-hidden');
+  document.body.classList.remove('is-landing-locked');
   
   // Scroll to top of main content
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -391,6 +393,10 @@ function showMainContent(event) {
 }
 
 document.addEventListener('DOMContentLoaded', initHandOverlays);
+
+function lockLandingScroll(){
+  document.body.classList.add('is-landing-locked');
+}
 
 /** [F16] Animates illustrated hands so they follow the user's pointer. */
 function initHandOverlays(){
