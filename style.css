@@ -404,7 +404,8 @@ body::-webkit-scrollbar-corner {
 }
 
 .card-text--artist {
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .card-text--small {
