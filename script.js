@@ -202,14 +202,17 @@ function enterChaos(toggle){
     chaosState.gridStyles.set(grid, {
       height: grid.style.height,
       minHeight: grid.style.minHeight,
+      maxHeight: grid.style.maxHeight,
       position: grid.style.position,
-      overflow: grid.style.overflow
+      overflow: grid.style.overflow,
+      display: grid.style.display
     });
 
     grid.classList.add('is-chaos');
     grid.classList.remove('is-stack');
     grid.style.position = 'relative';
     grid.style.overflow = 'visible';
+    grid.style.display = 'block';
 
     let maxBottom = 0;
 
@@ -237,6 +240,7 @@ function enterChaos(toggle){
     const heightPx = `${Math.ceil(canvasHeight)}px`;
     grid.style.height = heightPx;
     grid.style.minHeight = heightPx;
+    grid.style.maxHeight = heightPx;
   });
 
   toggle.setAttribute('aria-pressed', 'true');
@@ -262,8 +266,10 @@ function exitChaos(toggle){
   chaosState.gridStyles.forEach((styles, grid) => {
     grid.style.height = styles.height || '';
     grid.style.minHeight = styles.minHeight || '';
+    grid.style.maxHeight = styles.maxHeight || '';
     grid.style.position = styles.position || '';
     grid.style.overflow = styles.overflow || '';
+    grid.style.display = styles.display || '';
   });
   chaosState.gridStyles.clear();
 
