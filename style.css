@@ -172,6 +172,12 @@ body::-webkit-scrollbar-corner {
     flex-wrap: wrap;
 }
 
+.footer-logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .footer-logo {
     max-height: 32px;
     width: auto;
@@ -203,6 +209,17 @@ body::-webkit-scrollbar-corner {
     padding: 16px;
 }
 
+.logo-link {
+    display: inline-block;
+    inline-size: 100%;
+    block-size: 100%;
+}
+
+.logo-link img {
+    inline-size: 100%;
+    block-size: 100%;
+}
+
 .logo-wrap img {
     width: 100%;
     height: 100%;
@@ -225,6 +242,7 @@ body::-webkit-scrollbar-corner {
     font-weight: 700;
     letter-spacing: 4px;
     opacity: .25;
+    pointer-events: none;
 }
 
 .event-title {
@@ -383,6 +401,10 @@ body::-webkit-scrollbar-corner {
     margin: 0;
     line-height: 1.5;
     overflow-wrap: anywhere;
+}
+
+.card-text--artist {
+    font-size: 12px;
 }
 
 .card-text--small {
