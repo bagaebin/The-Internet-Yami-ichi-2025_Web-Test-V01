@@ -29,6 +29,10 @@ function initDateBadges(){
 /** [C1] Abbreviated weekday names used by {@link initDateBadges}. */
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+function clampNumber(value, min, max){
+  return Math.min(Math.max(value, min), max);
+}
+
 document.addEventListener('DOMContentLoaded', initDateBadges);
 document.addEventListener('DOMContentLoaded', () => {
   document.body.classList.add('is-landing-active');
@@ -197,11 +201,13 @@ function enterChaos(toggle){
   snapshots.forEach(({ grid, rect: gridRect, cards }) => {
     chaosState.gridStyles.set(grid, {
       height: grid.style.height,
-      minHeight: grid.style.minHeight
+      minHeight: grid.style.minHeight,
+      position: grid.style.position
     });
 
     grid.classList.add('is-chaos');
     grid.classList.remove('is-stack');
+    grid.style.position = 'relative';
 
     let maxBottom = 0;
 
@@ -254,6 +260,7 @@ function exitChaos(toggle){
   chaosState.gridStyles.forEach((styles, grid) => {
     grid.style.height = styles.height || '';
     grid.style.minHeight = styles.minHeight || '';
+    grid.style.position = styles.position || '';
   });
   chaosState.gridStyles.clear();
 
@@ -346,6 +353,48 @@ function updateChaosBounds(card){
   }
 }
 
+/** [F29] Calculates orbit radius and center logo sizing to avoid overlap. */
+function computeOrbitLayout(){
+  const centerLogo = document.querySelector('.logo-center__image');
+  const orbitItems = Array.from(document.querySelectorAll('.orbit-item'));
+  if (!centerLogo || orbitItems.length === 0) return;
+
+  const centerRect = centerLogo.getBoundingClientRect();
+  const largestOrbit = orbitItems.reduce((max, item) => {
+    const rect = item.getBoundingClientRect();
+    return Math.max(max, rect.width || rect.height || 0);
+  }, 0) || centerRect.width * 0.4;
+
+  const viewportShort = Math.min(window.innerWidth, window.innerHeight);
+  const isPortrait = window.innerHeight > window.innerWidth;
+  const baseGap = Math.max(24, centerRect.width * 0.08, viewportShort * 0.03);
+  const radiusFromSizes = centerRect.width / 2 + largestOrbit / 2 + baseGap;
+  const portraitBoost = isPortrait ? Math.max(baseGap, centerRect.height * 0.12) : 0;
+  const radius = clampNumber(radiusFromSizes + portraitBoost, 180, viewportShort * 0.6);
+
+  const centerMax = isPortrait
+    ? Math.min(480, window.innerWidth * 0.8, window.innerHeight * 0.42)
+    : Math.min(520, window.innerWidth * 0.82, window.innerHeight * 0.5);
+
+  document.documentElement.style.setProperty('--orbit-radius', `${radius}px`);
+  document.documentElement.style.setProperty('--center-logo-max', `${centerMax}px`);
+}
+
+/** [F30] Wires responsive observers for orbit sizing. */
+function initLandingOrbit(){
+  const recompute = () => requestAnimationFrame(() => computeOrbitLayout());
+  recompute();
+
+  ['resize', 'orientationchange'].forEach(eventName => {
+    window.addEventListener(eventName, recompute);
+  });
+
+  const centerLogo = document.querySelector('.logo-center__image');
+  if (centerLogo && !centerLogo.complete) {
+    centerLogo.addEventListener('load', recompute, { once: true });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(() => requestAnimationFrame(scheduleLayoutUpdate));
 
@@ -364,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  initLandingOrbit();
   setupChaosToggle();
 });
 
