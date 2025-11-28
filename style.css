@@ -627,7 +627,7 @@ body.is-chaos .hate-html-toggle:hover {
     position: absolute;
     inset: 0;
     z-index: 1;
-    pointer-events: none;
+    pointer-events: auto;
 }
 
 .orbit-item {
