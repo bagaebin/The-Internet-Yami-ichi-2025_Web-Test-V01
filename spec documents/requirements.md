@@ -18,6 +18,7 @@ scrollbar-highlight-color:#05B7FF;
 scrollbar-3dlight-color:#808080;
 scrollbar-darkshadow-Color:#202020;
 
+
 # Requirements 2_2811_Hyebin
 <공통> 아래 요청사항을 바탕으로 spec document를 먼저 업데이트를 하고, 이를 기반으로 실제 코드 패치를 진행해주세요.
 
@@ -34,3 +35,17 @@ scrollbar-darkshadow-Color:#202020;
 <해결 요청> 이 원인을 분석하고 해당 현상이 발생하지 않도록 패치해주세요.
 
 - <수정 1> **intro page**의 일시(logo-center__date)와 장소(텍스트 'FOCUS Arnhem')도 로고들과 같이 팝업에 넣어 중앙 로고 주위를 돌도록 해주세요.
+
+
+# Requirements 3_2811_Hyebin
+- <수정 1> **card**의 artist 이름이 들어가는 텍스트(예: '
+Marijke Goeting', 'My Pony Little', 'Lucia Siles
+'...)의 글씨를 12px로 지정해주세요. 필요한 경우 새로운 css 스타일을 만들어주세요.
+
+- <수정 2> 로고 이미지를 클릭하면 새 탭으로 지정한 링크가 열리도록 해주세요. 이미지와 링크는 아래 조합 목록을 확인해주세요.
+* artez_logo.png - https://www.artez.nl/en/
+* dat_logo.png - https://www.instagram.com/dat.artez.nl/
+* focus_logo.png - https://www.focusarnhem.nl
+* og_yamiichi_logo.png - http://yami-ichi.biz
+
+- <수정 3> favicon을 'yamiichi_25.ico'로 변경해주세요.
