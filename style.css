@@ -695,6 +695,10 @@ body.is-chaos .hate-html-toggle:hover {
     backface-visibility: hidden;
 }
 
+.landing-card--linkable {
+    cursor: pointer;
+}
+
 .landing-card .logo-wrap--card {
     width: 100%;
     padding: 12px;
