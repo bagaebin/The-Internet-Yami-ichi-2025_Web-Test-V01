@@ -29,6 +29,10 @@ function initDateBadges(){
 /** [C1] Abbreviated weekday names used by {@link initDateBadges}. */
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+function clampNumber(value, min, max){
+  return Math.min(Math.max(value, min), max);
+}
+
 document.addEventListener('DOMContentLoaded', initDateBadges);
 document.addEventListener('DOMContentLoaded', () => {
   document.body.classList.add('is-landing-active');
@@ -197,11 +201,18 @@ function enterChaos(toggle){
   snapshots.forEach(({ grid, rect: gridRect, cards }) => {
     chaosState.gridStyles.set(grid, {
       height: grid.style.height,
-      minHeight: grid.style.minHeight
+      minHeight: grid.style.minHeight,
+      maxHeight: grid.style.maxHeight,
+      position: grid.style.position,
+      overflow: grid.style.overflow,
+      display: grid.style.display
     });
 
     grid.classList.add('is-chaos');
     grid.classList.remove('is-stack');
+    grid.style.position = 'relative';
+    grid.style.overflow = 'visible';
+    grid.style.display = 'block';
 
     let maxBottom = 0;
 
@@ -229,6 +240,7 @@ function enterChaos(toggle){
     const heightPx = `${Math.ceil(canvasHeight)}px`;
     grid.style.height = heightPx;
     grid.style.minHeight = heightPx;
+    grid.style.maxHeight = heightPx;
   });
 
   toggle.setAttribute('aria-pressed', 'true');
@@ -254,6 +266,10 @@ function exitChaos(toggle){
   chaosState.gridStyles.forEach((styles, grid) => {
     grid.style.height = styles.height || '';
     grid.style.minHeight = styles.minHeight || '';
+    grid.style.maxHeight = styles.maxHeight || '';
+    grid.style.position = styles.position || '';
+    grid.style.overflow = styles.overflow || '';
+    grid.style.display = styles.display || '';
   });
   chaosState.gridStyles.clear();
 
@@ -333,16 +349,48 @@ function onChaosPointerEnd(event){
 function updateChaosBounds(card){
   const grid = chaosState.cardToGrid.get(card) || card.closest('.grid');
   if (!grid) return;
+  grid.style.overflow = 'visible';
+}
 
-  const top = parseFloat(card.style.top) || 0;
-  const height = card.offsetHeight;
-  const bottom = top + height;
-  const currentHeight = parseFloat(grid.style.height) || 0;
+/** [F29] Calculates orbit radius and center logo sizing to avoid overlap. */
+function computeOrbitLayout(){
+  const centerLogo = document.querySelector('.logo-center__image');
+  const orbitItems = Array.from(document.querySelectorAll('.orbit-item'));
+  if (!centerLogo || orbitItems.length === 0) return;
 
-  if (bottom > currentHeight) {
-    const heightPx = `${Math.ceil(bottom)}px`;
-    grid.style.height = heightPx;
-    grid.style.minHeight = heightPx;
+  const centerRect = centerLogo.getBoundingClientRect();
+  const largestOrbit = orbitItems.reduce((max, item) => {
+    const rect = item.getBoundingClientRect();
+    return Math.max(max, rect.width || rect.height || 0);
+  }, 0) || centerRect.width * 0.4;
+
+  const viewportShort = Math.min(window.innerWidth, window.innerHeight);
+  const isPortrait = window.innerHeight > window.innerWidth;
+  const baseGap = Math.max(24, centerRect.width * 0.08, viewportShort * 0.03);
+  const radiusFromSizes = centerRect.width / 2 + largestOrbit / 2 + baseGap;
+  const portraitBoost = isPortrait ? Math.max(baseGap, centerRect.height * 0.12) : 0;
+  const radius = clampNumber(radiusFromSizes + portraitBoost, 180, viewportShort * 0.6);
+
+  const centerMax = isPortrait
+    ? Math.min(480, window.innerWidth * 0.8, window.innerHeight * 0.42)
+    : Math.min(520, window.innerWidth * 0.82, window.innerHeight * 0.5);
+
+  document.documentElement.style.setProperty('--orbit-radius', `${radius}px`);
+  document.documentElement.style.setProperty('--center-logo-max', `${centerMax}px`);
+}
+
+/** [F30] Wires responsive observers for orbit sizing. */
+function initLandingOrbit(){
+  const recompute = () => requestAnimationFrame(() => computeOrbitLayout());
+  recompute();
+
+  ['resize', 'orientationchange'].forEach(eventName => {
+    window.addEventListener(eventName, recompute);
+  });
+
+  const centerLogo = document.querySelector('.logo-center__image');
+  if (centerLogo && !centerLogo.complete) {
+    centerLogo.addEventListener('load', recompute, { once: true });
   }
 }
 
@@ -364,6 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  initLandingOrbit();
   setupChaosToggle();
 });
 
@@ -377,11 +426,13 @@ function showMainContent(event) {
   const landingPage = document.querySelector('.landing-page');
   const mainContent = document.querySelector('.main-content');
   const footer = document.querySelector('.site-footer');
+  const footerGrid = document.querySelector('.grid--footer');
   const hateHtmlButton = document.getElementById('hate-html-toggle');
-  
+
   if (landingPage) landingPage.classList.add('is-hidden');
   if (mainContent) mainContent.classList.remove('is-hidden');
   if (footer) footer.classList.remove('is-hidden');
+  if (footerGrid) footerGrid.classList.remove('is-hidden');
   if (hateHtmlButton) hateHtmlButton.classList.remove('is-hidden');
   document.body.classList.remove('is-landing-active');
   

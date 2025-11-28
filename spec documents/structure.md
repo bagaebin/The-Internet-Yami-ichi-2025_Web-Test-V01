@@ -5,6 +5,7 @@
 - `index.html` is the sole entry document; it links `style.css` and `script.js` and inlines no critical styles.
 - Decorative and branding assets live in `assets/`; subdirectories separate logos from hand overlays to simplify swaps.
 - JavaScript executes after DOMContentLoaded, progressively enhancing the baseline semantic markup.
+- The landing hero now treats partner logos, date, and venue chips as orbiting "pop-up" cards that animate around the central logo.
 
 ## DOM Topology
 ### Global Regions
@@ -19,6 +20,7 @@
 | `.grid--branding` | Showcase primary and alternate logos with image fallback layers. | Two `.card--logo` articles each wrapping `.logo-wrap` with `.js-logo` image and `.logo-fallback` div. |
 | `.grid--venue` | Communicate venue address, event date (with weekday), and opening hours. | `.card--wide` for address text, `.card` with `#date-value[data-date]` for date auto-labeling, `.card` for time range. |
 | `.grid--artists` | Introduce the artist roster and individual bios. | `.card--section` for intro copy, multiple `.card--profile` entries containing heading, blurb, and `.card-actions` icon buttons. |
+| `.logo-orbit` | Landing-only radial cluster that spins partner logos plus venue/time chips. | Multiple `.orbit-item` nodes that host `.card` wrappers; some spin clockwise, others counter-clockwise for visual variety. |
 
 ### Component Contracts
 - **Cards (`.card`, variants)**
@@ -33,6 +35,9 @@
   - Floating button anchored bottom-right; script attaches click handler to flip layout state.
 - **Hand overlay**
   - Each `img.hand-overlay__pointer` registers anchor coordinates and transforms via CSS custom properties.
+- **Landing orbit system**
+  - Reads viewport ratio to size the central logo and assign an `--orbit-radius` custom property so orbiting cards never occlude the centerpiece.
+  - Textual chips (date and "FOCUS Arnhem") share the same pop-from-center motion as logos and join the rotation around the center.
 
 ## JavaScript System (`script.js`)
 ### Module Layout
@@ -46,7 +51,7 @@
    - Deploys `ResizeObserver` for grids and listens to `window` resize/orientationchange.
 4. **Chaos mode engine**
    - Maintains `chaosState` snapshot of original inline styles and transform offsets.
-   - On activation, applies `position:absolute` with randomized translation offsets, updates z-index on drag start, and restores on exit.
+   - On activation, applies `position:absolute` with randomized translation offsets, updates z-index on drag start, and restores on exit. Grids switch to `position:relative` canvases so drags never push siblings.
    - Pointer event handlers (`pointerdown`, `pointermove`, `pointerup/cancel`) enable dragging with pointer capture, honoring `touch-action:none` styles.
 5. **Hand overlay controller**
    - Pre-computes anchor metadata (bounding rect, rest rotation) for each pointer image.
