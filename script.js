@@ -202,12 +202,14 @@ function enterChaos(toggle){
     chaosState.gridStyles.set(grid, {
       height: grid.style.height,
       minHeight: grid.style.minHeight,
-      position: grid.style.position
+      position: grid.style.position,
+      overflow: grid.style.overflow
     });
 
     grid.classList.add('is-chaos');
     grid.classList.remove('is-stack');
     grid.style.position = 'relative';
+    grid.style.overflow = 'visible';
 
     let maxBottom = 0;
 
@@ -261,6 +263,7 @@ function exitChaos(toggle){
     grid.style.height = styles.height || '';
     grid.style.minHeight = styles.minHeight || '';
     grid.style.position = styles.position || '';
+    grid.style.overflow = styles.overflow || '';
   });
   chaosState.gridStyles.clear();
 
@@ -340,17 +343,7 @@ function onChaosPointerEnd(event){
 function updateChaosBounds(card){
   const grid = chaosState.cardToGrid.get(card) || card.closest('.grid');
   if (!grid) return;
-
-  const top = parseFloat(card.style.top) || 0;
-  const height = card.offsetHeight;
-  const bottom = top + height;
-  const currentHeight = parseFloat(grid.style.height) || 0;
-
-  if (bottom > currentHeight) {
-    const heightPx = `${Math.ceil(bottom)}px`;
-    grid.style.height = heightPx;
-    grid.style.minHeight = heightPx;
-  }
+  grid.style.overflow = 'visible';
 }
 
 /** [F29] Calculates orbit radius and center logo sizing to avoid overlap. */
@@ -427,11 +420,13 @@ function showMainContent(event) {
   const landingPage = document.querySelector('.landing-page');
   const mainContent = document.querySelector('.main-content');
   const footer = document.querySelector('.site-footer');
+  const footerGrid = document.querySelector('.grid--footer');
   const hateHtmlButton = document.getElementById('hate-html-toggle');
-  
+
   if (landingPage) landingPage.classList.add('is-hidden');
   if (mainContent) mainContent.classList.remove('is-hidden');
   if (footer) footer.classList.remove('is-hidden');
+  if (footerGrid) footerGrid.classList.remove('is-hidden');
   if (hateHtmlButton) hateHtmlButton.classList.remove('is-hidden');
   document.body.classList.remove('is-landing-active');
   
