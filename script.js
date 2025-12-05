@@ -223,6 +223,14 @@ function enterChaos(toggle){
 
     cards.forEach(({ card, rect, gallery }) => {
       captureCardStyles(card);
+      const galleryContainer = card.querySelector('.card-gallery');
+      const galleryRect = galleryContainer ? galleryContainer.getBoundingClientRect() : null;
+      if (galleryContainer && galleryRect) {
+        captureCardStyles(galleryContainer);
+        const galleryHeight = `${galleryRect.height}px`;
+        galleryContainer.style.height = galleryHeight;
+        galleryContainer.style.minHeight = galleryHeight;
+      }
       const left = rect.left - gridRect.left;
       const top = rect.top - gridRect.top;
       const jitterX = (Math.random() - 0.5) * 2 * CHAOS_JITTER_RANGE;
