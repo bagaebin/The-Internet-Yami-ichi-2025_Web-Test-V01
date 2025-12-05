@@ -102,7 +102,7 @@ const chaosState = {
   zIndex: 1000,
   gridStyles: new Map(),
   grids: new Set(),
-  cardToGrid: new Map()
+  entityToGrid: new Map()
 };
 
 /** [S3] Lazily created ResizeObserver shared across grids. */
@@ -171,7 +171,8 @@ function captureCardStyles(card){
     width: card.style.width,
     height: card.style.height,
     zIndex: card.style.zIndex,
-    cursor: card.style.cursor
+    cursor: card.style.cursor,
+    overflow: card.style.overflow
   });
 }
 
@@ -185,13 +186,17 @@ function enterChaos(toggle){
     rect: grid.getBoundingClientRect(),
     cards: getDirectCards(grid).map(card => ({
       card,
-      rect: card.getBoundingClientRect()
+      rect: card.getBoundingClientRect(),
+      gallery: Array.from(card.querySelectorAll('.card-gallery__item')).map(item => ({
+        item,
+        rect: item.getBoundingClientRect()
+      }))
     }))
   }));
 
   chaosState.originalStyles.clear();
   chaosState.gridStyles.clear();
-  chaosState.cardToGrid.clear();
+  chaosState.entityToGrid.clear();
   chaosState.drags.clear();
   chaosState.grids = new Set(grids);
   chaosState.zIndex = 1000;
@@ -216,7 +221,7 @@ function enterChaos(toggle){
 
     let maxBottom = 0;
 
-    cards.forEach(({ card, rect }) => {
+    cards.forEach(({ card, rect, gallery }) => {
       captureCardStyles(card);
       const left = rect.left - gridRect.left;
       const top = rect.top - gridRect.top;
@@ -231,9 +236,34 @@ function enterChaos(toggle){
       card.style.height = `${rect.height}px`;
       card.style.zIndex = `${++chaosState.zIndex}`;
       card.style.cursor = 'grab';
-      card.classList.add('is-chaos-card');
-      chaosState.cardToGrid.set(card, grid);
+      card.style.overflow = 'visible';
+      card.classList.add('is-chaos-card', 'chaos-draggable', 'is-chaos-entity');
+      chaosState.entityToGrid.set(card, grid);
       maxBottom = Math.max(maxBottom, jitteredTop + rect.height);
+
+      gallery.forEach(({ item, rect: itemRect }) => {
+        captureCardStyles(item);
+        const baseLeft = itemRect.left - gridRect.left;
+        const baseTop = itemRect.top - gridRect.top;
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 40 + Math.random() * 80;
+        const offsetX = distance * Math.cos(angle);
+        const offsetY = distance * Math.sin(angle) - itemRect.height * 0.2;
+        const finalLeft = Math.max(0, baseLeft + offsetX);
+        const finalTop = Math.max(0, baseTop + offsetY);
+
+        item.style.position = 'absolute';
+        item.style.left = `${finalLeft}px`;
+        item.style.top = `${finalTop}px`;
+        item.style.width = `${itemRect.width}px`;
+        item.style.height = `${itemRect.height}px`;
+        item.style.zIndex = `${++chaosState.zIndex}`;
+        item.style.cursor = 'grab';
+        item.style.overflow = 'visible';
+        item.classList.add('is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity');
+        chaosState.entityToGrid.set(item, grid);
+        maxBottom = Math.max(maxBottom, finalTop + itemRect.height);
+      });
     });
 
     const canvasHeight = Math.max(maxBottom, gridRect.height);
@@ -257,8 +287,8 @@ function exitChaos(toggle){
   chaosState.grids.forEach(grid => grid.classList.remove('is-chaos'));
 
   chaosState.drags.forEach((drag, pointerId) => {
-    if (drag.card && drag.card.releasePointerCapture) {
-      drag.card.releasePointerCapture(pointerId);
+    if (drag.node && drag.node.releasePointerCapture) {
+      drag.node.releasePointerCapture(pointerId);
     }
   });
   chaosState.drags.clear();
@@ -274,13 +304,13 @@ function exitChaos(toggle){
   chaosState.gridStyles.clear();
 
   chaosState.originalStyles.forEach((styles, card) => {
-    ['position', 'left', 'top', 'width', 'height', 'zIndex', 'cursor'].forEach(prop => {
+    ['position', 'left', 'top', 'width', 'height', 'zIndex', 'cursor', 'overflow'].forEach(prop => {
       card.style[prop] = styles[prop] || '';
     });
-    card.classList.remove('is-chaos-card', 'is-dragging');
+    card.classList.remove('is-chaos-card', 'is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity', 'is-dragging');
   });
   chaosState.originalStyles.clear();
-  chaosState.cardToGrid.clear();
+  chaosState.entityToGrid.clear();
   chaosState.grids.clear();
 
   toggle.setAttribute('aria-pressed', 'false');
@@ -293,27 +323,27 @@ function exitChaos(toggle){
 function onChaosPointerDown(event){
   if (!chaosState.active || event.button !== 0) return;
 
-  const card = event.target.closest('.card');
-  if (!card || !chaosState.originalStyles.has(card)) return;
+  const node = event.target.closest('.chaos-draggable');
+  if (!node || !chaosState.originalStyles.has(node)) return;
 
-  const baseLeft = parseFloat(card.style.left) || 0;
-  const baseTop = parseFloat(card.style.top) || 0;
+  const baseLeft = parseFloat(node.style.left) || 0;
+  const baseTop = parseFloat(node.style.top) || 0;
 
-  if (card.setPointerCapture) {
-    card.setPointerCapture(event.pointerId);
+  if (node.setPointerCapture) {
+    node.setPointerCapture(event.pointerId);
   }
 
   chaosState.drags.set(event.pointerId, {
-    card,
+    node,
     startX: event.clientX,
     startY: event.clientY,
     baseLeft,
     baseTop
   });
 
-  card.classList.add('is-dragging');
-  card.style.cursor = 'grabbing';
-  card.style.zIndex = `${++chaosState.zIndex}`;
+  node.classList.add('is-dragging');
+  node.style.cursor = 'grabbing';
+  node.style.zIndex = `${++chaosState.zIndex}`;
   event.preventDefault();
 }
 
@@ -324,10 +354,10 @@ function onChaosPointerMove(event){
 
   const dx = event.clientX - drag.startX;
   const dy = event.clientY - drag.startY;
-  drag.card.style.left = `${drag.baseLeft + dx}px`;
-  drag.card.style.top = `${drag.baseTop + dy}px`;
+  drag.node.style.left = `${drag.baseLeft + dx}px`;
+  drag.node.style.top = `${drag.baseTop + dy}px`;
 
-  updateChaosBounds(drag.card);
+  updateChaosBounds(drag.node);
 }
 
 /** [F14] Finalizes a drag interaction and cleans up state. */
@@ -335,19 +365,19 @@ function onChaosPointerEnd(event){
   const drag = chaosState.drags.get(event.pointerId);
   if (!drag) return;
 
-  if (drag.card.releasePointerCapture) {
-    drag.card.releasePointerCapture(event.pointerId);
+  if (drag.node.releasePointerCapture) {
+    drag.node.releasePointerCapture(event.pointerId);
   }
 
-  drag.card.classList.remove('is-dragging');
-  drag.card.style.cursor = 'grab';
+  drag.node.classList.remove('is-dragging');
+  drag.node.style.cursor = 'grab';
 
   chaosState.drags.delete(event.pointerId);
 }
 
 /** [F15] Extends chaos grid bounds whenever a card moves beyond limits. */
 function updateChaosBounds(card){
-  const grid = chaosState.cardToGrid.get(card) || card.closest('.grid');
+  const grid = chaosState.entityToGrid.get(card) || card.closest('.grid');
   if (!grid) return;
   grid.style.overflow = 'visible';
 }

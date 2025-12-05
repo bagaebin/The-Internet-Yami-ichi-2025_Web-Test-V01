@@ -3,7 +3,7 @@
 ## Stack Summary
 - **HTML5**: Landed in `index.html` with semantic `<section>` and `<article>` usage, ARIA labelling for hidden headings, and `data-*` attributes to store dynamic metadata.
 - **CSS3**: Author-level styles in `style.css` leveraging custom properties, Flexbox, logical properties, `aspect-ratio`, and prefers-reduced-motion media queries. Fonts sourced from Google Fonts (Space Grotesk primary, Nunito/Quicksand support).
-- **Vanilla JavaScript (ES2018+)**: Runs client-side enhancements via DOM APIs, `Intl.DateTimeFormat`, `requestAnimationFrame`, `ResizeObserver`, and Pointer Events.
+- **Vanilla JavaScript (ES2018+)**: Runs client-side enhancements via DOM APIs, `Intl.DateTimeFormat`, `requestAnimationFrame`, `ResizeObserver`, and Pointer Events. Chaos mode now also binds draggable behavior to gallery tiles that detach from their cards for free-form play.
 - **Static assets**: PNG logos and illustrative hands located under `assets/`; no runtime optimization pipeline.
 
 ## Integration Points & Dependencies
@@ -14,7 +14,7 @@
 ## Architectural Patterns
 - **Progressive enhancement**: Content remains accessible without JS; enhancements (weekday labels, chaos mode) layer on top.
 - **Functional decomposition**: Distinct helper functions for layout measurement, chaos state management, and hand animation; avoids global namespace pollution except for intentionally scoped state objects.
-- **State snapshotting**: Chaos engine caches original inline styles in `chaosState.cache` before mutation, enabling reversible toggles.
+- **State snapshotting**: Chaos engine caches original inline styles in `chaosState.cache` before mutation, enabling reversible toggles across both cards and gallery tiles, while centrally bumping z-index on interaction to keep the active element above its peers.
 - **Event-driven updates**: `ResizeObserver`, `pointermove`, and button `click` events orchestrate dynamic behaviors.
 - **CSS Variable binding**: JavaScript writes to CSS custom properties for performant transform updates instead of manipulating inline transforms directly.
 

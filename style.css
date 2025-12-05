@@ -313,6 +313,64 @@ body::-webkit-scrollbar-corner {
     gap: 4px;
 }
 
+.card--event.card--event-gallery {
+    max-width: calc(var(--card-max) * 2);
+    width: min(100%, calc(var(--card-max) * 2));
+}
+
+.card-event__body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .card-event__body {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card-event__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    text-align: left;
+}
+
+.card-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    width: 100%;
+    padding: 8px;
+    background: #f6fcff;
+    border: 1px dashed var(--outline);
+    border-radius: 10px;
+}
+
+.card-gallery__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.card-gallery__item img {
+    width: 100%;
+    height: auto;
+    max-height: 160px;
+    object-fit: contain;
+}
+
 .card--info {
     display: flex;
     flex-direction: column;
@@ -377,10 +435,24 @@ body::-webkit-scrollbar-corner {
 
 .grid.is-chaos .card {
     cursor: grab;
+    overflow: visible;
 }
 
 .grid.is-chaos .card.is-dragging {
     cursor: grabbing;
+}
+
+.chaos-draggable {
+    touch-action: none;
+}
+
+body.is-chaos .is-chaos-entity {
+    transition: box-shadow 0.2s ease;
+}
+
+body.is-chaos .is-chaos-gallery {
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+    border-color: rgba(0, 0, 0, 0.12);
 }
 
 .card-title {
