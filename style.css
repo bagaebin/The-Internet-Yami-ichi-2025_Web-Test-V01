@@ -286,7 +286,7 @@ body::-webkit-scrollbar-corner {
     box-shadow:
         inset -2px -2px 0 var(--highlight-inset),
         inset 2px 2px 0 var(--shadow-inset);
-    text-align: center;
+    text-align: left;
     margin: 0;
     max-width: var(--card-max);
     width: auto;
@@ -309,7 +309,7 @@ body::-webkit-scrollbar-corner {
 .card--event {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 4px;
 }
 
@@ -320,7 +320,7 @@ body::-webkit-scrollbar-corner {
 
 .card-event__body {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 16px;
     align-items: stretch;
     width: 100%;
@@ -349,8 +349,7 @@ body::-webkit-scrollbar-corner {
     width: 100%;
     padding: 0;
     background: #f6fcff;
-    border: 1px dashed var(--outline);
-    border-radius: 10px;
+    border: 1px solid var(--outline);
 }
 
 .card-gallery__item {
@@ -464,7 +463,7 @@ body.is-chaos .is-chaos-gallery {
 
 .card-title {
     margin: 0 0 10px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .08em;
