@@ -102,7 +102,9 @@ const chaosState = {
   zIndex: 1000,
   gridStyles: new Map(),
   grids: new Set(),
-  entityToGrid: new Map()
+  entityToGrid: new Map(),
+  hosts: new Map(),
+  stage: null
 };
 
 /** [S3] Lazily created ResizeObserver shared across grids. */
@@ -200,6 +202,23 @@ function enterChaos(toggle){
   chaosState.drags.clear();
   chaosState.grids = new Set(grids);
   chaosState.zIndex = 1000;
+  chaosState.hosts.clear();
+
+  const stage = document.createElement('div');
+  stage.className = 'chaos-stage';
+  stage.style.position = 'absolute';
+  stage.style.left = '0';
+  stage.style.top = '0';
+  stage.style.width = '100%';
+  stage.style.height = '0';
+  stage.style.overflow = 'visible';
+  stage.style.zIndex = '9999';
+  stage.style.pointerEvents = 'auto';
+  stage.style.isolation = 'isolate';
+  const mainContent = document.querySelector('.main-content') || document.body;
+  mainContent.appendChild(stage);
+  const stageRect = stage.getBoundingClientRect();
+  chaosState.stage = stage;
 
   document.body.classList.add('is-chaos');
 
@@ -233,8 +252,8 @@ function enterChaos(toggle){
         galleryContainer.style.height = galleryHeight;
         galleryContainer.style.minHeight = galleryHeight;
       }
-      const left = rect.left - gridRect.left;
-      const top = rect.top - gridRect.top;
+      const left = rect.left - stageRect.left;
+      const top = rect.top - stageRect.top;
       const jitterX = (Math.random() - 0.5) * 2 * CHAOS_JITTER_RANGE;
       const jitterY = (Math.random() - 0.5) * 2 * CHAOS_JITTER_RANGE;
       const jitteredLeft = Math.max(0, left + jitterX);
@@ -247,8 +266,11 @@ function enterChaos(toggle){
       card.style.zIndex = `${++chaosState.zIndex}`;
       card.style.cursor = 'grab';
       card.style.overflow = 'visible';
+      card.style.pointerEvents = 'auto';
       card.classList.add('is-chaos-card', 'chaos-draggable', 'is-chaos-entity');
       chaosState.entityToGrid.set(card, grid);
+      chaosState.hosts.set(card, grid);
+      stage.appendChild(card);
       maxBottom = Math.max(maxBottom, jitteredTop + rect.height);
 
       const firstItemRect = gallery.length > 0 ? gallery[0].rect : null;
@@ -290,8 +312,11 @@ function enterChaos(toggle){
         item.style.zIndex = `${++chaosState.zIndex}`;
         item.style.cursor = 'grab';
         item.style.overflow = 'visible';
+        item.style.pointerEvents = 'auto';
         item.classList.add('is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity');
         chaosState.entityToGrid.set(item, grid);
+        chaosState.hosts.set(item, card);
+        stage.appendChild(item);
         maxBottom = Math.max(maxBottom, finalTop + itemRect.height);
       });
     });
@@ -339,10 +364,20 @@ function exitChaos(toggle){
       card.style[prop] = styles[prop] || '';
     });
     card.classList.remove('is-chaos-card', 'is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity', 'is-dragging');
+    const host = chaosState.hosts.get(card);
+    if (host) {
+      host.appendChild(card);
+    }
   });
   chaosState.originalStyles.clear();
   chaosState.entityToGrid.clear();
   chaosState.grids.clear();
+  chaosState.hosts.clear();
+
+  if (chaosState.stage && chaosState.stage.parentNode) {
+    chaosState.stage.parentNode.removeChild(chaosState.stage);
+  }
+  chaosState.stage = null;
 
   toggle.setAttribute('aria-pressed', 'false');
   toggle.textContent = 'I HATE HTML';
