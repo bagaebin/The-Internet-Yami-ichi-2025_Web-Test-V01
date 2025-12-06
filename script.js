@@ -366,8 +366,9 @@ function enterChaos(toggle){
         item.style.overflow = 'visible';
         item.style.pointerEvents = 'auto';
         item.classList.add('is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity');
+        const galleryHost = galleryContainer || card;
         chaosState.entityToGrid.set(item, grid);
-        chaosState.hosts.set(item, card);
+        chaosState.hosts.set(item, galleryHost);
         stage.appendChild(item);
         maxBottom = Math.max(maxBottom, finalTop + itemRect.height);
       });
