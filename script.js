@@ -253,6 +253,8 @@ function enterChaos(toggle){
       const firstOffsetLeft = firstItemRect ? firstItemRect.left - rect.left : null;
       const firstOffsetTop = firstItemRect ? firstItemRect.top - rect.top : null;
 
+      const clampHeight = galleryRect ? galleryRect.height : rect.height;
+
       gallery.forEach(({ item, rect: itemRect }) => {
         captureCardStyles(item);
         const baseLeft = firstOffsetLeft !== null
@@ -275,7 +277,7 @@ function enterChaos(toggle){
         const minX = Math.max(0, anchorLeft - tetherMargin);
         const minY = Math.max(0, anchorTop - tetherMargin);
         const maxX = Math.max(minX, Math.min(gridRect.width - itemRect.width, anchorLeft + rect.width + tetherMargin - itemRect.width));
-        const maxY = Math.max(minY, anchorTop + rect.height + tetherMargin - itemRect.height);
+        const maxY = Math.max(minY, anchorTop + clampHeight + tetherMargin - itemRect.height);
 
         const finalLeft = clampNumber(baseLeft + offsetX, minX, maxX);
         const finalTop = clampNumber(baseTop + offsetY, minY, maxY);
@@ -287,6 +289,8 @@ function enterChaos(toggle){
         item.style.height = `${itemRect.height}px`;
         item.style.zIndex = `${++chaosState.zIndex}`;
         item.style.cursor = 'grab';
+        item.style.touchAction = 'none';
+        item.style.pointerEvents = 'auto';
         item.style.overflow = 'visible';
         item.classList.add('is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity');
         chaosState.entityToGrid.set(item, grid);
