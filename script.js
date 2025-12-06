@@ -250,13 +250,17 @@ function enterChaos(toggle){
       maxBottom = Math.max(maxBottom, jitteredTop + rect.height);
 
       const firstItemRect = gallery.length > 0 ? gallery[0].rect : null;
-      const baseAnchorLeft = firstItemRect ? firstItemRect.left - gridRect.left : null;
-      const baseAnchorTop = firstItemRect ? firstItemRect.top - gridRect.top : null;
+      const firstOffsetLeft = firstItemRect ? firstItemRect.left - rect.left : null;
+      const firstOffsetTop = firstItemRect ? firstItemRect.top - rect.top : null;
 
       gallery.forEach(({ item, rect: itemRect }) => {
         captureCardStyles(item);
-        const baseLeft = baseAnchorLeft !== null ? baseAnchorLeft : itemRect.left - gridRect.left;
-        const baseTop = baseAnchorTop !== null ? baseAnchorTop : itemRect.top - gridRect.top;
+        const baseLeft = firstOffsetLeft !== null
+          ? jitteredLeft + firstOffsetLeft
+          : jitteredLeft + (itemRect.left - rect.left);
+        const baseTop = firstOffsetTop !== null
+          ? jitteredTop + firstOffsetTop
+          : jitteredTop + (itemRect.top - rect.top);
         const angle = Math.random() * Math.PI * 2;
         const cardLongSide = Math.max(rect.width, rect.height);
         const maxOffset = clampNumber(cardLongSide * 0.1, 8, 16);
@@ -265,8 +269,8 @@ function enterChaos(toggle){
         const offsetX = distance * Math.cos(angle);
         const offsetY = distance * Math.sin(angle) * 0.6 - itemRect.height * 0.18;
 
-        const anchorLeft = rect.left - gridRect.left;
-        const anchorTop = rect.top - gridRect.top;
+        const anchorLeft = jitteredLeft;
+        const anchorTop = jitteredTop;
         const tetherMargin = clampNumber(cardLongSide * 0.12, 10, 22);
         const minX = Math.max(0, anchorLeft - tetherMargin);
         const minY = Math.max(0, anchorTop - tetherMargin);
