@@ -104,7 +104,8 @@ const chaosState = {
   grids: new Set(),
   entityToGrid: new Map(),
   hosts: new Map(),
-  stage: null
+  stage: null,
+  skipAdClick: false
 };
 
 /** [S3] Lazily created ResizeObserver shared across grids. */
@@ -178,7 +179,13 @@ function setupAdPopup(){
   };
 
   if (iconButton) {
-    iconButton.addEventListener('click', showPanel);
+    iconButton.addEventListener('click', () => {
+      if (chaosState.skipAdClick) {
+        chaosState.skipAdClick = false;
+        return;
+      }
+      showPanel();
+    });
   }
 
   if (closeButton) {
@@ -449,7 +456,8 @@ function onChaosPointerDown(event){
     startX: event.clientX,
     startY: event.clientY,
     baseLeft,
-    baseTop
+    baseTop,
+    moved: false
   });
 
   liftChaosGrid(node);
@@ -467,6 +475,9 @@ function onChaosPointerMove(event){
 
   const dx = event.clientX - drag.startX;
   const dy = event.clientY - drag.startY;
+  if (!drag.moved && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+    drag.moved = true;
+  }
   drag.node.style.left = `${drag.baseLeft + dx}px`;
   drag.node.style.top = `${drag.baseTop + dy}px`;
 
@@ -484,6 +495,10 @@ function onChaosPointerEnd(event){
 
   drag.node.classList.remove('is-dragging');
   drag.node.style.cursor = 'grab';
+
+  if (drag.moved && drag.node.id === 'chaos-ad') {
+    chaosState.skipAdClick = true;
+  }
 
   chaosState.drags.delete(event.pointerId);
 }

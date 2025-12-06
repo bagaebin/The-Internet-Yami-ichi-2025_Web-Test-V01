@@ -506,10 +506,18 @@ body.is-chaos .is-chaos-gallery {
     transform-origin: center bottom;
 }
 
+.ad-popup--expanded .ad-popup__icon {
+    display: none;
+}
+
 .ad-popup__panel {
     position: relative;
     padding: 14px 16px 18px;
     width: min(360px, calc(100vw - 40px));
+}
+
+.ad-popup--collapsed .ad-popup__panel {
+    display: none;
 }
 
 .ad-popup__title {
