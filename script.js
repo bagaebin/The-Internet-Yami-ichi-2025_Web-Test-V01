@@ -154,6 +154,46 @@ function setupChaosToggle(){
   document.addEventListener('pointercancel', onChaosPointerEnd);
 }
 
+/** [F8b] Wires the promo popup to toggle between icon and detail card. */
+function setupAdPopup(){
+  const ad = document.getElementById('chaos-ad');
+  if (!ad) return;
+
+  const iconButton = ad.querySelector('.ad-popup__icon');
+  const panel = ad.querySelector('.ad-popup__panel');
+  const closeButton = ad.querySelector('.ad-popup__close');
+
+  const showIcon = () => {
+    ad.classList.add('ad-popup--collapsed');
+    ad.classList.remove('ad-popup--expanded');
+    if (panel) panel.hidden = true;
+    if (iconButton) iconButton.hidden = false;
+  };
+
+  const showPanel = () => {
+    ad.classList.remove('ad-popup--collapsed');
+    ad.classList.add('ad-popup--expanded');
+    if (panel) panel.hidden = false;
+    if (iconButton) iconButton.hidden = true;
+  };
+
+  if (iconButton) {
+    iconButton.addEventListener('click', showPanel);
+  }
+
+  if (closeButton) {
+    closeButton.addEventListener('click', event => {
+      event.preventDefault();
+      showIcon();
+      if (iconButton) {
+        iconButton.focus();
+      }
+    });
+  }
+
+  showIcon();
+}
+
 /** [F8] Collects grids that contain draggable cards. */
 function getChaosGrids(){
   return Array.from(document.querySelectorAll('.grid')).filter(grid => getDirectCards(grid).length > 0);
@@ -169,12 +209,15 @@ function captureCardStyles(card){
   chaosState.originalStyles.set(card, {
     position: card.style.position,
     left: card.style.left,
+    right: card.style.right,
     top: card.style.top,
+    bottom: card.style.bottom,
     width: card.style.width,
     height: card.style.height,
     zIndex: card.style.zIndex,
     cursor: card.style.cursor,
-    overflow: card.style.overflow
+    overflow: card.style.overflow,
+    transform: card.style.transform
   });
 }
 
@@ -219,6 +262,8 @@ function enterChaos(toggle){
   mainContent.appendChild(stage);
   const stageRect = stage.getBoundingClientRect();
   chaosState.stage = stage;
+
+  moveChaosAdIntoStage(stage, stageRect);
 
   document.body.classList.add('is-chaos');
 
@@ -360,7 +405,7 @@ function exitChaos(toggle){
   chaosState.gridStyles.clear();
 
   chaosState.originalStyles.forEach((styles, card) => {
-    ['position', 'left', 'top', 'width', 'height', 'zIndex', 'cursor', 'overflow'].forEach(prop => {
+    ['position', 'left', 'right', 'top', 'bottom', 'width', 'height', 'zIndex', 'cursor', 'overflow', 'transform'].forEach(prop => {
       card.style[prop] = styles[prop] || '';
     });
     card.classList.remove('is-chaos-card', 'is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity', 'is-dragging');
@@ -457,6 +502,33 @@ function liftChaosGrid(node){
   grid.style.zIndex = `${++chaosState.zIndex}`;
 }
 
+/** [F15b] Moves the promo popup into the chaos stage so it can be dragged. */
+function moveChaosAdIntoStage(stage, stageRect){
+  const ad = document.getElementById('chaos-ad');
+  if (!ad) return;
+
+  const rect = ad.getBoundingClientRect();
+  captureCardStyles(ad);
+  chaosState.entityToGrid.set(ad, null);
+  chaosState.hosts.set(ad, ad.parentElement);
+
+  const left = Math.max(0, rect.left - stageRect.left);
+  const top = Math.max(0, rect.top - stageRect.top);
+
+  ad.style.position = 'absolute';
+  ad.style.left = `${left}px`;
+  ad.style.top = `${top}px`;
+  ad.style.right = '';
+  ad.style.bottom = '';
+  ad.style.width = `${rect.width}px`;
+  ad.style.height = `${rect.height}px`;
+  ad.style.zIndex = `${++chaosState.zIndex}`;
+  ad.style.cursor = 'grab';
+  ad.classList.add('chaos-draggable', 'is-chaos-entity');
+
+  stage.appendChild(ad);
+}
+
 /** [F29] Calculates orbit radius and center logo sizing to avoid overlap. */
 function computeOrbitLayout(){
   const centerLogo = document.querySelector('.logo-center__image');
@@ -540,6 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLandingOrbit();
   enableLandingOrbitLinks();
   setupChaosToggle();
+  setupAdPopup();
 });
 
 window.addEventListener('load', scheduleLayoutUpdate);
