@@ -92,7 +92,7 @@ function groupRowsByOffsetTop(items){
 }
 
 /** [C2] Maximum chaos jitter distance for draggable cards. */
-const CHAOS_JITTER_RANGE = 24;
+const CHAOS_JITTER_RANGE = 16;
 
 /** [S2] Mutable state backing chaos mode interactions. */
 const chaosState = {
@@ -255,15 +255,15 @@ function enterChaos(toggle){
         const baseTop = itemRect.top - gridRect.top;
         const angle = Math.random() * Math.PI * 2;
         const cardLongSide = Math.max(rect.width, rect.height);
-        const maxOffset = clampNumber(cardLongSide * 0.16, 12, 28);
+        const maxOffset = clampNumber(cardLongSide * 0.12, 10, 22);
         const minOffset = clampNumber(maxOffset * 0.6, 8, maxOffset);
         const distance = minOffset + Math.random() * (maxOffset - minOffset);
         const offsetX = distance * Math.cos(angle);
-        const offsetY = distance * Math.sin(angle) - itemRect.height * 0.15;
+        const offsetY = distance * Math.sin(angle) - itemRect.height * 0.25;
 
         const anchorLeft = rect.left - gridRect.left;
         const anchorTop = rect.top - gridRect.top;
-        const tetherMargin = clampNumber(cardLongSide * 0.18, 16, 36);
+        const tetherMargin = clampNumber(cardLongSide * 0.14, 12, 28);
         const minX = Math.max(0, anchorLeft - tetherMargin);
         const minY = Math.max(0, anchorTop - tetherMargin);
         const maxX = Math.max(minX, Math.min(gridRect.width - itemRect.width, anchorLeft + rect.width + tetherMargin - itemRect.width));
