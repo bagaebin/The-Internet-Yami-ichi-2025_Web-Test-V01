@@ -104,6 +104,7 @@ const chaosState = {
   grids: new Set(),
   entityToGrid: new Map(),
   hosts: new Map(),
+  order: new Map(),
   stage: null,
   skipAdClick: false
 };
@@ -211,6 +212,13 @@ function getDirectCards(grid){
   return Array.from(grid.children).filter(child => child.classList && child.classList.contains('card'));
 }
 
+/** [F8c] Returns the child index of a node within its parent. */
+function getChildIndex(node){
+  const parent = node ? node.parentElement : null;
+  if (!parent) return -1;
+  return Array.prototype.indexOf.call(parent.children, node);
+}
+
 /** [F9] Saves inline styles prior to chaos mode mutation. */
 function captureCardStyles(card){
   chaosState.originalStyles.set(card, {
@@ -296,6 +304,7 @@ function enterChaos(toggle){
 
     cards.forEach(({ card, rect, gallery }) => {
       captureCardStyles(card);
+      chaosState.order.set(card, getChildIndex(card));
       const galleryContainer = card.querySelector('.card-gallery');
       const galleryRect = galleryContainer ? galleryContainer.getBoundingClientRect() : null;
       if (galleryContainer && galleryRect) {
@@ -369,6 +378,7 @@ function enterChaos(toggle){
         const galleryHost = galleryContainer || card;
         chaosState.entityToGrid.set(item, grid);
         chaosState.hosts.set(item, galleryHost);
+        chaosState.order.set(item, getChildIndex(item));
         stage.appendChild(item);
         maxBottom = Math.max(maxBottom, finalTop + itemRect.height);
       });
@@ -412,6 +422,8 @@ function exitChaos(toggle){
   });
   chaosState.gridStyles.clear();
 
+  const placements = new Map();
+
   chaosState.originalStyles.forEach((styles, card) => {
     ['position', 'left', 'right', 'top', 'bottom', 'width', 'height', 'zIndex', 'cursor', 'overflow', 'transform'].forEach(prop => {
       card.style[prop] = styles[prop] || '';
@@ -419,13 +431,25 @@ function exitChaos(toggle){
     card.classList.remove('is-chaos-card', 'is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity', 'is-dragging');
     const host = chaosState.hosts.get(card);
     if (host) {
-      host.appendChild(card);
+      const index = chaosState.order.has(card) ? chaosState.order.get(card) : Number.POSITIVE_INFINITY;
+      if (!placements.has(host)) placements.set(host, []);
+      placements.get(host).push({ node: card, index });
     }
   });
   chaosState.originalStyles.clear();
+  chaosState.order.clear();
   chaosState.entityToGrid.clear();
   chaosState.grids.clear();
   chaosState.hosts.clear();
+
+  placements.forEach((nodes, host) => {
+    nodes
+      .sort((a, b) => a.index - b.index)
+      .forEach(({ node, index }) => {
+        const ref = host.children[index] || null;
+        host.insertBefore(node, ref);
+      });
+  });
 
   if (chaosState.stage && chaosState.stage.parentNode) {
     chaosState.stage.parentNode.removeChild(chaosState.stage);
@@ -527,6 +551,7 @@ function moveChaosAdIntoStage(stage, stageRect){
   captureCardStyles(ad);
   chaosState.entityToGrid.set(ad, null);
   chaosState.hosts.set(ad, ad.parentElement);
+  chaosState.order.set(ad, getChildIndex(ad));
 
   const left = Math.max(0, rect.left - stageRect.left);
   const top = Math.max(0, rect.top - stageRect.top);
