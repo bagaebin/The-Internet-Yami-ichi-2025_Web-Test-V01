@@ -249,10 +249,14 @@ function enterChaos(toggle){
       chaosState.entityToGrid.set(card, grid);
       maxBottom = Math.max(maxBottom, jitteredTop + rect.height);
 
+      const firstItemRect = gallery.length > 0 ? gallery[0].rect : null;
+      const baseAnchorLeft = firstItemRect ? firstItemRect.left - gridRect.left : null;
+      const baseAnchorTop = firstItemRect ? firstItemRect.top - gridRect.top : null;
+
       gallery.forEach(({ item, rect: itemRect }) => {
         captureCardStyles(item);
-        const baseLeft = itemRect.left - gridRect.left;
-        const baseTop = itemRect.top - gridRect.top;
+        const baseLeft = baseAnchorLeft !== null ? baseAnchorLeft : itemRect.left - gridRect.left;
+        const baseTop = baseAnchorTop !== null ? baseAnchorTop : itemRect.top - gridRect.top;
         const angle = Math.random() * Math.PI * 2;
         const cardLongSide = Math.max(rect.width, rect.height);
         const maxOffset = clampNumber(cardLongSide * 0.1, 8, 16);
