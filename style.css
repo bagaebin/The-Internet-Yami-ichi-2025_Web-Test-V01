@@ -326,8 +326,17 @@ body::-webkit-scrollbar-corner {
     width: 100%;
 }
 
+.card--event-gallery .card-event__body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+}
+
 @media (max-width: 900px) {
     .card-event__body {
+        grid-template-columns: 1fr;
+    }
+
+    .card--event-gallery .card-event__body {
         grid-template-columns: 1fr;
     }
 }
@@ -457,8 +466,10 @@ body.is-chaos .is-chaos-entity {
 }
 
 body.is-chaos .is-chaos-gallery {
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
     border-color: rgba(0, 0, 0, 0.12);
+    background: transparent;
+    border-width: 0;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
 }
 
 .card-title {
