@@ -466,8 +466,10 @@ body.is-chaos .is-chaos-entity {
 }
 
 body.is-chaos .is-chaos-gallery {
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
     border-color: rgba(0, 0, 0, 0.12);
+    background: transparent;
+    border-width: 0;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
 }
 
 .card-title {
