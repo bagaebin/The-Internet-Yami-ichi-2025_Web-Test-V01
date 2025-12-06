@@ -210,7 +210,8 @@ function enterChaos(toggle){
       maxHeight: grid.style.maxHeight,
       position: grid.style.position,
       overflow: grid.style.overflow,
-      display: grid.style.display
+      display: grid.style.display,
+      zIndex: grid.style.zIndex
     });
 
     grid.classList.add('is-chaos');
@@ -218,6 +219,7 @@ function enterChaos(toggle){
     grid.style.position = 'relative';
     grid.style.overflow = 'visible';
     grid.style.display = 'block';
+    grid.style.zIndex = `${++chaosState.zIndex}`;
 
     let maxBottom = 0;
 
@@ -328,6 +330,7 @@ function exitChaos(toggle){
     grid.style.position = styles.position || '';
     grid.style.overflow = styles.overflow || '';
     grid.style.display = styles.display || '';
+    grid.style.zIndex = styles.zIndex || '';
   });
   chaosState.gridStyles.clear();
 
@@ -369,6 +372,8 @@ function onChaosPointerDown(event){
     baseTop
   });
 
+  liftChaosGrid(node);
+
   node.classList.add('is-dragging');
   node.style.cursor = 'grabbing';
   node.style.zIndex = `${++chaosState.zIndex}`;
@@ -408,6 +413,13 @@ function updateChaosBounds(card){
   const grid = chaosState.entityToGrid.get(card) || card.closest('.grid');
   if (!grid) return;
   grid.style.overflow = 'visible';
+}
+
+/** [F15a] Elevates the chaos grid of a dragged entity to receive pointer events. */
+function liftChaosGrid(node){
+  const grid = chaosState.entityToGrid.get(node) || node.closest('.grid');
+  if (!grid || !chaosState.grids.has(grid)) return;
+  grid.style.zIndex = `${++chaosState.zIndex}`;
 }
 
 /** [F29] Calculates orbit radius and center logo sizing to avoid overlap. */
