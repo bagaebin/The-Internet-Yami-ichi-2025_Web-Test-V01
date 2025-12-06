@@ -255,15 +255,15 @@ function enterChaos(toggle){
         const baseTop = itemRect.top - gridRect.top;
         const angle = Math.random() * Math.PI * 2;
         const cardLongSide = Math.max(rect.width, rect.height);
-        const maxOffset = clampNumber(cardLongSide * 0.12, 10, 22);
-        const minOffset = clampNumber(maxOffset * 0.6, 8, maxOffset);
+        const maxOffset = clampNumber(cardLongSide * 0.1, 8, 16);
+        const minOffset = clampNumber(maxOffset * 0.6, 6, maxOffset);
         const distance = minOffset + Math.random() * (maxOffset - minOffset);
         const offsetX = distance * Math.cos(angle);
-        const offsetY = distance * Math.sin(angle) - itemRect.height * 0.25;
+        const offsetY = distance * Math.sin(angle) * 0.6 - itemRect.height * 0.18;
 
         const anchorLeft = rect.left - gridRect.left;
         const anchorTop = rect.top - gridRect.top;
-        const tetherMargin = clampNumber(cardLongSide * 0.14, 12, 28);
+        const tetherMargin = clampNumber(cardLongSide * 0.12, 10, 22);
         const minX = Math.max(0, anchorLeft - tetherMargin);
         const minY = Math.max(0, anchorTop - tetherMargin);
         const maxX = Math.max(minX, Math.min(gridRect.width - itemRect.width, anchorLeft + rect.width + tetherMargin - itemRect.width));
