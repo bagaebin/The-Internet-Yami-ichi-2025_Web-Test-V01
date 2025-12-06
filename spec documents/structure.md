@@ -23,10 +23,9 @@
 | `.logo-orbit` | Landing-only radial cluster that spins partner logos plus venue/time chips. | Multiple `.orbit-item` nodes that host `.card` wrappers; some spin clockwise, others counter-clockwise for visual variety. |
 
 ### Component Contracts
-- **Cards (`.card`, variants)**
   - Accept child content slots (`.card-title`, `.card-text`, `.card-actions`).
   - Provide bevel styling via shared `.bevel` class and rely on CSS variables for background/edge colors.
-  - Event cards can opt into a **gallery layout** that splits the card into two equal-width columns: left text stack and right media rail. These cards expand their max width to double the standard card to preserve breathing room for both columns, while the gallery column caps its height and enables vertical scrolling when multiple images are present.
+  - Event cards can opt into a **gallery layout** via `.card--event-gallery`, which splits the card into two equal-width columns: left text stack and right media rail. These cards expand their max width to double the standard card to preserve breathing room for both columns. The gallery column caps its height and enables vertical scrolling when multiple images are present, stacking to a single column only on narrow viewports.
   - **Grids (`.grid`, modifiers)**
   - Flexbox containers toggling between row and column layouts (`.is-stack`) based on viewport height/width heuristics.
   - When `body.is-chaos` is active, grids gain `.is-chaos` class enabling absolute-positioned children while preserving min-height.
@@ -59,7 +58,7 @@
   - On pointer move, computes vector toward cursor and updates CSS variables (`--hand-rotate`, `--hand-translate-x/y`).
   - Respects `prefers-reduced-motion` by short-circuiting listeners when matched.
 6. **Chaos draggables layer**
-  - Expands chaos mode beyond cards to include gallery images inside event cards. On activation, gallery tiles pop outward from their host cards with slight jitter and gain independent drag handles. Both cards and gallery tiles bump to the frontmost z-index when clicked or dragged, preventing occlusion while users rearrange the layout.
+  - Expands chaos mode beyond cards to include gallery images inside event cards. On activation, gallery tiles pop outward from their host cards with slight jitter—kept within a short radius of the originating card—and gain independent drag handles. Both cards and gallery tiles bump to the frontmost z-index when clicked or dragged, preventing occlusion while users rearrange the layout.
 
 ### Lifecycle Timeline
 1. **DOMContentLoaded**: ready handler runs date enhancer, logo fallback attachments, hand controller initialization, chaos toggle wiring, and initial layout measurement.
