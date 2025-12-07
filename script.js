@@ -147,6 +147,7 @@ function updateAllGridLayouts(){
 function applyCardTextCollapsers(){
   const cards = document.querySelectorAll('.card.bevel:not(.card--section)');
   cards.forEach(card => {
+    if (card.closest('.ad-popup')) return;
     if (card.querySelector('.card-text-collapsible')) return;
 
     const textBlocks = Array.from(card.querySelectorAll('.card-text'));

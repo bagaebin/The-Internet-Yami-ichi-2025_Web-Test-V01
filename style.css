@@ -56,11 +56,11 @@
     /* 카드 최대 너비 */
     --orbit-radius: clamp(180px, 28vw, 320px);
     --center-logo-max: 80vw;
-    --color-market-accent: #4ba5ff;
+    --color-market-accent: #0869fb;
     --color-market-bg: #e8f3ff;
-    --color-exhibition-accent: #2aa772;
-    --color-exhibition-bg: #e6f7ef;
-    --color-film-accent: #c243c8;
+    --color-exhibition-accent: #744bf7;
+    --color-exhibition-bg: #dee1ff;
+    --color-film-accent: #c52fcd;
     --color-film-bg: #f8e6fa;
 }
 
@@ -368,7 +368,6 @@ body::-webkit-scrollbar-corner {
     inline-size: 64px;
     block-size: 64px;
     padding: 6px;
-    border-radius: 12px;
     background: rgba(0, 0, 0, 0.04);
     box-shadow: inset -1px -1px 0 var(--highlight-inset), inset 1px 1px 0 var(--shadow-inset);
     display: grid;
@@ -576,7 +575,7 @@ body.is-chaos .is-chaos-gallery {
 
 .ad-popup__icon img {
     display: block;
-    max-width: clamp(220px, 28vw, 340px);
+    max-width: clamp(240px, 36vw, 360px);
     height: auto;
 }
 
@@ -599,21 +598,19 @@ body.is-chaos .is-chaos-gallery {
     display: none;
 }
 
-.ad-popup__title {
-    margin-bottom: 8px;
-    font-size: 22px;
+.ad-popup__panel .card-heading {
+    margin-bottom: 12px; /* 원하는 값으로 조절 */
 }
 
 .ad-popup__close {
     position: absolute;
     top: 8px;
     right: 8px;
-    inline-size: 32px;
-    block-size: 32px;
-    border-radius: 999px;
+    inline-size:20px;
+    block-size: 20px;
     border: 1px solid #e0e0e0;
     background: #fff;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     line-height: 1;
     display: inline-flex;
