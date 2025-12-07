@@ -113,7 +113,7 @@ const chaosState = {
 let gridResizeObserver = null;
 
 /** [C2b] Character thresholds for card text collapse toggles. */
-const TEXT_COLLAPSE_LIMIT = 200;
+const TEXT_COLLAPSE_LIMIT = 300;
 const TEXT_COLLAPSE_MIN_OVERFLOW = 20;
 let textCollapseId = 0;
 
