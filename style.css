@@ -589,6 +589,55 @@ body.is-chaos .is-chaos-gallery {
     font-size: 14px;
 }
 
+.card-text__ellipsis {
+    display: inline;
+}
+
+.card-text__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    margin-left: 4px;
+    font-size: 12px;
+    line-height: 1.2;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    color: var(--text);
+    cursor: pointer;
+    box-shadow:
+        inset -2px -2px 0 var(--highlight-inset),
+        inset 2px 2px 0 var(--shadow-inset);
+}
+
+.card-text__toggle--less {
+    margin-left: 8px;
+}
+
+.card-text__toggle:focus-visible {
+    outline: 3px solid rgba(16, 16, 16, 0.2);
+    outline-offset: 2px;
+}
+
+.card-text__toggle:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        inset -1px -1px 0 rgba(255, 255, 255, 0.8),
+        inset 2px 2px 0 rgba(0, 0, 0, 0.18);
+}
+
+.card-text__preview,
+.card-text__tail,
+.card-text__ellipsis {
+    overflow-wrap: anywhere;
+}
+
+.card-text__overflow {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+}
+
 .card-actions {
     display: flex;
     flex-wrap: wrap;

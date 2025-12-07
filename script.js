@@ -219,6 +219,137 @@ function getChildIndex(node){
   return Array.prototype.indexOf.call(parent.children, node);
 }
 
+/** [F8d] Creates a beveled inline toggle button used by truncation controls. */
+function createTextToggle(label){
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'card-text__toggle';
+  button.textContent = label;
+  return button;
+}
+
+/** [F8e] Collapses lengthy card descriptions and wires MORE/LESS toggles. */
+function setupTextTruncation(){
+  const cards = Array.from(document.querySelectorAll('.card'));
+  cards.forEach(card => {
+    if (card.dataset.truncationReady === 'true') return;
+
+    const paragraphs = Array.from(card.querySelectorAll('.card-text--small'))
+      .filter(p => p.textContent && p.textContent.trim().length > 0);
+    if (paragraphs.length === 0) return;
+
+    const firstParagraph = paragraphs[0];
+    const remainingParagraphs = paragraphs.slice(1);
+
+    const remainingLength = remainingParagraphs.reduce((sum, p) => sum + p.textContent.trim().length, 0);
+    const firstText = firstParagraph.textContent;
+
+    const shouldCollapseByParagraphs = remainingParagraphs.length >= 1 && remainingLength >= 20;
+    const shouldCollapseByLength = remainingParagraphs.length === 0 && firstText.length > 200 && firstText.slice(200).trim().length >= 20;
+
+    if (!shouldCollapseByParagraphs && !shouldCollapseByLength) return;
+
+    card.dataset.truncationReady = 'true';
+
+    const ellipsis = document.createElement('span');
+    ellipsis.className = 'card-text__ellipsis';
+    ellipsis.textContent = '… ';
+
+    const moreButton = createTextToggle('MORE');
+    const lessButton = createTextToggle('LESS');
+    lessButton.classList.add('card-text__toggle--less');
+
+    let collapse = () => {
+      ellipsis.hidden = false;
+      moreButton.hidden = false;
+      lessButton.hidden = true;
+      moreButton.setAttribute('aria-expanded', 'false');
+      lessButton.setAttribute('aria-expanded', 'false');
+    };
+
+    if (shouldCollapseByParagraphs){
+      const hiddenBlock = document.createElement('div');
+      hiddenBlock.className = 'card-text__overflow';
+      hiddenBlock.hidden = true;
+
+      remainingParagraphs.forEach(p => hiddenBlock.appendChild(p));
+
+      const lastParagraph = hiddenBlock.lastElementChild;
+      if (lastParagraph) {
+        lastParagraph.appendChild(document.createTextNode(' '));
+        lastParagraph.appendChild(lessButton);
+      }
+
+      const expand = () => {
+        hiddenBlock.hidden = false;
+        ellipsis.hidden = true;
+        moreButton.hidden = true;
+        lessButton.hidden = false;
+        moreButton.setAttribute('aria-expanded', 'true');
+        lessButton.setAttribute('aria-expanded', 'true');
+      };
+
+      collapse = () => {
+        hiddenBlock.hidden = true;
+        ellipsis.hidden = false;
+        moreButton.hidden = false;
+        lessButton.hidden = true;
+        moreButton.setAttribute('aria-expanded', 'false');
+        lessButton.setAttribute('aria-expanded', 'false');
+      };
+
+      moreButton.addEventListener('click', expand);
+      lessButton.addEventListener('click', collapse);
+
+      firstParagraph.insertAdjacentElement('afterend', ellipsis);
+      ellipsis.insertAdjacentElement('afterend', moreButton);
+      moreButton.insertAdjacentElement('afterend', hiddenBlock);
+
+      collapse();
+      return;
+    }
+
+    if (shouldCollapseByLength){
+      const visibleText = firstText.slice(0, 200).replace(/\s+$/, '');
+      const hiddenText = firstText.slice(visibleText.length);
+
+      const visibleSpan = document.createElement('span');
+      visibleSpan.className = 'card-text__preview';
+      visibleSpan.textContent = visibleText;
+
+      const hiddenSpan = document.createElement('span');
+      hiddenSpan.className = 'card-text__tail';
+      hiddenSpan.hidden = true;
+      hiddenSpan.textContent = hiddenText;
+
+      firstParagraph.textContent = '';
+      firstParagraph.appendChild(visibleSpan);
+      firstParagraph.appendChild(ellipsis);
+      firstParagraph.appendChild(moreButton);
+      firstParagraph.appendChild(hiddenSpan);
+      firstParagraph.appendChild(document.createTextNode(' '));
+      firstParagraph.appendChild(lessButton);
+
+      const expand = () => {
+        hiddenSpan.hidden = false;
+        ellipsis.hidden = true;
+        moreButton.hidden = true;
+        lessButton.hidden = false;
+        moreButton.setAttribute('aria-expanded', 'true');
+        lessButton.setAttribute('aria-expanded', 'true');
+      };
+
+      moreButton.addEventListener('click', expand);
+      lessButton.addEventListener('click', () => {
+        hiddenSpan.hidden = true;
+        collapse();
+      });
+
+      collapse();
+    }
+  });
+}
+
 /** [F9] Saves inline styles prior to chaos mode mutation. */
 function captureCardStyles(card){
   chaosState.originalStyles.set(card, {
@@ -654,6 +785,7 @@ document.addEventListener('DOMContentLoaded', () => {
   enableLandingOrbitLinks();
   setupChaosToggle();
   setupAdPopup();
+  setupTextTruncation();
 });
 
 window.addEventListener('load', scheduleLayoutUpdate);
