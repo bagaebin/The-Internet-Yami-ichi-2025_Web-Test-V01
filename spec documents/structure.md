@@ -38,6 +38,8 @@
 - **Landing orbit system**
   - Reads viewport ratio to size the central logo and assign an `--orbit-radius` custom property so orbiting cards never occlude the centerpiece.
   - Textual chips (date and "FOCUS Arnhem") share the same pop-from-center motion as logos and join the rotation around the center.
+- **Card text reveal control**
+  - Standard bevel cards automatically collapse verbose body copy: when a card has multiple `.card-text` blocks or any single block exceeds 200 characters, content beyond the 200-character mark is hidden behind a `MORE` toggle. Tapping `MORE` expands the remaining text and appends a trailing `LESS` control to revert the collapse. Section intro cards (`.card--section`) are exempt, and if the extra content is 20 characters or fewer (total length ≤220), the toggle is suppressed entirely.
 
 ## JavaScript System (`script.js`)
 ### Module Layout
@@ -49,6 +51,7 @@
 3. **Responsive layout manager**
    - Calculates row count for each `.grid` via `getComputedStyle` and toggles `.is-stack` class when cards wrap to multiple lines.
    - Deploys `ResizeObserver` for grids and listens to `window` resize/orientationchange.
+   - Manages card text truncation toggles by measuring combined text length per card, inserting `MORE/LESS` controls when thresholds are crossed, and re-evaluating on resize to honor layout changes.
 4. **Chaos mode engine**
    - Maintains `chaosState` snapshot of original inline styles and transform offsets.
    - On activation, applies `position:absolute` with randomized translation offsets, updates z-index on drag start, and restores on exit. Grids switch to `position:relative` canvases so drags never push siblings.
