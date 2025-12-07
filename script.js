@@ -350,7 +350,7 @@ function captureCardStyles(card){
 
 /** [F9b] Locks in computed title colors so they persist outside their grid context. */
 function preserveCardTitleColors(card){
-  card.querySelectorAll('.card-title').forEach(title => {
+  card.querySelectorAll('.card-title, .card-heading').forEach(title => {
     if (!Object.prototype.hasOwnProperty.call(title.dataset, 'originalChaosColor')) {
       title.dataset.originalChaosColor = title.style.color || '';
     }
@@ -361,7 +361,7 @@ function preserveCardTitleColors(card){
 
 /** [F9c] Restores any inline title colors applied during chaos mode. */
 function restoreCardTitleColors(card){
-  card.querySelectorAll('.card-title').forEach(title => {
+  card.querySelectorAll('.card-title, .card-heading').forEach(title => {
     if (Object.prototype.hasOwnProperty.call(title.dataset, 'originalChaosColor')) {
       title.style.color = title.dataset.originalChaosColor;
       delete title.dataset.originalChaosColor;
