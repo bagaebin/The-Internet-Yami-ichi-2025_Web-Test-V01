@@ -313,8 +313,9 @@ function getDirectCards(grid){
 /** [F8c] Returns the child index of a node within its parent. */
 function getChildIndex(node){
   const parent = node ? node.parentElement : null;
-  if (!parent) return -1;
-  return Array.prototype.indexOf.call(parent.children, node);
+  if (!parent) return Number.POSITIVE_INFINITY;
+  const index = Array.prototype.indexOf.call(parent.children, node);
+  return index === -1 ? Number.POSITIVE_INFINITY : index;
 }
 
 /** [F9] Saves inline styles prior to chaos mode mutation. */
