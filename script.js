@@ -177,6 +177,7 @@ function applyCardTextCollapsers(){
     textBlocks.forEach(el => el.remove());
 
     let consumed = 0;
+    const inlineOverflows = [];
 
     const buildParagraph = (template, content) => {
       const node = document.createElement(template.tagName.toLowerCase());
@@ -195,8 +196,14 @@ function applyCardTextCollapsers(){
         preview.appendChild(buildParagraph(block, text));
       } else {
         const splitAt = TEXT_COLLAPSE_LIMIT - consumed;
-        preview.appendChild(buildParagraph(block, text.slice(0, splitAt)));
-        hidden.appendChild(buildParagraph(block, text.slice(splitAt)));
+        const overflowParagraph = buildParagraph(block, text.slice(0, splitAt));
+        const overflowSpan = document.createElement('span');
+        overflowSpan.className = 'card-text__overflow';
+        overflowSpan.textContent = text.slice(splitAt);
+        overflowSpan.hidden = true;
+        overflowParagraph.appendChild(overflowSpan);
+        inlineOverflows.push(overflowSpan);
+        preview.appendChild(overflowParagraph);
       }
 
       consumed += len;
@@ -215,6 +222,7 @@ function applyCardTextCollapsers(){
     toggle.addEventListener('click', () => {
       const expanded = wrapper.classList.toggle('is-expanded');
       hidden.hidden = !expanded;
+      inlineOverflows.forEach(span => span.hidden = !expanded);
       toggle.textContent = expanded ? 'LESS' : 'MORE';
       toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     });
@@ -333,7 +341,8 @@ function captureCardStyles(card){
     zIndex: card.style.zIndex,
     cursor: card.style.cursor,
     overflow: card.style.overflow,
-    transform: card.style.transform
+    transform: card.style.transform,
+    backgroundColor: card.style.backgroundColor
   });
 }
 
@@ -423,6 +432,7 @@ function enterChaos(toggle){
       const jitterY = (Math.random() - 0.5) * 2 * CHAOS_JITTER_RANGE;
       const jitteredLeft = Math.max(0, left + jitterX);
       const jitteredTop = Math.max(0, top + jitterY);
+      const computedBackground = getComputedStyle(card).backgroundColor;
       card.style.position = 'absolute';
       card.style.left = `${jitteredLeft}px`;
       card.style.top = `${jitteredTop}px`;
@@ -431,6 +441,7 @@ function enterChaos(toggle){
       card.style.zIndex = `${++chaosState.zIndex}`;
       card.style.cursor = 'grab';
       card.style.overflow = 'visible';
+      card.style.backgroundColor = computedBackground;
       card.style.pointerEvents = 'auto';
       card.classList.add('is-chaos-card', 'chaos-draggable', 'is-chaos-entity');
       chaosState.entityToGrid.set(card, grid);
@@ -532,7 +543,7 @@ function exitChaos(toggle){
   const placements = new Map();
 
   chaosState.originalStyles.forEach((styles, card) => {
-    ['position', 'left', 'right', 'top', 'bottom', 'width', 'height', 'zIndex', 'cursor', 'overflow', 'transform'].forEach(prop => {
+    ['position', 'left', 'right', 'top', 'bottom', 'width', 'height', 'zIndex', 'cursor', 'overflow', 'transform', 'backgroundColor'].forEach(prop => {
       card.style[prop] = styles[prop] || '';
     });
     card.classList.remove('is-chaos-card', 'is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity', 'is-dragging');
