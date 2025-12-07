@@ -1005,6 +1005,19 @@ body.is-chaos .hate-html-toggle:hover {
     padding: 16px;
 }
 
+/* Apply category-specific background colors to cards based on their grid */
+.grid--market .card {
+    background-color: var(--color-market-bg);
+}
+
+.grid--exhibition .card {
+    background-color: var(--color-exhibition-bg);
+}
+
+.grid--film-screening .card {
+    background-color: var(--color-film-bg);
+}
+
 /* Animations */
 @keyframes logoPop {
     0% {
