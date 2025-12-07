@@ -112,6 +112,11 @@ const chaosState = {
 /** [S3] Lazily created ResizeObserver shared across grids. */
 let gridResizeObserver = null;
 
+/** [C2b] Character thresholds for card text collapse toggles. */
+const TEXT_COLLAPSE_LIMIT = 200;
+const TEXT_COLLAPSE_MIN_OVERFLOW = 20;
+let textCollapseId = 0;
+
 /** [F5] Reads the CSS custom property representing card width limit. */
 function getCardMaxWidth(){
   const root = getComputedStyle(document.documentElement);
@@ -134,6 +139,99 @@ function updateAllGridLayouts(){
     const shouldStack = maxPerRow <= 1 && window.innerWidth < getCardMaxWidth();
 
     grid.classList.toggle('is-stack', shouldStack);
+  });
+}
+
+/** [F6b] Attaches MORE/LESS toggles when card text exceeds thresholds. */
+function applyCardTextCollapsers(){
+  const cards = document.querySelectorAll('.card.bevel:not(.card--section)');
+  cards.forEach(card => {
+    if (card.querySelector('.card-text-collapsible')) return;
+
+    const textBlocks = Array.from(card.querySelectorAll('.card-text'));
+    if (textBlocks.length === 0) return;
+
+    const totalLength = textBlocks.reduce((sum, el) => sum + el.textContent.trim().length, 0);
+    const hasMultiple = textBlocks.length > 1;
+    const overflow = totalLength - TEXT_COLLAPSE_LIMIT;
+    const shouldCollapse = (hasMultiple || totalLength >= TEXT_COLLAPSE_LIMIT) && overflow > TEXT_COLLAPSE_MIN_OVERFLOW;
+    if (!shouldCollapse) return;
+
+    const anchor = textBlocks[0];
+    const container = anchor ? anchor.parentElement : null;
+    if (!container) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'card-text-collapsible';
+
+    const preview = document.createElement('div');
+    preview.className = 'card-text-collapsible__preview';
+
+    const hidden = document.createElement('div');
+    hidden.className = 'card-text-collapsible__hidden';
+    hidden.hidden = true;
+
+    container.insertBefore(wrapper, anchor);
+    textBlocks.forEach(el => el.remove());
+
+    let consumed = 0;
+
+    const buildParagraph = (template, content) => {
+      const node = document.createElement(template.tagName.toLowerCase());
+      node.className = template.className;
+      node.textContent = content;
+      return node;
+    };
+
+    textBlocks.forEach(block => {
+      const text = block.textContent || '';
+      const len = text.length;
+
+      if (consumed >= TEXT_COLLAPSE_LIMIT) {
+        hidden.appendChild(buildParagraph(block, text));
+      } else if (consumed + len <= TEXT_COLLAPSE_LIMIT) {
+        preview.appendChild(buildParagraph(block, text));
+      } else {
+        const splitAt = TEXT_COLLAPSE_LIMIT - consumed;
+        preview.appendChild(buildParagraph(block, text.slice(0, splitAt)));
+        hidden.appendChild(buildParagraph(block, text.slice(splitAt)));
+      }
+
+      consumed += len;
+    });
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'card-text-toggle';
+    toggle.textContent = 'MORE';
+
+    const hiddenId = `card-text-more-${++textCollapseId}`;
+    hidden.id = hiddenId;
+    toggle.setAttribute('aria-controls', hiddenId);
+    toggle.setAttribute('aria-expanded', 'false');
+
+    toggle.addEventListener('click', () => {
+      const expanded = wrapper.classList.toggle('is-expanded');
+      hidden.hidden = !expanded;
+      toggle.textContent = expanded ? 'LESS' : 'MORE';
+      toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    });
+
+    wrapper.appendChild(preview);
+    wrapper.appendChild(hidden);
+    wrapper.appendChild(toggle);
+  });
+}
+
+/** [S1b] rAF guard for card text collapse updates. */
+let textCollapseScheduled = false;
+
+function scheduleCardTextCollapse(){
+  if (textCollapseScheduled) return;
+  textCollapseScheduled = true;
+  requestAnimationFrame(() => {
+    applyCardTextCollapsers();
+    textCollapseScheduled = false;
   });
 }
 
@@ -634,6 +732,7 @@ function enableLandingOrbitLinks(){
 
 document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(() => requestAnimationFrame(scheduleLayoutUpdate));
+  requestAnimationFrame(() => scheduleCardTextCollapse());
 
   const grids = Array.from(document.querySelectorAll('.grid'));
 
@@ -659,6 +758,9 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', scheduleLayoutUpdate);
 window.addEventListener('resize', scheduleLayoutUpdate);
 window.addEventListener('orientationchange', scheduleLayoutUpdate);
+window.addEventListener('load', scheduleCardTextCollapse);
+window.addEventListener('resize', scheduleCardTextCollapse);
+window.addEventListener('orientationchange', scheduleCardTextCollapse);
 
 /** [F28] Handles navigation from landing page to main content */
 function showMainContent(event) {

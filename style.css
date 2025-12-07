@@ -589,6 +589,40 @@ body.is-chaos .is-chaos-gallery {
     font-size: 14px;
 }
 
+.card-text-collapsible {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card-text-collapsible__hidden[hidden] {
+    display: none;
+}
+
+.card-text-toggle {
+    align-self: flex-start;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #0c0c0c;
+    box-shadow:
+        inset -2px -2px 0 var(--highlight-inset),
+        inset 2px 2px 0 var(--shadow-inset);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-text-toggle:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        inset -1px -1px 0 rgba(255, 255, 255, 0.8),
+        inset 2px 2px 0 rgba(0, 0, 0, 0.18);
+}
+
 .card-actions {
     display: flex;
     flex-wrap: wrap;
