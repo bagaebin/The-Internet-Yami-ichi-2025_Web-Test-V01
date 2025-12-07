@@ -102,7 +102,11 @@ const chaosState = {
   zIndex: 1000,
   gridStyles: new Map(),
   grids: new Set(),
-  entityToGrid: new Map()
+  entityToGrid: new Map(),
+  hosts: new Map(),
+  order: new Map(),
+  stage: null,
+  skipAdClick: false
 };
 
 /** [S3] Lazily created ResizeObserver shared across grids. */
@@ -152,6 +156,52 @@ function setupChaosToggle(){
   document.addEventListener('pointercancel', onChaosPointerEnd);
 }
 
+/** [F8b] Wires the promo popup to toggle between icon and detail card. */
+function setupAdPopup(){
+  const ad = document.getElementById('chaos-ad');
+  if (!ad) return;
+
+  const iconButton = ad.querySelector('.ad-popup__icon');
+  const panel = ad.querySelector('.ad-popup__panel');
+  const closeButton = ad.querySelector('.ad-popup__close');
+
+  const showIcon = () => {
+    ad.classList.add('ad-popup--collapsed');
+    ad.classList.remove('ad-popup--expanded');
+    if (panel) panel.hidden = true;
+    if (iconButton) iconButton.hidden = false;
+  };
+
+  const showPanel = () => {
+    ad.classList.remove('ad-popup--collapsed');
+    ad.classList.add('ad-popup--expanded');
+    if (panel) panel.hidden = false;
+    if (iconButton) iconButton.hidden = true;
+  };
+
+  if (iconButton) {
+    iconButton.addEventListener('click', () => {
+      if (chaosState.skipAdClick) {
+        chaosState.skipAdClick = false;
+        return;
+      }
+      showPanel();
+    });
+  }
+
+  if (closeButton) {
+    closeButton.addEventListener('click', event => {
+      event.preventDefault();
+      showIcon();
+      if (iconButton) {
+        iconButton.focus();
+      }
+    });
+  }
+
+  showIcon();
+}
+
 /** [F8] Collects grids that contain draggable cards. */
 function getChaosGrids(){
   return Array.from(document.querySelectorAll('.grid')).filter(grid => getDirectCards(grid).length > 0);
@@ -162,17 +212,158 @@ function getDirectCards(grid){
   return Array.from(grid.children).filter(child => child.classList && child.classList.contains('card'));
 }
 
+/** [F8c] Returns the child index of a node within its parent. */
+function getChildIndex(node){
+  const parent = node ? node.parentElement : null;
+  if (!parent) return -1;
+  return Array.prototype.indexOf.call(parent.children, node);
+}
+
+/** [F8d] Creates a beveled inline toggle button used by truncation controls. */
+function createTextToggle(label){
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'card-text__toggle';
+  button.textContent = label;
+  return button;
+}
+
+/** [F8e] Collapses lengthy card descriptions and wires MORE/LESS toggles. */
+function setupTextTruncation(){
+  const cards = Array.from(document.querySelectorAll('.card'));
+  cards.forEach(card => {
+    if (card.dataset.truncationReady === 'true') return;
+
+    const paragraphs = Array.from(card.querySelectorAll('.card-text--small'))
+      .filter(p => p.textContent && p.textContent.trim().length > 0);
+    if (paragraphs.length === 0) return;
+
+    const firstParagraph = paragraphs[0];
+    const remainingParagraphs = paragraphs.slice(1);
+
+    const remainingLength = remainingParagraphs.reduce((sum, p) => sum + p.textContent.trim().length, 0);
+    const firstText = firstParagraph.textContent;
+
+    const shouldCollapseByParagraphs = remainingParagraphs.length >= 1 && remainingLength >= 20;
+    const shouldCollapseByLength = remainingParagraphs.length === 0 && firstText.length > 200 && firstText.slice(200).trim().length >= 20;
+
+    if (!shouldCollapseByParagraphs && !shouldCollapseByLength) return;
+
+    card.dataset.truncationReady = 'true';
+
+    const ellipsis = document.createElement('span');
+    ellipsis.className = 'card-text__ellipsis';
+    ellipsis.textContent = '… ';
+
+    const moreButton = createTextToggle('MORE');
+    const lessButton = createTextToggle('LESS');
+    lessButton.classList.add('card-text__toggle--less');
+
+    let collapse = () => {
+      ellipsis.hidden = false;
+      moreButton.hidden = false;
+      lessButton.hidden = true;
+      moreButton.setAttribute('aria-expanded', 'false');
+      lessButton.setAttribute('aria-expanded', 'false');
+    };
+
+    if (shouldCollapseByParagraphs){
+      const hiddenBlock = document.createElement('div');
+      hiddenBlock.className = 'card-text__overflow';
+      hiddenBlock.hidden = true;
+
+      remainingParagraphs.forEach(p => hiddenBlock.appendChild(p));
+
+      const lastParagraph = hiddenBlock.lastElementChild;
+      if (lastParagraph) {
+        lastParagraph.appendChild(document.createTextNode(' '));
+        lastParagraph.appendChild(lessButton);
+      }
+
+      const expand = () => {
+        hiddenBlock.hidden = false;
+        ellipsis.hidden = true;
+        moreButton.hidden = true;
+        lessButton.hidden = false;
+        moreButton.setAttribute('aria-expanded', 'true');
+        lessButton.setAttribute('aria-expanded', 'true');
+      };
+
+      collapse = () => {
+        hiddenBlock.hidden = true;
+        ellipsis.hidden = false;
+        moreButton.hidden = false;
+        lessButton.hidden = true;
+        moreButton.setAttribute('aria-expanded', 'false');
+        lessButton.setAttribute('aria-expanded', 'false');
+      };
+
+      moreButton.addEventListener('click', expand);
+      lessButton.addEventListener('click', collapse);
+
+      firstParagraph.insertAdjacentElement('afterend', ellipsis);
+      ellipsis.insertAdjacentElement('afterend', moreButton);
+      moreButton.insertAdjacentElement('afterend', hiddenBlock);
+
+      collapse();
+      return;
+    }
+
+    if (shouldCollapseByLength){
+      const visibleText = firstText.slice(0, 200).replace(/\s+$/, '');
+      const hiddenText = firstText.slice(visibleText.length);
+
+      const visibleSpan = document.createElement('span');
+      visibleSpan.className = 'card-text__preview';
+      visibleSpan.textContent = visibleText;
+
+      const hiddenSpan = document.createElement('span');
+      hiddenSpan.className = 'card-text__tail';
+      hiddenSpan.hidden = true;
+      hiddenSpan.textContent = hiddenText;
+
+      firstParagraph.textContent = '';
+      firstParagraph.appendChild(visibleSpan);
+      firstParagraph.appendChild(ellipsis);
+      firstParagraph.appendChild(moreButton);
+      firstParagraph.appendChild(hiddenSpan);
+      firstParagraph.appendChild(document.createTextNode(' '));
+      firstParagraph.appendChild(lessButton);
+
+      const expand = () => {
+        hiddenSpan.hidden = false;
+        ellipsis.hidden = true;
+        moreButton.hidden = true;
+        lessButton.hidden = false;
+        moreButton.setAttribute('aria-expanded', 'true');
+        lessButton.setAttribute('aria-expanded', 'true');
+      };
+
+      moreButton.addEventListener('click', expand);
+      lessButton.addEventListener('click', () => {
+        hiddenSpan.hidden = true;
+        collapse();
+      });
+
+      collapse();
+    }
+  });
+}
+
 /** [F9] Saves inline styles prior to chaos mode mutation. */
 function captureCardStyles(card){
   chaosState.originalStyles.set(card, {
     position: card.style.position,
     left: card.style.left,
+    right: card.style.right,
     top: card.style.top,
+    bottom: card.style.bottom,
     width: card.style.width,
     height: card.style.height,
     zIndex: card.style.zIndex,
     cursor: card.style.cursor,
-    overflow: card.style.overflow
+    overflow: card.style.overflow,
+    transform: card.style.transform
   });
 }
 
@@ -200,6 +391,25 @@ function enterChaos(toggle){
   chaosState.drags.clear();
   chaosState.grids = new Set(grids);
   chaosState.zIndex = 1000;
+  chaosState.hosts.clear();
+
+  const stage = document.createElement('div');
+  stage.className = 'chaos-stage';
+  stage.style.position = 'absolute';
+  stage.style.left = '0';
+  stage.style.top = '0';
+  stage.style.width = '100%';
+  stage.style.height = '0';
+  stage.style.overflow = 'visible';
+  stage.style.zIndex = '9999';
+  stage.style.pointerEvents = 'auto';
+  stage.style.isolation = 'isolate';
+  const mainContent = document.querySelector('.main-content') || document.body;
+  mainContent.appendChild(stage);
+  const stageRect = stage.getBoundingClientRect();
+  chaosState.stage = stage;
+
+  moveChaosAdIntoStage(stage, stageRect);
 
   document.body.classList.add('is-chaos');
 
@@ -210,7 +420,8 @@ function enterChaos(toggle){
       maxHeight: grid.style.maxHeight,
       position: grid.style.position,
       overflow: grid.style.overflow,
-      display: grid.style.display
+      display: grid.style.display,
+      zIndex: grid.style.zIndex
     });
 
     grid.classList.add('is-chaos');
@@ -218,11 +429,13 @@ function enterChaos(toggle){
     grid.style.position = 'relative';
     grid.style.overflow = 'visible';
     grid.style.display = 'block';
+    grid.style.zIndex = `${++chaosState.zIndex}`;
 
     let maxBottom = 0;
 
     cards.forEach(({ card, rect, gallery }) => {
       captureCardStyles(card);
+      chaosState.order.set(card, getChildIndex(card));
       const galleryContainer = card.querySelector('.card-gallery');
       const galleryRect = galleryContainer ? galleryContainer.getBoundingClientRect() : null;
       if (galleryContainer && galleryRect) {
@@ -231,8 +444,8 @@ function enterChaos(toggle){
         galleryContainer.style.height = galleryHeight;
         galleryContainer.style.minHeight = galleryHeight;
       }
-      const left = rect.left - gridRect.left;
-      const top = rect.top - gridRect.top;
+      const left = rect.left - stageRect.left;
+      const top = rect.top - stageRect.top;
       const jitterX = (Math.random() - 0.5) * 2 * CHAOS_JITTER_RANGE;
       const jitterY = (Math.random() - 0.5) * 2 * CHAOS_JITTER_RANGE;
       const jitteredLeft = Math.max(0, left + jitterX);
@@ -245,8 +458,11 @@ function enterChaos(toggle){
       card.style.zIndex = `${++chaosState.zIndex}`;
       card.style.cursor = 'grab';
       card.style.overflow = 'visible';
+      card.style.pointerEvents = 'auto';
       card.classList.add('is-chaos-card', 'chaos-draggable', 'is-chaos-entity');
       chaosState.entityToGrid.set(card, grid);
+      chaosState.hosts.set(card, grid);
+      stage.appendChild(card);
       maxBottom = Math.max(maxBottom, jitteredTop + rect.height);
 
       const firstItemRect = gallery.length > 0 ? gallery[0].rect : null;
@@ -288,8 +504,13 @@ function enterChaos(toggle){
         item.style.zIndex = `${++chaosState.zIndex}`;
         item.style.cursor = 'grab';
         item.style.overflow = 'visible';
+        item.style.pointerEvents = 'auto';
         item.classList.add('is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity');
+        const galleryHost = galleryContainer || card;
         chaosState.entityToGrid.set(item, grid);
+        chaosState.hosts.set(item, galleryHost);
+        chaosState.order.set(item, getChildIndex(item));
+        stage.appendChild(item);
         maxBottom = Math.max(maxBottom, finalTop + itemRect.height);
       });
     });
@@ -328,18 +549,43 @@ function exitChaos(toggle){
     grid.style.position = styles.position || '';
     grid.style.overflow = styles.overflow || '';
     grid.style.display = styles.display || '';
+    grid.style.zIndex = styles.zIndex || '';
   });
   chaosState.gridStyles.clear();
 
+  const placements = new Map();
+
   chaosState.originalStyles.forEach((styles, card) => {
-    ['position', 'left', 'top', 'width', 'height', 'zIndex', 'cursor', 'overflow'].forEach(prop => {
+    ['position', 'left', 'right', 'top', 'bottom', 'width', 'height', 'zIndex', 'cursor', 'overflow', 'transform'].forEach(prop => {
       card.style[prop] = styles[prop] || '';
     });
     card.classList.remove('is-chaos-card', 'is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity', 'is-dragging');
+    const host = chaosState.hosts.get(card);
+    if (host) {
+      const index = chaosState.order.has(card) ? chaosState.order.get(card) : Number.POSITIVE_INFINITY;
+      if (!placements.has(host)) placements.set(host, []);
+      placements.get(host).push({ node: card, index });
+    }
   });
   chaosState.originalStyles.clear();
+  chaosState.order.clear();
   chaosState.entityToGrid.clear();
   chaosState.grids.clear();
+  chaosState.hosts.clear();
+
+  placements.forEach((nodes, host) => {
+    nodes
+      .sort((a, b) => a.index - b.index)
+      .forEach(({ node, index }) => {
+        const ref = host.children[index] || null;
+        host.insertBefore(node, ref);
+      });
+  });
+
+  if (chaosState.stage && chaosState.stage.parentNode) {
+    chaosState.stage.parentNode.removeChild(chaosState.stage);
+  }
+  chaosState.stage = null;
 
   toggle.setAttribute('aria-pressed', 'false');
   toggle.textContent = 'I HATE HTML';
@@ -366,8 +612,11 @@ function onChaosPointerDown(event){
     startX: event.clientX,
     startY: event.clientY,
     baseLeft,
-    baseTop
+    baseTop,
+    moved: false
   });
+
+  liftChaosGrid(node);
 
   node.classList.add('is-dragging');
   node.style.cursor = 'grabbing';
@@ -382,6 +631,9 @@ function onChaosPointerMove(event){
 
   const dx = event.clientX - drag.startX;
   const dy = event.clientY - drag.startY;
+  if (!drag.moved && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+    drag.moved = true;
+  }
   drag.node.style.left = `${drag.baseLeft + dx}px`;
   drag.node.style.top = `${drag.baseTop + dy}px`;
 
@@ -400,6 +652,10 @@ function onChaosPointerEnd(event){
   drag.node.classList.remove('is-dragging');
   drag.node.style.cursor = 'grab';
 
+  if (drag.moved && drag.node.id === 'chaos-ad') {
+    chaosState.skipAdClick = true;
+  }
+
   chaosState.drags.delete(event.pointerId);
 }
 
@@ -408,6 +664,41 @@ function updateChaosBounds(card){
   const grid = chaosState.entityToGrid.get(card) || card.closest('.grid');
   if (!grid) return;
   grid.style.overflow = 'visible';
+}
+
+/** [F15a] Elevates the chaos grid of a dragged entity to receive pointer events. */
+function liftChaosGrid(node){
+  const grid = chaosState.entityToGrid.get(node) || node.closest('.grid');
+  if (!grid || !chaosState.grids.has(grid)) return;
+  grid.style.zIndex = `${++chaosState.zIndex}`;
+}
+
+/** [F15b] Moves the promo popup into the chaos stage so it can be dragged. */
+function moveChaosAdIntoStage(stage, stageRect){
+  const ad = document.getElementById('chaos-ad');
+  if (!ad) return;
+
+  const rect = ad.getBoundingClientRect();
+  captureCardStyles(ad);
+  chaosState.entityToGrid.set(ad, null);
+  chaosState.hosts.set(ad, ad.parentElement);
+  chaosState.order.set(ad, getChildIndex(ad));
+
+  const left = Math.max(0, rect.left - stageRect.left);
+  const top = Math.max(0, rect.top - stageRect.top);
+
+  ad.style.position = 'absolute';
+  ad.style.left = `${left}px`;
+  ad.style.top = `${top}px`;
+  ad.style.right = '';
+  ad.style.bottom = '';
+  ad.style.width = `${rect.width}px`;
+  ad.style.height = `${rect.height}px`;
+  ad.style.zIndex = `${++chaosState.zIndex}`;
+  ad.style.cursor = 'grab';
+  ad.classList.add('chaos-draggable', 'is-chaos-entity');
+
+  stage.appendChild(ad);
 }
 
 /** [F29] Calculates orbit radius and center logo sizing to avoid overlap. */
@@ -493,6 +784,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initLandingOrbit();
   enableLandingOrbitLinks();
   setupChaosToggle();
+  setupAdPopup();
+  setupTextTruncation();
 });
 
 window.addEventListener('load', scheduleLayoutUpdate);
