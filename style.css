@@ -393,12 +393,24 @@ body::-webkit-scrollbar-corner {
     background: var(--color-market-bg);
 }
 
+.grid--market .card--section .card-title {
+    color: var(--color-market-accent);
+}
+
 .grid--exhibition .card--section {
     background: var(--color-exhibition-bg);
 }
 
+.grid--exhibition .card--section .card-title {
+    color: var(--color-exhibition-accent);
+}
+
 .grid--film-screening .card--section {
     background: var(--color-film-bg);
+}
+
+.grid--film-screening .card--section .card-title {
+    color: var(--color-film-accent);
 }
 
 .grid--market .card--event .card-heading,
