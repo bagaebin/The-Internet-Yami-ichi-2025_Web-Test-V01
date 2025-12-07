@@ -56,6 +56,12 @@
     /* 카드 최대 너비 */
     --orbit-radius: clamp(180px, 28vw, 320px);
     --center-logo-max: 80vw;
+    --color-market-accent: #4ba5ff;
+    --color-market-bg: #e8f3ff;
+    --color-exhibition-accent: #2aa772;
+    --color-exhibition-bg: #e6f7ef;
+    --color-film-accent: #c243c8;
+    --color-film-bg: #f8e6fa;
 }
 
 html,
@@ -302,8 +308,9 @@ body::-webkit-scrollbar-corner {
 .card--section {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 6px;
+    text-align: left;
 }
 
 .card--event {
@@ -347,6 +354,66 @@ body::-webkit-scrollbar-corner {
     align-items: flex-start;
     gap: 8px;
     text-align: left;
+}
+
+.card-section__body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.card-section__icon {
+    inline-size: 64px;
+    block-size: 64px;
+    padding: 6px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.04);
+    box-shadow: inset -1px -1px 0 var(--highlight-inset), inset 1px 1px 0 var(--shadow-inset);
+    display: grid;
+    place-items: center;
+}
+
+.card-section__icon img {
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    object-fit: contain;
+}
+
+.card-section__content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.grid--market .card--section {
+    background: var(--color-market-bg);
+}
+
+.grid--exhibition .card--section {
+    background: var(--color-exhibition-bg);
+}
+
+.grid--film-screening .card--section {
+    background: var(--color-film-bg);
+}
+
+.grid--market .card--event .card-heading,
+.grid--market .card--event-gallery .card-heading {
+    color: var(--color-market-accent);
+}
+
+.grid--exhibition .card--event .card-heading,
+.grid--exhibition .card--event-gallery .card-heading {
+    color: var(--color-exhibition-accent);
+}
+
+.grid--film-screening .card--event .card-heading,
+.grid--film-screening .card--event-gallery .card-heading {
+    color: var(--color-film-accent);
 }
 
 .card-gallery {
