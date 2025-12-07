@@ -26,7 +26,8 @@
 - **Cards (`.card`, variants)**
   - Accept child content slots (`.card-title`, `.card-text`, `.card-actions`).
   - Provide bevel styling via shared `.bevel` class and rely on CSS variables for background/edge colors.
-- **Grids (`.grid`, modifiers)**
+  - Event cards can opt into a **gallery layout** that splits the card into two equal-width columns: left text stack and right media rail. These cards expand their max width to double the standard card to preserve breathing room for both columns, while the gallery column caps its height and enables vertical scrolling when multiple images are present.
+  - **Grids (`.grid`, modifiers)**
   - Flexbox containers toggling between row and column layouts (`.is-stack`) based on viewport height/width heuristics.
   - When `body.is-chaos` is active, grids gain `.is-chaos` class enabling absolute-positioned children while preserving min-height.
 - **Logo wrap (`.logo-wrap--card`)**
@@ -54,9 +55,11 @@
    - On activation, applies `position:absolute` with randomized translation offsets, updates z-index on drag start, and restores on exit. Grids switch to `position:relative` canvases so drags never push siblings.
    - Pointer event handlers (`pointerdown`, `pointermove`, `pointerup/cancel`) enable dragging with pointer capture, honoring `touch-action:none` styles.
 5. **Hand overlay controller**
-   - Pre-computes anchor metadata (bounding rect, rest rotation) for each pointer image.
-   - On pointer move, computes vector toward cursor and updates CSS variables (`--hand-rotate`, `--hand-translate-x/y`).
-   - Respects `prefers-reduced-motion` by short-circuiting listeners when matched.
+  - Pre-computes anchor metadata (bounding rect, rest rotation) for each pointer image.
+  - On pointer move, computes vector toward cursor and updates CSS variables (`--hand-rotate`, `--hand-translate-x/y`).
+  - Respects `prefers-reduced-motion` by short-circuiting listeners when matched.
+6. **Chaos draggables layer**
+  - Expands chaos mode beyond cards to include gallery images inside event cards. On activation, gallery tiles pop outward from their host cards with slight jitter and gain independent drag handles. Both cards and gallery tiles bump to the frontmost z-index when clicked or dragged, preventing occlusion while users rearrange the layout.
 
 ### Lifecycle Timeline
 1. **DOMContentLoaded**: ready handler runs date enhancer, logo fallback attachments, hand controller initialization, chaos toggle wiring, and initial layout measurement.
