@@ -105,6 +105,7 @@ const chaosState = {
   entityToGrid: new Map(),
   hosts: new Map(),
   order: new Map(),
+  placeholders: new Map(),
   stage: null,
   skipAdClick: false
 };
@@ -404,6 +405,9 @@ function enterChaos(toggle){
     cards.forEach(({ card, rect, gallery }) => {
       captureCardStyles(card);
       chaosState.order.set(card, getChildIndex(card));
+      const cardPlaceholder = document.createComment('chaos-placeholder');
+      grid.insertBefore(cardPlaceholder, card);
+      chaosState.placeholders.set(card, cardPlaceholder);
       const galleryContainer = card.querySelector('.card-gallery');
       const galleryRect = galleryContainer ? galleryContainer.getBoundingClientRect() : null;
       if (galleryContainer && galleryRect) {
@@ -445,6 +449,10 @@ function enterChaos(toggle){
         const baseTop = firstOffsetTop !== null
           ? jitteredTop + firstOffsetTop
           : jitteredTop + (itemRect.top - rect.top);
+        const galleryHost = galleryContainer || card;
+        const galleryPlaceholder = document.createComment('chaos-placeholder');
+        galleryHost.insertBefore(galleryPlaceholder, item);
+        chaosState.placeholders.set(item, galleryPlaceholder);
         const angle = Math.random() * Math.PI * 2;
         const cardLongSide = Math.max(rect.width, rect.height);
         const maxOffset = clampNumber(cardLongSide * 0.1, 8, 16);
@@ -474,7 +482,6 @@ function enterChaos(toggle){
         item.style.overflow = 'visible';
         item.style.pointerEvents = 'auto';
         item.classList.add('is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity');
-        const galleryHost = galleryContainer || card;
         chaosState.entityToGrid.set(item, grid);
         chaosState.hosts.set(item, galleryHost);
         chaosState.order.set(item, getChildIndex(item));
@@ -528,6 +535,14 @@ function exitChaos(toggle){
       card.style[prop] = styles[prop] || '';
     });
     card.classList.remove('is-chaos-card', 'is-chaos-gallery', 'chaos-draggable', 'is-chaos-entity', 'is-dragging');
+    const placeholder = chaosState.placeholders.get(card);
+    if (placeholder && placeholder.parentNode) {
+      placeholder.parentNode.insertBefore(card, placeholder);
+      placeholder.remove();
+      chaosState.placeholders.delete(card);
+      return;
+    }
+
     const host = chaosState.hosts.get(card);
     if (host) {
       const index = chaosState.order.has(card) ? chaosState.order.get(card) : Number.POSITIVE_INFINITY;
@@ -540,6 +555,7 @@ function exitChaos(toggle){
   chaosState.entityToGrid.clear();
   chaosState.grids.clear();
   chaosState.hosts.clear();
+  chaosState.placeholders.clear();
 
   placements.forEach((nodes, host) => {
     nodes
@@ -651,6 +667,9 @@ function moveChaosAdIntoStage(stage, stageRect){
   chaosState.entityToGrid.set(ad, null);
   chaosState.hosts.set(ad, ad.parentElement);
   chaosState.order.set(ad, getChildIndex(ad));
+  const adPlaceholder = document.createComment('chaos-placeholder');
+  ad.parentElement.insertBefore(adPlaceholder, ad);
+  chaosState.placeholders.set(ad, adPlaceholder);
 
   const left = Math.max(0, rect.left - stageRect.left);
   const top = Math.max(0, rect.top - stageRect.top);
