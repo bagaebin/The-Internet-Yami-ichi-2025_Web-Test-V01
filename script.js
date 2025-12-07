@@ -92,7 +92,7 @@ function groupRowsByOffsetTop(items){
 }
 
 /** [C2] Maximum chaos jitter distance for draggable cards. */
-const CHAOS_JITTER_RANGE = 16;
+const CHAOS_JITTER_RANGE = 24;
 
 /** [S2] Mutable state backing chaos mode interactions. */
 const chaosState = {
