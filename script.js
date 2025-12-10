@@ -394,6 +394,26 @@ function initLandingOrbit(){
   }
 }
 
+/** [F31] Ensures landing orbit cards open their partner links even when wrappers intercept clicks. */
+function enableLandingOrbitLinks(){
+  document.querySelectorAll('.logo-orbit .landing-card').forEach(card => {
+    const link = card.querySelector('.logo-link');
+    if (!link || !link.href) return;
+
+    card.classList.add('landing-card--linkable');
+
+    card.addEventListener('click', event => {
+      if (event.defaultPrevented) return;
+      if (event.target.closest('a')) return;
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+      event.preventDefault();
+      const target = link.target && link.target.trim() ? link.target : '_blank';
+      window.open(link.href, target, 'noopener,noreferrer');
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(() => requestAnimationFrame(scheduleLayoutUpdate));
 
@@ -413,6 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   initLandingOrbit();
+  enableLandingOrbitLinks();
   setupChaosToggle();
 });
 
