@@ -582,7 +582,7 @@ body.is-chaos .is-chaos-gallery {
 
 .ad-popup__icon img {
     display: block;
-    max-width: clamp(240px, 36vw, 360px);
+    max-width: clamp(200px, 36vw, 360px);
     height: auto;
 }
 
