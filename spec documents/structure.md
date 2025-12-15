@@ -75,7 +75,7 @@
 ## CSS Organization (`style.css`)
 ### File Sections
 1. **Foundations**: CSS custom property definitions for palette, spacing, bevel depth, motion durations.
-2. **Resets & Typography**: Normalize styles, assign `Space Grotesk`, `Nunito`, `Quicksand` fallback stack, configure base font sizing.
+2. **Resets & Typography**: Normalize styles, assign `Turret Road` and system fallback stack, configure base font sizing.
 3. **Layout & Containers**: `.wrap`, `.grid`, `.site-header/footer`, `.hand-overlay` structural rules.
 4. **Components**: `.card` family, `.icon-button`, `.logo-wrap`, `.card-actions` alignment.
 5. **State Modifiers**: `.is-stack`, `.is-chaos`, `.is-chaos-card`, focus-visible handling.

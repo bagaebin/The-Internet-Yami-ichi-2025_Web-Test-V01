@@ -2,7 +2,7 @@
 
 ## Stack Summary
 - **HTML5**: Landed in `index.html` with semantic `<section>` and `<article>` usage, ARIA labelling for hidden headings, and `data-*` attributes to store dynamic metadata.
-- **CSS3**: Author-level styles in `style.css` leveraging custom properties, Flexbox, logical properties, `aspect-ratio`, and prefers-reduced-motion media queries. Fonts sourced from Google Fonts (Space Grotesk primary, Nunito/Quicksand support).
+- **CSS3**: Author-level styles in `style.css` leveraging custom properties, Flexbox, logical properties, `aspect-ratio`, and prefers-reduced-motion media queries. Fonts sourced from Google Fonts (Turret Road primary).
 - **Vanilla JavaScript (ES2018+)**: Runs client-side enhancements via DOM APIs, `Intl.DateTimeFormat`, `requestAnimationFrame`, `ResizeObserver`, and Pointer Events. Chaos mode now also binds draggable behavior to gallery tiles that detach from their cards for free-form play while keeping their offset radius near the source card.
 - **Static assets**: PNG logos and illustrative hands located under `assets/`; no runtime optimization pipeline.
 

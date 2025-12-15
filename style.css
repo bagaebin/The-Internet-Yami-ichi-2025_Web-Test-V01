@@ -7,6 +7,7 @@
 }
 
 /* Turret Road font weights */
+
 .turret-road-extralight {
     font-family: "Turret Road", sans-serif;
     font-weight: 200;
@@ -56,12 +57,14 @@
     /* 카드 최대 너비 */
     --orbit-radius: clamp(180px, 28vw, 320px);
     --center-logo-max: 80vw;
-    --color-market-accent: #0869fb;
-    --color-market-bg: #e8f3ff;
-    --color-exhibition-accent: #744bf7;
-    --color-exhibition-bg: #dee1ff;
-    --color-film-accent: #c52fcd;
-    --color-film-bg: #f8e6fa;
+    --color-market-accent: #0069d9;
+    --color-market-bg: #ddeeff;
+    --color-exhibition-accent: #0069d9;
+    --color-exhibition-bg: #defdff;
+    --color-film-accent: #0069d9;
+    --color-film-bg: #ddeeff;
+    --color-gameroom-accent: #e1008b;
+    --color-gameroom-bg: #fff0f7;
 }
 
 html,
@@ -73,7 +76,7 @@ body {
     margin: 0;
     color: var(--text);
     background: var(--bg) url("assets/bg.png") center / cover no-repeat fixed;
-    font-family: "Turret Road", "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+    font-family: "Turret Road", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
     font-optical-sizing: auto;
     font-weight: 500;
     letter-spacing: 0.01em;
@@ -161,9 +164,15 @@ body::-webkit-scrollbar-corner {
     padding: 12px;
 }
 
+.grid--footer {
+margin-bottom: 128px;
+}
+
 .site-footer {
-    margin: 12px auto;
+    margin: 12px auto 64px;
     gap: 16px;
+    inline-size: min(100%, var(--card-max));
+    width: min(100%, var(--card-max));
 }
 
 .site-footer small {
@@ -175,27 +184,43 @@ body::-webkit-scrollbar-corner {
     align-items: center;
     justify-content: center;
     gap: 16px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .footer-logo-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 clamp(96px, 18vw, 108px);
+    inline-size: auto;
+    max-inline-size: 150px;
+    min-inline-size: 96px;
+    block-size: 52px;
+    padding: 6px 10px;
 }
 
 .footer-logo {
     max-height: 32px;
+    max-width: 100%;
     width: auto;
     object-fit: contain;
     filter: grayscale(0.1);
+}
+
+.footer-logos .footer-logo-link:nth-child(2) .footer-logo {
+    max-height: 48px;
 }
 
 /* 로고 영역 */
 .logo-wrap {
     position: relative;
     display: inline-grid;
-    place-items: center;
+    /* place-items: center; */
     width: auto;
     aspect-ratio: 3 / 1;
     overflow: hidden;
@@ -212,7 +237,6 @@ body::-webkit-scrollbar-corner {
     border: none;
     aspect-ratio: auto;
     overflow: visible;
-    padding: 16px;
 }
 
 .logo-link {
@@ -264,7 +288,6 @@ body::-webkit-scrollbar-corner {
     justify-content: center;
     align-items: flex-start;
     align-content: flex-start;
-    gap: 0px;
     inline-size: 100%;
     margin-inline: 0;
     max-inline-size: none;
@@ -303,6 +326,8 @@ body::-webkit-scrollbar-corner {
 
 .card--wide {
     flex-basis: auto;
+    max-width: calc(var(--card-max) * 1.2);
+    width: 100%;
 }
 
 .card--section {
@@ -317,12 +342,12 @@ body::-webkit-scrollbar-corner {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 8px;
 }
 
 .card--event.card--event-gallery {
-    max-width: calc(var(--card-max) * 2);
-    width: min(100%, calc(var(--card-max) * 2));
+    max-width: calc(var(--card-max) * 1.6);
+    width: min(100%, calc(var(--card-max) * 1.6));
 }
 
 .card-event__body {
@@ -439,6 +464,11 @@ body::-webkit-scrollbar-corner {
     border: 1px solid var(--outline);
 }
 
+.card-gallery:has(.card-gallery__item:only-child) {
+    max-height: none;
+    overflow-y: visible;
+}
+
 .card-gallery__item {
     display: flex;
     align-items: center;
@@ -459,16 +489,18 @@ body::-webkit-scrollbar-corner {
 .card-gallery__item--map iframe {
     display: block;
     width: 100%;
-    height: 320px;
+    height: auto;
+    aspect-ratio: 3 / 2;
     border: 0;
 }
 
 .card-gallery__reference {
     font-size: 12px;
     font-weight: 500;
-    padding: 4px 12px;
+    line-height: 1.2;
     width: 100%;
     height: 100%;
+    padding: 0 12px ;
     align-content: flex-end;
     box-sizing: border-box;
 }
@@ -502,7 +534,7 @@ body::-webkit-scrollbar-corner {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap:24px;
 }
 
 .card img {
@@ -514,7 +546,7 @@ body::-webkit-scrollbar-corner {
 }
 
 .card--logo code {
-    font-family: "Space Grotesk", "Courier New", Courier, monospace;
+    font-family: "Courier New", Courier, monospace;
     font-size: 12px;
     background: rgba(0, 0, 0, 0.05);
     padding: 2px 6px;
@@ -548,6 +580,10 @@ body::-webkit-scrollbar-corner {
     touch-action: none;
 }
 
+body.is-chaos {
+    overflow-x: hidden;
+}
+
 body.is-chaos .is-chaos-entity {
     transition: box-shadow 0.2s ease;
 }
@@ -555,6 +591,11 @@ body.is-chaos .is-chaos-entity {
 body.is-chaos .is-chaos-gallery {
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
     border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.is-chaos .card-gallery__item--map.is-chaos-gallery {
+    padding: 4px;
+    background-color: #fff;
 }
 
 .ad-popup {
@@ -567,6 +608,11 @@ body.is-chaos .is-chaos-gallery {
     align-items: end;
     z-index: 30;
     pointer-events: auto;
+}
+
+/* Landing intro: hide the promo popup completely. */
+body.is-landing-active .ad-popup {
+    display: none;
 }
 
 .ad-popup__icon {
@@ -586,6 +632,50 @@ body.is-chaos .is-chaos-gallery {
     height: auto;
 }
 
+.category-sticky-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2147483646;
+}
+
+body.is-landing-active .category-sticky-layer {
+    display: none;
+}
+
+.category-icon-placeholder {
+    visibility: hidden;
+}
+
+.category-sticky {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    inline-size: 64px;
+    block-size: 64px;
+    padding: 6px;
+    border: 1px solid #e6e6e6;
+    background: rgba(0, 0, 0, 0.04);
+    box-shadow: inset -1px -1px 0 var(--highlight-inset), inset 1px 1px 0 var(--shadow-inset);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.2));
+}
+
+.category-sticky:focus-visible {
+    outline: 3px solid rgba(16, 16, 16, 0.2);
+    outline-offset: 2px;
+}
+
+.category-sticky img {
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    object-fit: contain;
+    display: block;
+}
+
 .ad-popup--collapsed .ad-popup__icon {
     animation: ad-pop-bounce 3s ease-in-out infinite;
     transform-origin: center bottom;
@@ -595,10 +685,11 @@ body.is-chaos .is-chaos-gallery {
     display: none;
 }
 
-.ad-popup__panel {
+.ad-popup__panel.bevel {
     position: relative;
     padding: 14px 16px 18px;
     width: min(360px, calc(100vw - 40px));
+    background-color: var(--color-gameroom-bg);
 }
 
 .ad-popup--collapsed .ad-popup__panel {
@@ -607,27 +698,26 @@ body.is-chaos .is-chaos-gallery {
 
 .ad-popup__panel .card-heading {
     margin-bottom: 12px; /* 원하는 값으로 조절 */
+    color: var(--color-gameroom-accent);
 }
 
 .ad-popup__close {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 12px;
+    right: 12px;
     inline-size:20px;
     block-size: 20px;
+    padding: 6px;
     border: 1px solid #e0e0e0;
-    background: #fff;
+    background: none;
+    box-shadow: inset -1px -1px 0 var(--highlight-inset), inset 1px 1px 0 var(--shadow-inset);
     font-size: 16px;
+    font-weight: 400;
     cursor: pointer;
     line-height: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-}
-
-.ad-popup__close:hover {
-    background: #f5f5f5;
 }
 
 @keyframes ad-pop-bounce {
@@ -644,7 +734,7 @@ body.is-chaos .is-chaos-gallery {
 }
 
 .card-title {
-    margin: 0 0 10px;
+    margin: 0;
     font-size: 28px;
     font-weight: 800;
     text-transform: uppercase;
@@ -656,6 +746,7 @@ body.is-chaos .is-chaos-gallery {
     margin: 0;
     font-size: 18px;
     font-weight: 700;
+    line-height: 1.2;
 }
 
 .card-text {
@@ -664,9 +755,17 @@ body.is-chaos .is-chaos-gallery {
     overflow-wrap: anywhere;
 }
 
+.card-text--venue {
+    font-size: 18px;
+    letter-spacing: 0.05rem;
+    font-weight: 400;
+}
+
 .card-text--artist {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
+    margin-bottom: 24px;
+    color: var(--color-exhibition-accent);
 }
 
 .card-text--small {
@@ -683,21 +782,30 @@ body.is-chaos .is-chaos-gallery {
     display: none;
 }
 
+.card-text-collapsible__preview,
+.card-text-collapsible__hidden {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .card-text-toggle {
-    align-self: flex-start;
     padding: 6px 12px;
-    font-family: "Turret Road", "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+    font-family: "Turret Road", system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
     border: 1px solid #e0e0e0;
-    background: #fff;
-    color: #0c0c0c;
+    background: none;
+    color: var(--color-film-accent);
     box-shadow:
-        inset -2px -2px 0 var(--highlight-inset),
-        inset 2px 2px 0 var(--shadow-inset);
+        inset -1px -1px 0 var(--highlight-inset),
+        inset 1px 1px 0 var(--shadow-inset);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-flex;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
 .card-actions {
@@ -789,7 +897,42 @@ body.is-chaos .is-chaos-gallery {
     letter-spacing: 0.08em;
     cursor: pointer;
     transition: background-image 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    z-index: 10000;
+    z-index: 2147483647;
+    pointer-events: auto;
+    touch-action: manipulation;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+    isolation: isolate;
+}
+
+.hate-html-toggle.hate-html-toggle--hint {
+    animation: hate-html-hint-pulse 1.2s ease-in-out infinite;
+    box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.22),
+        0 0 18px 6px rgba(5, 183, 255, 0.60),
+        0 0 48px 16px rgba(5, 183, 255, 0.28),
+        rgba(0, 0, 0, 0.22) 0 12px 26px;
+}
+
+body.is-chaos .hate-html-toggle.hate-html-toggle--hint {
+    box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.18),
+    0 0 18px 6px rgba(255, 107, 107, 0.62),
+    0 0 48px 16px rgba(255, 107, 107, 0.28),
+    rgba(0, 0, 0, 0.22) 0 12px 26px;
+}
+
+@keyframes hate-html-hint-pulse {
+    0%,
+    100% {
+        transform: translateY(0);
+        filter: brightness(1);
+    }
+    50% {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+    }
 }
 
 .hate-html-toggle:focus-visible {
@@ -837,6 +980,29 @@ body.is-chaos .hate-html-toggle:hover {
     padding: clamp(24px, 4vw, 48px);
     position: relative;
     overflow: hidden;
+}
+
+/* Landing screensaver mode (bouncing orbit items) */
+.landing-page.is-screensaver .logo-orbit {
+    position: fixed;
+    inset: 0;
+}
+
+.landing-page.is-screensaver .orbit-item {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translate3d(0, 0, 0);
+    animation: none !important;
+    will-change: transform;
+}
+
+.landing-page.is-screensaver .orbit-item__orbiter,
+.landing-page.is-screensaver .orbit-item__drifter,
+.landing-page.is-screensaver .orbit-item__stabilizer,
+.landing-page.is-screensaver .orbit-item__stabilizer .card {
+    transform: none !important;
+    animation: none !important;
 }
 
 /* Main Content Layout */
@@ -990,7 +1156,7 @@ body.is-chaos .hate-html-toggle:hover {
 
 .landing-card .logo-wrap--card {
     width: 100%;
-    padding: 12px;
+    padding: 0px;
 }
 
 .landing-card .logo-wrap--card img {
@@ -1007,10 +1173,10 @@ body.is-chaos .hate-html-toggle:hover {
     margin: 0;
     font-size: clamp(18px, 3vw, 22px);
     font-weight: 800;
-    text-transform: uppercase;
     letter-spacing: 0.08em;
     text-align: center;
-    padding: 16px;
+    padding: 8px;
+    line-height: 1.2;
 }
 
 /* Apply category-specific background colors to cards based on their grid */

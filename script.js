@@ -33,6 +33,167 @@ function clampNumber(value, min, max){
   return Math.min(Math.max(value, min), max);
 }
 
+/** [S4] Sticky category icon state (Market/Exhibition/Film Screening). */
+const categoryStickyState = {
+  layer: null,
+  items: new Map(),
+  raf: 0
+};
+
+/** [C4] Config describing which section icons should become sticky. */
+const CATEGORY_STICKY_CONFIG = [
+  {
+    key: 'market',
+    label: 'Market',
+    iconSelector: '.card--section-market .card-section__icon',
+    targetSelector: '.grid--market'
+  },
+  {
+    key: 'exhibition',
+    label: 'Exhibition',
+    iconSelector: '.card--section-exhibition .card-section__icon',
+    targetSelector: '.grid--exhibition'
+  },
+  {
+    key: 'film-screening',
+    label: 'Film Screening',
+    iconSelector: '.card--section-film-screening .card-section__icon',
+    targetSelector: '.grid--film-screening'
+  }
+];
+
+function scheduleCategoryStickyUpdate(){
+  if (categoryStickyState.raf) return;
+  categoryStickyState.raf = requestAnimationFrame(() => {
+    categoryStickyState.raf = 0;
+    updateCategoryStickyIcons();
+  });
+}
+
+function stickCategoryIcon(item){
+  const { icon } = item;
+  if (!icon || !icon.isConnected) return;
+  if (item.isStuck) return;
+
+  const parent = icon.parentElement;
+  if (!parent) return;
+
+  const placeholder = icon.cloneNode(false);
+  placeholder.classList.add('category-icon-placeholder');
+  while (placeholder.firstChild) placeholder.removeChild(placeholder.firstChild);
+  parent.replaceChild(placeholder, icon);
+
+  item.placeholder = placeholder;
+  item.originalParent = parent;
+  item.isStuck = true;
+
+  if (categoryStickyState.layer) categoryStickyState.layer.appendChild(icon);
+  icon.classList.add('category-sticky');
+  icon.style.position = 'fixed';
+  icon.style.top = `${item.stickyTop}px`;
+  icon.style.zIndex = '2147483646';
+}
+
+function unstickCategoryIcon(item){
+  const { icon, placeholder, originalParent } = item;
+  if (!icon) return;
+  if (!item.isStuck) return;
+
+  if (placeholder && originalParent && placeholder.parentNode === originalParent) {
+    originalParent.replaceChild(icon, placeholder);
+  }
+
+  item.placeholder = null;
+  item.originalParent = null;
+  item.isStuck = false;
+
+  icon.classList.remove('category-sticky');
+  icon.style.position = '';
+  icon.style.left = '';
+  icon.style.top = '';
+  icon.style.zIndex = '';
+}
+
+function updateCategoryStickyIcons(){
+  if (!categoryStickyState.layer) return;
+
+  const mainContent = document.querySelector('.main-content');
+  const isLanding = document.body.classList.contains('is-landing-active') || (mainContent && mainContent.classList.contains('is-hidden'));
+  if (isLanding) {
+    categoryStickyState.items.forEach(item => unstickCategoryIcon(item));
+    return;
+  }
+
+  const threshold = 10;
+
+  categoryStickyState.items.forEach(item => {
+    const { icon, placeholder } = item;
+    if (!icon || !icon.isConnected) return;
+
+    const anchorRect = item.isStuck && placeholder
+      ? placeholder.getBoundingClientRect()
+      : icon.getBoundingClientRect();
+
+    const shouldStick = anchorRect.top < threshold;
+    if (shouldStick && !item.isStuck) {
+      stickCategoryIcon(item);
+    } else if (!shouldStick && item.isStuck) {
+      unstickCategoryIcon(item);
+      return;
+    }
+
+    if (!item.isStuck) return;
+
+    const iconRect = icon.getBoundingClientRect();
+    const width = iconRect.width || 64;
+    let x = anchorRect.left;
+    x = clampNumber(x, 8, Math.max(8, window.innerWidth - width - 8));
+    icon.style.left = `${Math.round(x)}px`;
+  });
+}
+
+function setupCategoryStickyIcons(){
+  if (categoryStickyState.layer) return;
+
+  const layer = document.createElement('div');
+  layer.className = 'category-sticky-layer';
+  document.body.appendChild(layer);
+  categoryStickyState.layer = layer;
+
+  CATEGORY_STICKY_CONFIG.forEach((cfg, index) => {
+    const icon = document.querySelector(cfg.iconSelector);
+    const target = document.querySelector(cfg.targetSelector);
+    if (!icon || !target) return;
+
+    const stickyTop = 12 + index * 76;
+
+    const item = {
+      cfg,
+      icon,
+      target,
+      isStuck: false,
+      placeholder: null,
+      originalParent: null,
+      stickyTop
+    };
+
+    icon.addEventListener('click', event => {
+      if (!item.isStuck) return;
+      event.preventDefault();
+      event.stopPropagation();
+      target.scrollIntoView({ block: 'start', behavior: 'auto' });
+    });
+
+    categoryStickyState.items.set(cfg.key, item);
+  });
+
+  window.addEventListener('scroll', scheduleCategoryStickyUpdate, { passive: true });
+  window.addEventListener('resize', scheduleCategoryStickyUpdate);
+  window.addEventListener('orientationchange', scheduleCategoryStickyUpdate);
+
+  requestAnimationFrame(() => requestAnimationFrame(scheduleCategoryStickyUpdate));
+}
+
 document.addEventListener('DOMContentLoaded', initDateBadges);
 document.addEventListener('DOMContentLoaded', () => {
   document.body.classList.add('is-landing-active');
@@ -116,7 +277,7 @@ const chaosState = {
 let gridResizeObserver = null;
 
 /** [C2b] Character thresholds for card text collapse toggles. */
-const TEXT_COLLAPSE_LIMIT = 300;
+const TEXT_COLLAPSE_LIMIT = 200;
 const TEXT_COLLAPSE_MIN_OVERFLOW = 20;
 let textCollapseId = 0;
 
@@ -150,15 +311,66 @@ function applyCardTextCollapsers(){
   const cards = document.querySelectorAll('.card.bevel:not(.card--section)');
   cards.forEach(card => {
     if (card.closest('.ad-popup')) return;
-    if (card.querySelector('.card-text-collapsible')) return;
 
-    const textBlocks = Array.from(card.querySelectorAll('.card-text'));
+    // [Reset Logic]
+    const existingWrapper = card.querySelector('.card-text-collapsible');
+    let textBlocks = [];
+    
+    if (existingWrapper) {
+      const preview = existingWrapper.querySelector('.card-text-collapsible__preview');
+      const hidden = existingWrapper.querySelector('.card-text-collapsible__hidden');
+      
+      // Move hidden content to preview
+      if (hidden) {
+        while (hidden.firstChild) {
+          preview.appendChild(hidden.firstChild);
+        }
+      }
+      
+      // Fix overflow spans
+      if (preview) {
+        preview.querySelectorAll('.card-text__overflow').forEach(span => {
+           const parent = span.parentNode;
+           span.replaceWith(document.createTextNode(span.textContent));
+           parent.normalize();
+        });
+        
+        // Remove toggle
+        const toggle = existingWrapper.querySelector('.card-text-toggle');
+        if (toggle) toggle.remove();
+
+        // Extract paragraphs
+        textBlocks = Array.from(preview.children);
+        
+        // Move paragraphs back to container
+        const container = existingWrapper.parentNode;
+        textBlocks.forEach(block => container.insertBefore(block, existingWrapper));
+        
+        existingWrapper.remove();
+      }
+    } else {
+      textBlocks = Array.from(card.querySelectorAll('.card-text'));
+    }
+
     if (textBlocks.length === 0) return;
 
+    // [Determine Mode]
+    const isGalleryLayout = card.classList.contains('card--event-gallery') && window.innerWidth > 900;
+    const gallery = isGalleryLayout ? card.querySelector('.card-gallery') : null;
+    const limitHeight = gallery ? gallery.offsetHeight : 0;
+
+    // [Check if collapse is needed]
     const totalLength = textBlocks.reduce((sum, el) => sum + el.textContent.trim().length, 0);
     const hasMultiple = textBlocks.length > 1;
-    const overflow = totalLength - TEXT_COLLAPSE_LIMIT;
-    const shouldCollapse = (hasMultiple || totalLength >= TEXT_COLLAPSE_LIMIT) && overflow > TEXT_COLLAPSE_MIN_OVERFLOW;
+    
+    let shouldCollapse = false;
+    if (isGalleryLayout && gallery) {
+        shouldCollapse = true; // Assume needed, verify later
+    } else {
+        const overflow = totalLength - TEXT_COLLAPSE_LIMIT;
+        shouldCollapse = (hasMultiple || totalLength >= TEXT_COLLAPSE_LIMIT) && overflow > TEXT_COLLAPSE_MIN_OVERFLOW;
+    }
+
     if (!shouldCollapse) return;
 
     const anchor = textBlocks[0];
@@ -178,9 +390,6 @@ function applyCardTextCollapsers(){
     container.insertBefore(wrapper, anchor);
     textBlocks.forEach(el => el.remove());
 
-    let consumed = 0;
-    const inlineOverflows = [];
-
     const buildParagraph = (template, content) => {
       const node = document.createElement(template.tagName.toLowerCase());
       node.className = template.className;
@@ -188,28 +397,115 @@ function applyCardTextCollapsers(){
       return node;
     };
 
-    textBlocks.forEach(block => {
-      const text = block.textContent || '';
-      const len = text.length;
+    let consumed = 0;
+    let hasSplit = false;
+    const inlineOverflows = [];
 
-      if (consumed >= TEXT_COLLAPSE_LIMIT) {
-        hidden.appendChild(buildParagraph(block, text));
-      } else if (consumed + len <= TEXT_COLLAPSE_LIMIT) {
-        preview.appendChild(buildParagraph(block, text));
-      } else {
-        const splitAt = TEXT_COLLAPSE_LIMIT - consumed;
-        const overflowParagraph = buildParagraph(block, text.slice(0, splitAt));
-        const overflowSpan = document.createElement('span');
-        overflowSpan.className = 'card-text__overflow';
-        overflowSpan.textContent = text.slice(splitAt);
-        overflowSpan.hidden = true;
-        overflowParagraph.appendChild(overflowSpan);
-        inlineOverflows.push(overflowSpan);
-        preview.appendChild(overflowParagraph);
-      }
+    if (isGalleryLayout && gallery) {
+        // Height-based logic
+        wrapper.appendChild(preview);
+        
+        for (let i = 0; i < textBlocks.length; i++) {
+            const block = textBlocks[i];
+            const text = block.textContent || '';
+            
+            if (hasSplit) {
+                hidden.appendChild(buildParagraph(block, text));
+                continue;
+            }
 
-      consumed += len;
-    });
+            const p = buildParagraph(block, text);
+            preview.appendChild(p);
+            
+            if (preview.offsetHeight > limitHeight) {
+                preview.removeChild(p);
+                
+                const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+                const splitP = buildParagraph(block, '');
+                preview.appendChild(splitP);
+                
+                let currentText = '';
+                
+                for (let j = 0; j < sentences.length; j++) {
+                    const sentence = sentences[j];
+                    const prevText = currentText;
+                    currentText += sentence;
+                    splitP.textContent = currentText;
+                    
+                    if (preview.offsetHeight > limitHeight) {
+                        splitP.textContent = prevText;
+                        
+                        const remainingText = text.slice(prevText.length);
+                        const overflowSpan = document.createElement('span');
+                        overflowSpan.className = 'card-text__overflow';
+                        overflowSpan.textContent = remainingText;
+                        overflowSpan.hidden = true;
+                        splitP.appendChild(overflowSpan);
+                        inlineOverflows.push(overflowSpan);
+                        
+                        hasSplit = true;
+                        break;
+                    }
+                }
+                
+                if (!hasSplit) {
+                    // If loop finished but we didn't split (rare edge case), force split?
+                    // Or just accept it fits now (maybe sub-pixel diff).
+                }
+            }
+        }
+        
+        if (!hasSplit) {
+             textBlocks.forEach(block => container.insertBefore(block, wrapper));
+             wrapper.remove();
+             return;
+        }
+
+    } else {
+        // Character count logic
+        textBlocks.forEach(block => {
+          const text = block.textContent || '';
+          const len = text.length;
+
+          if (hasSplit) {
+            hidden.appendChild(buildParagraph(block, text));
+          } else {
+            let searchStartIndex = 0;
+            if (consumed < TEXT_COLLAPSE_LIMIT) {
+              searchStartIndex = TEXT_COLLAPSE_LIMIT - consumed;
+            }
+            
+            const dotIndex = text.indexOf('.', searchStartIndex);
+
+            if (dotIndex !== -1) {
+              const splitAt = dotIndex + 1;
+              const overflowParagraph = buildParagraph(block, text.slice(0, splitAt));
+              const overflowSpan = document.createElement('span');
+              overflowSpan.className = 'card-text__overflow';
+              overflowSpan.textContent = text.slice(splitAt);
+              overflowSpan.hidden = true;
+              overflowParagraph.appendChild(overflowSpan);
+              inlineOverflows.push(overflowSpan);
+              preview.appendChild(overflowParagraph);
+              hasSplit = true;
+            } else {
+              preview.appendChild(buildParagraph(block, text));
+            }
+          }
+
+          consumed += len;
+        });
+        
+        if (!hasSplit) {
+             textBlocks.forEach(block => container.insertBefore(block, wrapper));
+             wrapper.remove();
+             return;
+        }
+        
+        wrapper.appendChild(preview);
+    }
+
+    wrapper.appendChild(hidden);
 
     const toggle = document.createElement('button');
     toggle.type = 'button';
@@ -221,17 +517,36 @@ function applyCardTextCollapsers(){
     toggle.setAttribute('aria-controls', hiddenId);
     toggle.setAttribute('aria-expanded', 'false');
 
-    toggle.addEventListener('click', () => {
+    if (preview.lastElementChild) {
+      preview.lastElementChild.appendChild(document.createTextNode(" "));
+      preview.lastElementChild.appendChild(toggle);
+    } else {
+      wrapper.appendChild(toggle);
+    }
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       const expanded = wrapper.classList.toggle('is-expanded');
       hidden.hidden = !expanded;
       inlineOverflows.forEach(span => span.hidden = !expanded);
       toggle.textContent = expanded ? 'LESS' : 'MORE';
       toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    });
 
-    wrapper.appendChild(preview);
-    wrapper.appendChild(hidden);
-    wrapper.appendChild(toggle);
+      if (expanded) {
+        if (hidden.lastElementChild) {
+          hidden.lastElementChild.appendChild(document.createTextNode(" "));
+          hidden.lastElementChild.appendChild(toggle);
+        } else if (preview.lastElementChild) {
+          preview.lastElementChild.appendChild(document.createTextNode(" "));
+          preview.lastElementChild.appendChild(toggle);
+        }
+      } else {
+        if (preview.lastElementChild) {
+          preview.lastElementChild.appendChild(document.createTextNode(" "));
+          preview.lastElementChild.appendChild(toggle);
+        }
+      }
+    });
   });
 }
 
@@ -252,7 +567,15 @@ function setupChaosToggle(){
   const toggle = document.getElementById('hate-html-toggle');
   if (!toggle) return;
 
+  const hintKey = 'yamiichi.hasClickedChaosToggle';
+  const hasClicked = localStorage.getItem(hintKey) === '1';
+  if (!hasClicked) {
+    toggle.classList.add('hate-html-toggle--hint');
+  }
+
   toggle.addEventListener('click', () => {
+    localStorage.setItem(hintKey, '1');
+    toggle.classList.remove('hate-html-toggle--hint');
     if (chaosState.active) {
       exitChaos(toggle);
     } else {
@@ -536,6 +859,8 @@ function enterChaos(toggle){
   toggle.setAttribute('aria-pressed', 'true');
   toggle.textContent = 'I LOVE HTML';
   chaosState.active = true;
+
+  scheduleCategoryStickyUpdate();
 }
 
 /** [F11] Restores original grid layout and pointer bindings. */
@@ -611,6 +936,8 @@ function exitChaos(toggle){
   toggle.setAttribute('aria-pressed', 'false');
   toggle.textContent = 'I HATE HTML';
 
+  scheduleCategoryStickyUpdate();
+
   requestAnimationFrame(() => scheduleLayoutUpdate());
 }
 
@@ -665,6 +992,9 @@ function onChaosPointerMove(event){
   drag.node.style.top = `${drag.baseTop + dy}px`;
 
   updateChaosBounds(drag.node);
+
+  // Keep sticky category icons aligned with their source icons.
+  scheduleCategoryStickyUpdate();
 }
 
 /** [F14] Finalizes a drag interaction and cleans up state. */
@@ -773,6 +1103,194 @@ function initLandingOrbit(){
   }
 }
 
+/** [S5] Landing screensaver (bouncing orbit items) state. */
+const landingScreensaverState = {
+  raf: 0,
+  lastTime: 0,
+  running: false,
+  items: [],
+  onResize: null
+};
+
+/** [C5] Landing screensaver speed tuning (px/s). */
+const LANDING_SCREENSAVER_SPEED = {
+  multiplier: 0.05,
+  min: 10,
+  max: 28,
+  variance: 0.6
+};
+
+function rectsIntersect(a, b){
+  return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+}
+
+function stopLandingScreensaver(){
+  if (landingScreensaverState.raf) {
+    cancelAnimationFrame(landingScreensaverState.raf);
+  }
+  landingScreensaverState.raf = 0;
+  landingScreensaverState.running = false;
+  landingScreensaverState.lastTime = 0;
+  const landingPage = document.querySelector('.landing-page');
+  if (landingPage) landingPage.classList.remove('is-screensaver');
+
+  if (landingScreensaverState.onResize) {
+    window.removeEventListener('resize', landingScreensaverState.onResize);
+    window.removeEventListener('orientationchange', landingScreensaverState.onResize);
+    landingScreensaverState.onResize = null;
+  }
+}
+
+/** [F32] Replaces orbit animation with a slow bouncing (screensaver-like) motion. */
+function initLandingScreensaver(){
+  const landingPage = document.querySelector('.landing-page');
+  const orbitItems = Array.from(document.querySelectorAll('.orbit-item'));
+  const centerLink = document.querySelector('.logo-center__link');
+  if (!landingPage || orbitItems.length === 0 || !centerLink) return;
+
+  const prefersReducedMotion = matchMediaSafe('(prefers-reduced-motion: reduce)');
+  if (prefersReducedMotion && prefersReducedMotion.matches) return;
+
+  landingPage.classList.add('is-screensaver');
+
+  // Ensure layout is computed once before measuring sizes.
+  requestAnimationFrame(() => {
+    // If landing is already dismissed, do nothing.
+    const mainContent = document.querySelector('.main-content');
+    const isLanding = document.body.classList.contains('is-landing-active') || (mainContent && mainContent.classList.contains('is-hidden'));
+    if (!isLanding) return;
+
+    const margin = 12;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const centerRect = centerLink.getBoundingClientRect();
+
+    landingScreensaverState.items = orbitItems.map(node => {
+      const rect = node.getBoundingClientRect();
+      const width = Math.max(1, rect.width);
+      const height = Math.max(1, rect.height);
+
+      // Slow, varied velocities (px/s).
+      const baseSpeed = clampNumber(
+        Math.min(vw, vh) * LANDING_SCREENSAVER_SPEED.multiplier,
+        LANDING_SCREENSAVER_SPEED.min,
+        LANDING_SCREENSAVER_SPEED.max
+      );
+      const speed = baseSpeed * (0.7 + Math.random() * LANDING_SCREENSAVER_SPEED.variance);
+      const angle = Math.random() * Math.PI * 2;
+      let vx = Math.cos(angle) * speed;
+      let vy = Math.sin(angle) * speed;
+
+      // Pick a start position that avoids the center logo if possible.
+      let x = margin + Math.random() * Math.max(1, vw - width - margin * 2);
+      let y = margin + Math.random() * Math.max(1, vh - height - margin * 2);
+
+      for (let i = 0; i < 24; i++) {
+        const r = { left: x, top: y, right: x + width, bottom: y + height };
+        if (!rectsIntersect(r, centerRect)) break;
+        x = margin + Math.random() * Math.max(1, vw - width - margin * 2);
+        y = margin + Math.random() * Math.max(1, vh - height - margin * 2);
+      }
+
+      node.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+      return { node, x, y, vx, vy, width, height, isDragging: false };
+    });
+
+
+    const clampAllToViewport = () => {
+      const vwNow = window.innerWidth;
+      const vhNow = window.innerHeight;
+      landingScreensaverState.items.forEach(item => {
+        item.x = clampNumber(item.x, margin, Math.max(margin, vwNow - item.width - margin));
+        item.y = clampNumber(item.y, margin, Math.max(margin, vhNow - item.height - margin));
+        item.node.style.transform = `translate3d(${Math.round(item.x)}px, ${Math.round(item.y)}px, 0)`;
+      });
+    };
+
+    landingScreensaverState.onResize = () => requestAnimationFrame(clampAllToViewport);
+    window.addEventListener('resize', landingScreensaverState.onResize);
+    window.addEventListener('orientationchange', landingScreensaverState.onResize);
+
+    const step = now => {
+      landingScreensaverState.raf = 0;
+
+      const mainContentNow = document.querySelector('.main-content');
+      const stillLanding = document.body.classList.contains('is-landing-active') || (mainContentNow && mainContentNow.classList.contains('is-hidden'));
+      if (!stillLanding) {
+        stopLandingScreensaver();
+        return;
+      }
+
+      const dt = landingScreensaverState.lastTime ? Math.min(0.05, (now - landingScreensaverState.lastTime) / 1000) : 0.016;
+      landingScreensaverState.lastTime = now;
+
+      const vwNow = window.innerWidth;
+      const vhNow = window.innerHeight;
+      const obstacle = centerLink.getBoundingClientRect();
+
+      landingScreensaverState.items.forEach(item => {
+        if (item.isDragging) return;
+        item.x += item.vx * dt;
+        item.y += item.vy * dt;
+
+        // Window bounds bounce.
+        const maxX = Math.max(margin, vwNow - item.width - margin);
+        const maxY = Math.max(margin, vhNow - item.height - margin);
+
+        if (item.x <= margin) {
+          item.x = margin;
+          item.vx = Math.abs(item.vx);
+        } else if (item.x >= maxX) {
+          item.x = maxX;
+          item.vx = -Math.abs(item.vx);
+        }
+
+        if (item.y <= margin) {
+          item.y = margin;
+          item.vy = Math.abs(item.vy);
+        } else if (item.y >= maxY) {
+          item.y = maxY;
+          item.vy = -Math.abs(item.vy);
+        }
+
+        // Bounce off the center logo (treated as an obstacle).
+        const r = { left: item.x, top: item.y, right: item.x + item.width, bottom: item.y + item.height };
+        if (rectsIntersect(r, obstacle)) {
+          const overlapX = Math.min(r.right - obstacle.left, obstacle.right - r.left);
+          const overlapY = Math.min(r.bottom - obstacle.top, obstacle.bottom - r.top);
+
+          if (overlapX < overlapY) {
+            if (r.left < obstacle.left) {
+              item.x -= overlapX;
+              item.vx = -Math.abs(item.vx);
+            } else {
+              item.x += overlapX;
+              item.vx = Math.abs(item.vx);
+            }
+          } else {
+            if (r.top < obstacle.top) {
+              item.y -= overlapY;
+              item.vy = -Math.abs(item.vy);
+            } else {
+              item.y += overlapY;
+              item.vy = Math.abs(item.vy);
+            }
+          }
+        }
+
+        item.node.style.transform = `translate3d(${Math.round(item.x)}px, ${Math.round(item.y)}px, 0)`;
+      });
+
+      landingScreensaverState.raf = requestAnimationFrame(step);
+    };
+
+    landingScreensaverState.running = true;
+    landingScreensaverState.lastTime = 0;
+    landingScreensaverState.raf = requestAnimationFrame(step);
+  });
+}
+
 /** [F31] Ensures landing orbit cards open their partner links even when wrappers intercept clicks. */
 function enableLandingOrbitLinks(){
   document.querySelectorAll('.logo-orbit .landing-card').forEach(card => {
@@ -812,10 +1330,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  initLandingOrbit();
+  setupAdPopup();
+  initLandingScreensaver();
   enableLandingOrbitLinks();
   setupChaosToggle();
-  setupAdPopup();
+  setupCategoryStickyIcons();
 });
 
 window.addEventListener('load', scheduleLayoutUpdate);
@@ -834,6 +1353,8 @@ function showMainContent(event) {
   const footerGrid = document.querySelector('.grid--footer');
   const hateHtmlButton = document.getElementById('hate-html-toggle');
 
+  stopLandingScreensaver();
+
   if (landingPage) landingPage.classList.add('is-hidden');
   if (mainContent) mainContent.classList.remove('is-hidden');
   if (footer) footer.classList.remove('is-hidden');
@@ -847,6 +1368,7 @@ function showMainContent(event) {
   // Trigger layout update for the main content
   requestAnimationFrame(() => {
     scheduleLayoutUpdate();
+    scheduleCategoryStickyUpdate();
   });
 }
 
