@@ -264,6 +264,7 @@ const chaosState = {
   drags: new Map(),
   zIndex: 1000,
   gridStyles: new Map(),
+  gridCanvasBase: new Map(),
   grids: new Set(),
   entityToGrid: new Map(),
   hosts: new Map(),
@@ -272,6 +273,76 @@ const chaosState = {
   stage: null,
   skipAdClick: false
 };
+
+/** [S2b] Pending chaos card relayout requests (e.g., MORE/LESS toggles). */
+const chaosRelayoutQueue = new Set();
+let chaosRelayoutRaf = 0;
+
+/** [F6c] Schedules a chaos card height + canvas refresh. */
+function scheduleChaosCardRelayout(card){
+  if (!card) return;
+  if (!chaosState.active) return;
+  if (!card.classList || !card.classList.contains('is-chaos-card')) return;
+
+  chaosRelayoutQueue.add(card);
+  if (chaosRelayoutRaf) return;
+  chaosRelayoutRaf = requestAnimationFrame(() => {
+    chaosRelayoutRaf = 0;
+    const cards = Array.from(chaosRelayoutQueue);
+    chaosRelayoutQueue.clear();
+    cards.forEach(syncChaosCardHeight);
+  });
+}
+
+/** [F6d] Updates a chaos card's fixed height to match its content. */
+function syncChaosCardHeight(card){
+  if (!chaosState.active) return;
+  if (!card || !card.classList || !card.classList.contains('is-chaos-card')) return;
+
+  // Allow the card to naturally size to its content, then lock it back in.
+  card.style.height = 'auto';
+  // Force reflow before measuring.
+  void card.offsetHeight;
+  const rect = card.getBoundingClientRect();
+  const nextHeight = Math.max(1, Math.ceil(rect.height));
+  card.style.height = `${nextHeight}px`;
+
+  refreshChaosGridCanvas(card);
+}
+
+/** [F6e] Ensures the owning grid's canvas height covers all of its chaos entities. */
+function refreshChaosGridCanvas(entity){
+  if (!chaosState.active) return;
+  const grid = chaosState.entityToGrid.get(entity);
+  if (!grid) return;
+
+  let maxBottom = 0;
+  const stageRect = chaosState.stage ? chaosState.stage.getBoundingClientRect() : null;
+
+  chaosState.entityToGrid.forEach((ownedGrid, node) => {
+    if (ownedGrid !== grid) return;
+    if (!node || !node.isConnected) return;
+
+    const top = parseFloat(node.style.top);
+    const height = parseFloat(node.style.height);
+
+    if (Number.isFinite(top) && Number.isFinite(height)) {
+      maxBottom = Math.max(maxBottom, top + height);
+      return;
+    }
+
+    const rect = node.getBoundingClientRect();
+    const relativeTop = stageRect ? rect.top - stageRect.top : rect.top;
+    maxBottom = Math.max(maxBottom, relativeTop + rect.height);
+  });
+
+  const base = chaosState.gridCanvasBase.get(grid);
+  const minHeight = Number.isFinite(base) ? base : 0;
+  const heightPx = `${Math.ceil(Math.max(maxBottom, minHeight))}px`;
+  grid.style.height = heightPx;
+  grid.style.minHeight = heightPx;
+  grid.style.maxHeight = heightPx;
+}
 
 /** [S3] Lazily created ResizeObserver shared across grids. */
 let gridResizeObserver = null;
@@ -546,6 +617,12 @@ function applyCardTextCollapsers(){
           preview.lastElementChild.appendChild(toggle);
         }
       }
+
+      // Chaos mode pins card heights; re-sync after expanding/collapsing text.
+      if (chaosState.active) {
+        const hostCard = wrapper.closest('.card');
+        scheduleChaosCardRelayout(hostCard);
+      }
     });
   });
 }
@@ -712,6 +789,7 @@ function enterChaos(toggle){
 
   chaosState.originalStyles.clear();
   chaosState.gridStyles.clear();
+  chaosState.gridCanvasBase.clear();
   chaosState.entityToGrid.clear();
   chaosState.drags.clear();
   chaosState.grids = new Set(grids);
@@ -850,10 +928,12 @@ function enterChaos(toggle){
     });
 
     const canvasHeight = Math.max(maxBottom, gridRect.height);
-    const heightPx = `${Math.ceil(canvasHeight)}px`;
+    const canvasPx = Math.ceil(canvasHeight);
+    const heightPx = `${canvasPx}px`;
     grid.style.height = heightPx;
     grid.style.minHeight = heightPx;
     grid.style.maxHeight = heightPx;
+    chaosState.gridCanvasBase.set(grid, canvasPx);
   });
 
   toggle.setAttribute('aria-pressed', 'true');
@@ -888,6 +968,7 @@ function exitChaos(toggle){
     grid.style.zIndex = styles.zIndex || '';
   });
   chaosState.gridStyles.clear();
+  chaosState.gridCanvasBase.clear();
 
   const placements = new Map();
 
