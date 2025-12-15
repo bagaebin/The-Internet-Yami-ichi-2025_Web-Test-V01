@@ -1029,6 +1029,26 @@ function onChaosPointerDown(event){
   const node = event.target.closest('.chaos-draggable');
   if (!node || !chaosState.originalStyles.has(node)) return;
 
+  // Allow interactive controls inside draggables to remain clickable.
+  // (e.g. MORE/LESS toggles, links, form fields, embedded iframes)
+  const interactiveSelector = [
+    '.card-text-toggle',
+    'button',
+    'a[href]',
+    'input',
+    'textarea',
+    'select',
+    'label',
+    'summary',
+    'details',
+    '[role="button"]',
+    '[role="link"]',
+    '[contenteditable="true"]',
+    'iframe'
+  ].join(', ');
+  const interactiveTarget = event.target.closest(interactiveSelector);
+  if (interactiveTarget && interactiveTarget !== node) return;
+
   const baseLeft = parseFloat(node.style.left) || 0;
   const baseTop = parseFloat(node.style.top) || 0;
 
