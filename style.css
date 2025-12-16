@@ -598,7 +598,7 @@ body.is-chaos .card-gallery__item--map.is-chaos-gallery {
     background-color: #fff;
 }
 
-.ad-popup {
+.info-popup {
     position: fixed;
     left: 16px;
     bottom: 16px;
@@ -611,11 +611,11 @@ body.is-chaos .card-gallery__item--map.is-chaos-gallery {
 }
 
 /* Landing intro: hide the promo popup completely. */
-body.is-landing-active .ad-popup {
+body.is-landing-active .info-popup {
     display: none;
 }
 
-.ad-popup__icon {
+.info-popup__icon {
     background: transparent;
     border: none;
     padding: 0;
@@ -626,7 +626,7 @@ body.is-landing-active .ad-popup {
     filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.2));
 }
 
-.ad-popup__icon img {
+.info-popup__icon img {
     display: block;
     max-width: clamp(200px, 36vw, 360px);
     height: auto;
@@ -676,32 +676,32 @@ body.is-landing-active .category-sticky-layer {
     display: block;
 }
 
-.ad-popup--collapsed .ad-popup__icon {
-    animation: ad-pop-bounce 3s ease-in-out infinite;
+.info-popup--collapsed .info-popup__icon {
+    animation: info-pop-bounce 3s ease-in-out infinite;
     transform-origin: center bottom;
 }
 
-.ad-popup--expanded .ad-popup__icon {
+.info-popup--expanded .info-popup__icon {
     display: none;
 }
 
-.ad-popup__panel.bevel {
+.info-popup__panel.bevel {
     position: relative;
     padding: 14px 16px 18px;
     width: min(360px, calc(100vw - 40px));
     background-color: var(--color-gameroom-bg);
 }
 
-.ad-popup--collapsed .ad-popup__panel {
+.info-popup--collapsed .info-popup__panel {
     display: none;
 }
 
-.ad-popup__panel .card-heading {
+.info-popup__panel .card-heading {
     margin-bottom: 12px; /* 원하는 값으로 조절 */
     color: var(--color-gameroom-accent);
 }
 
-.ad-popup__close {
+.info-popup__close {
     position: absolute;
     top: 12px;
     right: 12px;
@@ -720,7 +720,7 @@ body.is-landing-active .category-sticky-layer {
     justify-content: center;
 }
 
-@keyframes ad-pop-bounce {
+@keyframes info-pop-bounce {
     0%,
     100% {
         transform: translateY(0);

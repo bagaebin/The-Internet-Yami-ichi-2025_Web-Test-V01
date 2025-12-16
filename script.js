@@ -255,7 +255,7 @@ function groupRowsByOffsetTop(items){
 /** [C2] Maximum chaos jitter distance for draggable cards. */
 const CHAOS_JITTER_RANGE = 24;
 /** [C2c] High z-index reserved for the promo icon in chaos mode. */
-const CHAOS_AD_ZINDEX = 2147483000;
+const CHAOS_INFO_ZINDEX = 2147483000;
 
 /** [S2] Mutable state backing chaos mode interactions. */
 const chaosState = {
@@ -271,7 +271,7 @@ const chaosState = {
   order: new Map(),
   placeholders: new Map(),
   stage: null,
-  skipAdClick: false
+  skipInfoClick: false
 };
 
 /** [S2b] Pending chaos card relayout requests (e.g., MORE/LESS toggles). */
@@ -381,7 +381,7 @@ function updateAllGridLayouts(){
 function applyCardTextCollapsers(){
   const cards = document.querySelectorAll('.card.bevel:not(.card--section)');
   cards.forEach(card => {
-    if (card.closest('.ad-popup')) return;
+    if (card.closest('.info-popup')) return;
 
     // [Reset Logic]
     const existingWrapper = card.querySelector('.card-text-collapsible');
@@ -667,32 +667,32 @@ function setupChaosToggle(){
 }
 
 /** [F8b] Wires the promo popup to toggle between icon and detail card. */
-function setupAdPopup(){
-  const ad = document.getElementById('chaos-ad');
+function setupInfoPopup(){
+  const ad = document.getElementById('chaos-info');
   if (!ad) return;
 
-  const iconButton = ad.querySelector('.ad-popup__icon');
-  const panel = ad.querySelector('.ad-popup__panel');
-  const closeButton = ad.querySelector('.ad-popup__close');
+  const iconButton = ad.querySelector('.info-popup__icon');
+  const panel = ad.querySelector('.info-popup__panel');
+  const closeButton = ad.querySelector('.info-popup__close');
 
   const showIcon = () => {
-    ad.classList.add('ad-popup--collapsed');
-    ad.classList.remove('ad-popup--expanded');
+    ad.classList.add('info-popup--collapsed');
+    ad.classList.remove('info-popup--expanded');
     if (panel) panel.hidden = true;
     if (iconButton) iconButton.hidden = false;
   };
 
   const showPanel = () => {
-    ad.classList.remove('ad-popup--collapsed');
-    ad.classList.add('ad-popup--expanded');
+    ad.classList.remove('info-popup--collapsed');
+    ad.classList.add('info-popup--expanded');
     if (panel) panel.hidden = false;
     if (iconButton) iconButton.hidden = true;
   };
 
   if (iconButton) {
     iconButton.addEventListener('click', () => {
-      if (chaosState.skipAdClick) {
-        chaosState.skipAdClick = false;
+      if (chaosState.skipInfoClick) {
+        chaosState.skipInfoClick = false;
         return;
       }
       showPanel();
@@ -812,7 +812,7 @@ function enterChaos(toggle){
   const stageRect = stage.getBoundingClientRect();
   chaosState.stage = stage;
 
-  moveChaosAdIntoStage(stage, stageRect);
+  moveChaosInfoIntoStage(stage, stageRect);
 
   document.body.classList.add('is-chaos');
 
@@ -1065,9 +1065,9 @@ function onChaosPointerDown(event){
     moved: false
   });
 
-  if (node.id === 'chaos-ad') {
-    chaosState.zIndex = Math.max(chaosState.zIndex, CHAOS_AD_ZINDEX);
-    node.style.zIndex = `${CHAOS_AD_ZINDEX}`;
+  if (node.id === 'chaos-info') {
+    chaosState.zIndex = Math.max(chaosState.zIndex, CHAOS_INFO_ZINDEX);
+    node.style.zIndex = `${CHAOS_INFO_ZINDEX}`;
   } else {
     node.style.zIndex = `${++chaosState.zIndex}`;
   }
@@ -1110,8 +1110,8 @@ function onChaosPointerEnd(event){
   drag.node.classList.remove('is-dragging');
   drag.node.style.cursor = 'grab';
 
-  if (drag.moved && drag.node.id === 'chaos-ad') {
-    chaosState.skipAdClick = true;
+  if (drag.moved && drag.node.id === 'chaos-info') {
+    chaosState.skipInfoClick = true;
   }
 
   chaosState.drags.delete(event.pointerId);
@@ -1132,8 +1132,8 @@ function liftChaosGrid(node){
 }
 
 /** [F15b] Moves the promo popup into the chaos stage so it can be dragged. */
-function moveChaosAdIntoStage(stage, stageRect){
-  const ad = document.getElementById('chaos-ad');
+function moveChaosInfoIntoStage(stage, stageRect){
+  const ad = document.getElementById('chaos-info');
   if (!ad) return;
 
   const rect = ad.getBoundingClientRect();
@@ -1155,7 +1155,7 @@ function moveChaosAdIntoStage(stage, stageRect){
   ad.style.bottom = '';
   ad.style.width = `${rect.width}px`;
   ad.style.height = `${rect.height}px`;
-  ad.style.zIndex = `${CHAOS_AD_ZINDEX}`;
+  ad.style.zIndex = `${CHAOS_INFO_ZINDEX}`;
   ad.style.cursor = 'grab';
   ad.classList.add('chaos-draggable', 'is-chaos-entity');
 
@@ -1431,7 +1431,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  setupAdPopup();
+  setupInfoPopup();
   initLandingScreensaver();
   enableLandingOrbitLinks();
   setupChaosToggle();
